@@ -9,5 +9,154 @@
         <lastBuildDate>Fri, 14 Mar 2025 00:02:13 +0000</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
         
+        <item>
+            <title>Effortless Package Management: A Comprehensive Look at APT</title>
+            <link>/posts/apt/</link>
+            <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+            
+            <guid>/posts/apt/</guid>
+            <description>&lt;p&gt;You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software.
+Today I’ll dive deeper on the intricacies of this command.&lt;/p&gt;
+&lt;h2 id=&#34;what-is-apt-package-manager&#34;&gt;What is APT Package Manager&lt;/h2&gt;
+&lt;p&gt;The &lt;a href=&#34;https://en.wikipedia.org/wiki/APT_%28software%29&#34;&gt;Advanced Package Tool&lt;/a&gt; (APT) is a free utility that lets user install, update and manage software packages. These packages are bundled in repositories, which are external sources containing software that users can install. APT simplifies the interaction with these repositories and automates the management of dependencies.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software.
+Today I’ll dive deeper on the intricacies of this command.</p>
+<h2 id="what-is-apt-package-manager">What is APT Package Manager</h2>
+<p>The <a href="https://en.wikipedia.org/wiki/APT_%28software%29">Advanced Package Tool</a> (APT) is a free utility that lets user install, update and manage software packages. These packages are bundled in repositories, which are external sources containing software that users can install. APT simplifies the interaction with these repositories and automates the management of dependencies.</p>
+<p>APT came as a way to resolve dependency issues and is often hailed as one of Debian&rsquo;s best features.</p>
+<h3 id="apt-or-apt-get-whats-the-difference">apt or apt-get? What&rsquo;s the difference?</h3>
+<h4 id="a-brief-history">A brief history</h4>
+<ul>
+<li><em><strong>apt-get</strong></em> was introduced in 1998 as part of the Advanced Package Tool (APT). It’s a low-level command-line utility that has been the backbone of package management for system administrators for over two decades. It provides powerful, granular control over installing, updating, and removing packages, making it ideal for scripting and automation.</li>
+<li><em><strong>apt</strong></em> was introduced much later (in 2014 with Debian 8 and Ubuntu 16.04) as a more user-friendly interface that combines the most common functionalities of apt-get and apt-cache. It was designed to make package management simpler for everyday use by combining several commands into one and offering cleaner, more readable output.</li>
+</ul>
+<p>In a general sense, we can qualify <em><strong>apt</strong></em> to be the summation of <em><strong>apt-get</strong></em> <em><strong>apt-cache</strong></em> and <em><strong>dpkg</strong></em>.</p>
+
+    <img src="/screens/apt-vs-aptget.png"  alt="apt vs apt-get"  class="center"  style="border-radius: 8px; width: 50%"  />
+
+
+<p>There are also a few differences in output between the two commands :</p>
+<ul>
+<li><em><strong>apt</strong></em> is designed with a more user-friendly output. It includes:
+<ul>
+<li>Progress bars while downloading and installing packages.</li>
+<li>Automatic interaction prompts for actions like confirmation before installing or removing packages.</li>
+</ul>
+</li>
+</ul>
+
+    <img src="/screens/apt_install.png"  alt="apt install"  class="center"  style="border-radius: 8px;"  />
+
+
+<p><em><strong>apt-get</strong></em> provides detailed and verbose output. It doesn’t automatically include prompts or progress bars unless specified. For example, if you’re scripting or working in environments where every bit of output and behavior matters, this detailed feedback can be useful.</p>
+
+    <img src="/screens/apt_get_install.png"  alt="apt install"  class="center"  style="border-radius: 8px;"  />
+
+
+<h2 id="common-apt-commands">Common APT Commands</h2>
+<h3 id="updating-repositories">Updating Repositories</h3>
+<p>You must&rsquo;ve noticed that most commands/tutorial start with the following command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span></code></pre></div><p>Before installing or upgrading any package, it&rsquo;s good practice to refresh the package database from the repositories using this command.</p>
+<h3 id="installing-packages">Installing Packages</h3>
+<p>You can install packages using this well-known command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install package-name
+</span></span></code></pre></div><p>You can install multiple packages by following this syntax :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install package-1 package-2 package-3
+</span></span></code></pre></div><hr>
+<p><em>note : This syntax goes for installing, removing, purging&hellip;</em></p>
+<hr>
+<p>To install a specific version of a package, you can add the version following an &ldquo;=&rdquo; :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install package-name<span style="color:#f92672">=</span>package_version
+</span></span></code></pre></div><p>You can even easily install <a href="https://en.wikipedia.org/wiki/Deb_%28file_format%29">.deb</a> packages :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install ./debian-package.deb
+</span></span></code></pre></div><h3 id="removing-packages">Removing Packages</h3>
+<p>Similarly to installing, removing packages is pretty straith foreward :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt remove package-name
+</span></span></code></pre></div><p>You can use the <em>purge</em> command to remove packages along with their configuration files :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt purge package-name
+</span></span></code></pre></div><h3 id="upgrading-packages">Upgrading Packages</h3>
+<p>You can have a full list of upgradable packages using this command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt list --upgradable
+</span></span></code></pre></div>
+    <img src="/screens/screen_upgradable.png"  alt="sudo apt list --upgradable"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>In my case, you can see that i have a handfull of packages that need upgrading, the nest step is to type in the following command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt upgrade
+</span></span></code></pre></div><p>For a more comprehensive upgrade; upgrading installed packages while also handling changes in dependencies, which may include removing existing packages if necessary :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt full-upgrade
+</span></span></code></pre></div><p>If you do not want to remove packages, even if they&rsquo;re not needed anymore, you should use the following :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt dist-upgrade
+</span></span></code></pre></div><hr>
+<p><em>to learn more about the difference between <strong>dist-upgrade</strong> and <strong>full-upgrade</strong> you should check out <a href="https://hatchjs.com/apt-dist-upgrade-vs-full-upgrade/">this article</a></em></p>
+<hr>
+<p>You can upgrade a specific package if needed :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt upgrade package-name
+</span></span></code></pre></div><h2 id="managing-repositories">Managing repositories</h2>
+<p>A lot of beginners struggle to understand this part of the process and find themselves with errors or copy-pasting commands without understanding them.</p>
+<p>For a more comprehensive understanding on the way we might add a third party repo to our system, I&rsquo;ll use the case of <strong>mangoDB</strong>. On their official website, we get told to follow these steps to install the community edition :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --dearmor
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main&#34;</span> | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+</span></span></code></pre></div><p>Let&rsquo;s break this down :</p>
+<h3 id="first-part">First part</h3>
+<ul>
+<li><strong>curl :</strong> : A command-line tool used to download data from a URL. In this case, it is used to fetch the MongoDB GPG public key.</li>
+<li><strong>-fsSL</strong> :
+<ul>
+<li>f : Fail silently on server errors. If the server returns a 404 (not found) or 500 (server error), curl will not output any errors to the terminal.</li>
+<li>s : Silent mode. Suppresses progress meter and error messages. It’s useful when you don’t want verbose output, especially in scripts.</li>
+<li>S : Show errors. If -s is used, this ensures that error messages will still be displayed. This prevents progress messages from showing, but actual errors (if any) will still be printed.</li>
+<li>L : Follow redirects. If the URL redirects to another URL (like when you’re being redirected from HTTP to HTTPS), curl will follow it and fetch the final URL.</li>
+</ul>
+</li>
+</ul>
+<p>We fetch the PGP key from the link, and we pipe it into gpg :</p>
+<ul>
+<li><strong>gpg</strong> : This is the GNU Privacy Guard, a tool used to encrypt and sign data, as well as manage public and private keys. In this case, it processes the downloaded PGP key.</li>
+<li><strong>-o</strong> : To specify the output file.</li>
+<li><strong>&ndash;dearmor</strong> : This converts the downloaded PGP key from its ASCII-armored format (text format, like .asc) into the binary format (like .gpg) that is more suitable for machine usage. &ldquo;ASCII-armored&rdquo; means the key is encoded in a text-based format, and <em>&ldquo;dearmoring&rdquo;</em> refers to converting it back into binary.</li>
+</ul>
+<h3 id="second-part">Second part</h3>
+<ul>
+<li><strong>deb</strong> : This specifies that the repository is for binary (.deb) packages. APT uses this syntax to define repositories.</li>
+<li><em><strong>[signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg]</strong></em> : This option tells APT that this repository’s packages are signed by a specific GPG key. It&rsquo;s located at /usr/share/keyrings/mongodb-server-8.0.gpg, which we obtained and placed there in the previous command using gpg &ndash;dearmor. This ensures that APT uses this key to verify the authenticity of packages downloaded from this repository.</li>
+</ul>
+<p>Finally, we pipe the results into tee. That writes the APT repository definition to the <em>/etc/apt/sources.list.d/</em> directory.</p>
+<h2 id="more-apt-commands">More apt commands</h2>
+<p>And now, a list of apt commands that are lesser-known but that I find useful.</p>
+<hr>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>apt list --installed
+</span></span></code></pre></div><p>Helps you quickly view all the installed packages without needing to search manually, you can even pip the output into grep to find a specific package(s) :</p>
+
+    <img src="/screens/apt_grep_list.png"  alt="apt list --installed"  class="center"  style="border-radius: 8px;"  />
+
+
+<hr>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>apt show package
+</span></span></code></pre></div><p>Displays detailed information about a package, including its dependencies, description, and version.</p>
+<hr>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>apt depends package
+</span></span></code></pre></div><p>Displays a list of dependencies for a package.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>apt rdepends package
+</span></span></code></pre></div><p>Lists all reverse dependencies, i.e., packages that depend on the specified package.</p>
+<hr>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-mark hold package
+</span></span></code></pre></div><p>Prevents a package from being upgraded.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-mark unhold package
+</span></span></code></pre></div><p>Removes a hold on a package, allowing it to be upgraded again.</p>
+<hr>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt autoremove
+</span></span></code></pre></div><p>Removes unused packages. Add &ndash;purge to remove the configuration files too.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In conclusion, APT is a powerful and essential tool for managing packages on Debian-based systems. Whether you&rsquo;re a beginner or an advanced user, understanding the nuances of APT and its various commands can greatly enhance your system administration skills.</p>
+]]></content>
+        </item>
+        
     </channel>
 </rss>
