@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Fri, 14 Mar 2025 00:02:13 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 16 Mar 2025 20:52:36 +0000</lastBuildDate>
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>(INE - eJPT) Assessment Methodologies: Vulnerability Assessment CTF 1</title>
+      <link>/posts/vulnerability_assessment_ctf_1/</link>
+      <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
+      <guid>/posts/vulnerability_assessment_ctf_1/</guid>
+      <description>&lt;p&gt;Today we&amp;rsquo;re going to write about my attempt at solving the &lt;em&gt;&amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.&lt;/p&gt;&#xA;&#xA;    &lt;img src=&#34;/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;&#xA;&#xA;&#xA;&lt;p&gt;We can see that the ports &lt;strong&gt;80&lt;/strong&gt; and &lt;strong&gt;3306&lt;/strong&gt; are open on the host&amp;rsquo;s IP &lt;strong&gt;192.194.77.3&lt;/strong&gt; so it must be our target (the &lt;em&gt;target.ine.local&lt;/em&gt; helps too).&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Effortless Package Management: A Comprehensive Look at APT</title>
       <link>/posts/apt/</link>

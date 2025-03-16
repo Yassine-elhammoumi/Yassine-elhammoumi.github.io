@@ -2,19 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/</loc>
-    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+    <loc>/posts/vulnerability_assessment_ctf_1/</loc>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
   </url><url>
-    <loc>/posts/apt/</loc>
-    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+    <loc>/</loc>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
+  </url><url>
+    <loc>/tags/ctf/</loc>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
+  </url><url>
+    <loc>/tags/cybersecurity/</loc>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
   </url><url>
     <loc>/tags/linux/</loc>
-    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
   </url><url>
     <loc>/posts/</loc>
-    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
   </url><url>
     <loc>/tags/</loc>
+    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
+  </url><url>
+    <loc>/posts/apt/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
     <loc>/blog/</loc>

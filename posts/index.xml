@@ -6,8 +6,130 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Fri, 14 Mar 2025 00:02:13 +0000</lastBuildDate>
+        <lastBuildDate>Sun, 16 Mar 2025 20:52:36 +0000</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>(INE - eJPT) Assessment Methodologies: Vulnerability Assessment CTF 1</title>
+            <link>/posts/vulnerability_assessment_ctf_1/</link>
+            <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
+            
+            <guid>/posts/vulnerability_assessment_ctf_1/</guid>
+            <description>&lt;p&gt;Today we&amp;rsquo;re going to write about my attempt at solving the &lt;em&gt;&amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.&lt;/p&gt;
+
+    &lt;img src=&#34;/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;
+
+
+&lt;p&gt;We can see that the ports &lt;strong&gt;80&lt;/strong&gt; and &lt;strong&gt;3306&lt;/strong&gt; are open on the host&amp;rsquo;s IP &lt;strong&gt;192.194.77.3&lt;/strong&gt; so it must be our target (the &lt;em&gt;target.ine.local&lt;/em&gt; helps too).&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>Today we&rsquo;re going to write about my attempt at solving the <em>&ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&rdquo;</em></p>
+<p>Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.</p>
+
+    <img src="/screens/nmap-1.png"  alt="First nmap scan"  class="center"  style="border-radius: 8px; width: 70%;"  />
+
+
+<p>We can see that the ports <strong>80</strong> and <strong>3306</strong> are open on the host&rsquo;s IP <strong>192.194.77.3</strong> so it must be our target (the <em>target.ine.local</em> helps too).</p>
+<p>I then opened the browser to look at the web server (since port 80 is open) and i found an OWASP app.</p>
+
+    <img src="/screens/owasp-1.png"  alt="OWASP app"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="flag-1">Flag 1:</h2>
+<h3 id="explore-hidden-directories-for-version-control-artifacts-that-might-reveal-valuable-information">Explore hidden directories for version control artifacts that might reveal valuable information.</h3>
+<p>This instantly makes me think of a <em>.git</em> directory that must&rsquo;ve been left on the server, but to make sure I launch a metasploit scanner ; <strong>scanner/http/git_scanner</strong>.</p>
+
+    <img src="/screens/scan-1.png"  alt="git-scanner"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We, indeed, have a left-out .git directory at <strong>http://192.194.77.3/.git</strong>; Let&rsquo;s go exploring.</p>
+
+    <img src="/screens/git-1.png"  alt="git-flag"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We found the first flag there, let&rsquo;s keep digging.</p>
+<h2 id="flag-2">Flag 2</h2>
+<h3 id="the-data-storage-has-some-loose-security-measures-can-you-find-the-flag-hidden-within-it">The data storage has some loose security measures. Can you find the flag hidden within it?</h3>
+<p>First thing I thought about was the MySQL server on port <strong>3306</strong>, so I set out to find the login for it, which, in hindsight, was a bit hasty of me.</p>
+
+    <img src="/screens/mysql_login.png"  alt="mysql_login"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We find that the version of MySQL is unsupported&hellip; I try to do a more advanced service scan using nmap to find out more information.</p>
+
+    <img src="/screens/nmap-2.png"  alt="second nmap scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Too many connections&hellip; I decide then to do a more comprehensive enumeration of the web server to find any relevant directories.</p>
+
+    <img src="/screens/nmap-3.png"  alt="third nmap scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>BANG ON! This is a treasure site, we found some very juicy information :</p>
+<ul>
+<li>.git directory that would&rsquo;ve been revealed way more easily.</li>
+<li><em><strong>/phpmyadmin/ which is our target for this flag</strong></em></li>
+<li>/password/ (do I need to explain myself?)</li>
+<li>/config/</li>
+<li>/phpinfo.php</li>
+</ul>
+<p>Anyway, let&rsquo;s start exploring by navigating to the phpmyadmin dashboard.</p>
+
+    <img src="/screens/phpmyadmin-1.png"  alt="phpmyadmin"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Let&rsquo;s explore the database.</p>
+
+    <img src="/screens/phpmyadmin-2.png"  alt="phpmyadmin 2"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>There&rsquo;s one called <em>&ldquo;secret_info&rdquo;</em> where we find our second flag.</p>
+<h2 id="flag-3--4">Flag 3 &amp; 4</h2>
+<h3 id="a-php-file-that-displays-server-information-might-be-worth-examining-what-could-be-hidden-in-plain-sight">A PHP file that displays server information might be worth examining. What could be hidden in plain sight?</h3>
+<p>The last two flags are easily found thanks to the http_enum nmap scan, they were in the /passwords/ and /phpinfo.php.</p>
+
+    <img src="/screens/php.png"  alt="php-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/screens/passwords.png"  alt="passwords-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<h1 id="nessus">Nessus</h1>
+<p>This is the part where I remember that this was supposed to be a Nessus practice, so I pull up the app to try and find the same results by launching the first scan, which was a basic network scan.</p>
+
+    <img src="/screens/nessus-1.png"  alt="nessus-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+
+    <img src="/screens/nessus-2.png"  alt="nessus-2"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Okay, the scan gets us the open ports and the services but not much else, so I decide to do a Web Application scan, which gets me all the needed info to complete the CTF.</p>
+
+    <img src="/screens/nessus-git.png"  alt="nessus-git"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/screens/nessus-admin.png"  alt="nessus-admin"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/screens/nessus-php-2.png"  alt="nessus-php-2"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/screens/nessus-pass.png"  alt="nessus password"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h1 id="conclusion">Conclusion</h1>
+<p>To be totally honest, I found this CTF way too easy compared to some of the previous ones. But it was fun, I enjoyed it.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Effortless Package Management: A Comprehensive Look at APT</title>
