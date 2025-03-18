@@ -32,7 +32,7 @@
 
 
 <hr>
-<p><em>note : There&rsquo;s more depth to this, if you want to read more about it, I recommend this [article https://linuxize.com/post/how-to-set-and-list-environment-variables-in-linux/).</em></p>
+<p><em>note : There&rsquo;s more depth to this, if you want to read more about it, I recommend this <a href="https://linuxize.com/post/how-to-set-and-list-environment-variables-in-linux/">article</a>.</em></p>
 <hr>
 <p>The root of the problem comes from Bash executing arbitrary commands coming after function declarations. Bash continued to process and execute additional code that followed a function definition within the environment variable. This behavior was unexpected and dangerous. An attacker could exploit this by injecting malicious commands into the environment variables passed to Bash through CGI.</p>
 <h3 id="common-gateway-interface-cgi">Common Gateway Interface (CGI)</h3>
