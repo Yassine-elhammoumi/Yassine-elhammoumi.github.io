@@ -7,27 +7,48 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Sun, 16 Mar 2025 20:52:36 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 18 Mar 2025 19:47:45 +0000</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>CTF</title>
-      <link>/tags/ctf/</link>
-      <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
-      <guid>/tags/ctf/</guid>
+      <title>Untagged</title>
+      <link>/tags/untagged/</link>
+      <pubDate>Tue, 18 Mar 2025 19:47:45 +0000</pubDate>
+      <guid>/tags/untagged/</guid>
       <description></description>
     </item>
     <item>
       <title>Cybersecurity</title>
       <link>/tags/cybersecurity/</link>
-      <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
+      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
       <guid>/tags/cybersecurity/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux</title>
       <link>/tags/linux/</link>
-      <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
+      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
       <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Pentesting</title>
+      <link>/tags/pentesting/</link>
+      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+      <guid>/tags/pentesting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Vulnerability</title>
+      <link>/tags/vulnerability/</link>
+      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+      <guid>/tags/vulnerability/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>CTF</title>
+      <link>/tags/ctf/</link>
+      <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
+      <guid>/tags/ctf/</guid>
       <description></description>
     </item>
   </channel>

