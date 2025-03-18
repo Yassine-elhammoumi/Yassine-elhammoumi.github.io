@@ -11,10 +11,10 @@
         
         <item>
             <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
-            <link>/posts/cve-2014-6271/</link>
+            <link>/posts/shellshock/</link>
             <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
             
-            <guid>/posts/cve-2014-6271/</guid>
+            <guid>/posts/shellshock/</guid>
             <description>&lt;h2 id=&#34;what-is-shellshock-cve-2014-6271&#34;&gt;What is Shellshock (CVE-2014-6271)?&lt;/h2&gt;
 &lt;p&gt;Basically, Shellshock is a &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2014-6271&#34;&gt;critical&lt;/a&gt; vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&lt;/p&gt;
 &lt;h3 id=&#34;environment-variables-&#34;&gt;Environment variables ?&lt;/h3&gt;

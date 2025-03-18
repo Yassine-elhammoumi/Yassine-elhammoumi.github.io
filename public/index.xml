@@ -11,9 +11,9 @@
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
-      <link>/posts/cve-2014-6271/</link>
+      <link>/posts/shellshock/</link>
       <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
-      <guid>/posts/cve-2014-6271/</guid>
+      <guid>/posts/shellshock/</guid>
       <description>&lt;h2 id=&#34;what-is-shellshock-cve-2014-6271&#34;&gt;What is Shellshock (CVE-2014-6271)?&lt;/h2&gt;&#xA;&lt;p&gt;Basically, Shellshock is a &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2014-6271&#34;&gt;critical&lt;/a&gt; vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&lt;/p&gt;&#xA;&lt;h3 id=&#34;environment-variables-&#34;&gt;Environment variables ?&lt;/h3&gt;&#xA;&lt;p&gt;Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;variable&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test&amp;#34;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And you can use it as you would use a variable in a programming language.&lt;/p&gt;</description>
     </item>
     <item>
