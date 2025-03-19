@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Untagged on Arvee&#39;s Blog</title>
-    <link>/tags/untagged/</link>
+    <link>//localhost:1313/tags/untagged/</link>
     <description>Recent content in Untagged on Arvee&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Tue, 18 Mar 2025 19:47:45 +0000</lastBuildDate>
-    <atom:link href="/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Mar 2025 21:00:47 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Test</title>
-      <link>/posts/test/</link>
-      <pubDate>Tue, 18 Mar 2025 19:47:45 +0000</pubDate>
-      <guid>/posts/test/</guid>
-      <description></description>
+      <title>Hide_emoji</title>
+      <link>//localhost:1313/posts/hide_emoji/</link>
+      <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
+      <guid>//localhost:1313/posts/hide_emoji/</guid>
+      <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.&#xA;I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;&#xA;&lt;h3 id=&#34;unicode-variation-selectors&#34;&gt;Unicode Variation Selectors&lt;/h3&gt;&#xA;&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

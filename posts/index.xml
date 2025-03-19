@@ -6,8 +6,152 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Mon, 17 Mar 2025 23:59:52 +0000</lastBuildDate>
+        <lastBuildDate>Wed, 19 Mar 2025 21:00:47 +0000</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Concealing Text Using Unicode</title>
+            <link>/posts/hide_emoji/</link>
+            <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
+            
+            <guid>/posts/hide_emoji/</guid>
+            <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.
+I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;
+&lt;h3 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h3&gt;
+&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>I recently stumbled upon an article titled <a href="https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking">Hidden Messages in Emojis and Hacking the US Treasury</a> and it reminded me of a <a href="https://github.com/Yassine-elhammoumi/Unicode_character_encoding">piece of code</a> i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.
+I was able to do that thanks to the Unicode Variation Selectors.</p>
+<h3 id="unicode-variation-selectors">Unicode variation selectors</h3>
+<p>Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.</p>
+<p>For example in the case of emojis : (<a href="https://en.wikipedia.org/wiki/Hearts_in_Unicode">source</a>)</p>
+<table>
+  <thead>
+      <tr>
+          <th>Glyph</th>
+          <th>Description</th>
+          <th>Unicode</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>☑︎</td>
+          <td>U+2611 BALLOT BOX WITH CHECK in explicit text style</td>
+          <td><code>U+2611 U+FE0E</code> (VS15)</td>
+      </tr>
+      <tr>
+          <td>☑️</td>
+          <td>U+2611 BALLOT BOX WITH CHECK in explicit emoji style</td>
+          <td><code>U+2611 U+FE0F</code> (VS16)</td>
+      </tr>
+      <tr>
+          <td>✉︎</td>
+          <td>U+2709 ENVELOPE in explicit text style</td>
+          <td><code>U+2709 U+FE0E</code> (VS15)</td>
+      </tr>
+      <tr>
+          <td>✉️</td>
+          <td>U+2709 ENVELOPE in explicit emoji style</td>
+          <td><code>U+2709 U+FE0F</code> (VS16)</td>
+      </tr>
+      <tr>
+          <td>✔︎</td>
+          <td>U+2714 HEAVY CHECK MARK in explicit text style</td>
+          <td><code>U+2714 U+FE0E</code> (VS15)</td>
+      </tr>
+      <tr>
+          <td>✔️</td>
+          <td>U+2714 HEAVY CHECK MARK in explicit emoji style</td>
+          <td><code>U+2714 U+FE0F</code> (VS16)</td>
+      </tr>
+  </tbody>
+</table>
+<p>We see that they are pretty much the same but with different formating thanks to the variation selectors.</p>
+<p>We use these variation selectors in other contexts too, such as:</p>
+<ul>
+<li><strong>Mathematical Symbols</strong></li>
+<li><strong>Chinese, Japanese, and Korean Characters</strong></li>
+</ul>
+<h3 id="how-can-we-use-this-">How can we use this ?</h3>
+<p>So I made a demonstration to showcase how we could exploit this :</p>
+
+    <img src="/screens/unicode/screen.gif"  alt="code demo"  class="center"  style="border-radius: 8px; width: 100%"  />
+
+
+<h4 id="how-does-this-work-">How does this work ?</h4>
+<p>The concept is straightforward:</p>
+<ul>
+<li>Convert the data you want to hide into bytes.</li>
+<li>Map each byte to a corresponding variation selector.</li>
+<li>Attach these variation selectors to a base character.</li>
+<li>On the other side, when reading the text, you can extract the hidden bytes from the variation selectors, convert them back to their original form, and reveal the concealed data.</li>
+</ul>
+<p>Let&rsquo;s go through the code and try to understand it.</p>
+<p><em>encode.py</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">byte_to_variation_selector</span>(byte: int) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> byte <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> chr(<span style="color:#ae81ff">0xFE00</span> <span style="color:#f92672">+</span> byte)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> chr(<span style="color:#ae81ff">0xE0100</span> <span style="color:#f92672">+</span> (byte <span style="color:#f92672">-</span> <span style="color:#ae81ff">16</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">encode</span>(base: str, byte_list: list[int]) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> base
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> byte <span style="color:#f92672">in</span> byte_list:
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> byte_to_variation_selector(byte)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    conf_text <span style="color:#f92672">=</span> list(input(<span style="color:#e6db74">&#34;Enter the text you want to hide: &#34;</span>)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-8&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    char_uni <span style="color:#f92672">=</span> input(<span style="color:#e6db74">&#34;Enter the character you want to hide the text in: &#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    encoded <span style="color:#f92672">=</span> encode(char_uni, conf_text)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Encoded length:&#34;</span>, len(encoded))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Encoded: </span><span style="color:#e6db74">{</span>encoded<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p>The <code>byte_to_variation_selector</code> function maps each byte to a Unicode variation selector.</p>
+<hr>
+<p>So basically, there are two sets of variation selectors we can exploit :</p>
+<ul>
+<li><strong>0xFE00</strong> to <strong>0xFE0F</strong> : These are Unicode variation selectors for subtle changes (for example, stylistic differences in emoji or text).</li>
+<li><strong>0xE0100</strong> to <strong>0xE01EF</strong> : These are extended variation selectors used for additional rendering options.</li>
+</ul>
+<hr>
+<p>Then we just append the variations (that we selected with <code>byte_to_variation_selector</code>) to the base character.</p>
+<p><em>decode.py</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">variation_selector_to_byte</span>(variation_selector: str) <span style="color:#f92672">-&gt;</span> int <span style="color:#f92672">|</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>    codepoint <span style="color:#f92672">=</span> ord(variation_selector)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#ae81ff">0xFE00</span> <span style="color:#f92672">&lt;=</span> codepoint <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0xFE0F</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> codepoint <span style="color:#f92672">-</span> <span style="color:#ae81ff">0xFE00</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> <span style="color:#ae81ff">0xE0100</span> <span style="color:#f92672">&lt;=</span> codepoint <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0xE01EF</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> codepoint <span style="color:#f92672">-</span> <span style="color:#ae81ff">0xE0100</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">16</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decode</span>(variation_selectors: str) <span style="color:#f92672">-&gt;</span> list[int]:
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Skip the base character</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> ch <span style="color:#f92672">in</span> variation_selectors[<span style="color:#ae81ff">1</span>:]:
+</span></span><span style="display:flex;"><span>        byte <span style="color:#f92672">=</span> variation_selector_to_byte(ch)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> byte <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>            result<span style="color:#f92672">.</span>append(byte)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Instead of breaking, just ignore non-variation selectors.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    encoded <span style="color:#f92672">=</span> input(<span style="color:#e6db74">&#34;Enter the encoded text: &#34;</span>)
+</span></span><span style="display:flex;"><span>    decoded_bytes <span style="color:#f92672">=</span> decode(encoded)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        decoded_text <span style="color:#f92672">=</span> bytes(decoded_bytes)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        decoded_text <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Decoding error: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Decoded: </span><span style="color:#e6db74">{</span>decoded_text<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p>Decoding is basically the same process but in reverse. And this is how we can hide text in plain sight.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I could see this used in a CTF environment and i think it will carry out a lot of head scratches.
+I had a lot of fun discovering all of this and making it work and I hope you too will enjoy tinkering with this feature.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
