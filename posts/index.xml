@@ -6,11 +6,118 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Wed, 19 Mar 2025 21:00:47 +0000</lastBuildDate>
+        <lastBuildDate>Sun, 30 Mar 2025 23:00:53 +0000</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
-            <title>Concealing Text Using Unicode</title>
+            <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)</title>
+            <link>/posts/ine_ctf_2/</link>
+            <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
+            
+            <guid>/posts/ine_ctf_2/</guid>
+            <description>&lt;p&gt;Today, a second CTF walkthrough for the &lt;em&gt;System-Host Based Attacks CTF 1&lt;/em&gt;. This time we have 4 flags :&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The Desktop directory might have what you&amp;rsquo;re looking for. Enumerate its contents. (target2.ine.local)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&amp;rsquo;ll be subject to Windows targets.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>Today, a second CTF walkthrough for the <em>System-Host Based Attacks CTF 1</em>. This time we have 4 flags :</p>
+<ol>
+<li><strong>Flag 1</strong>: User &lsquo;bob&rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)</li>
+<li><strong>Flag 2</strong>: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)</li>
+<li><strong>Flag 3</strong>: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)</li>
+<li><strong>Flag 4</strong>: The Desktop directory might have what you&rsquo;re looking for. Enumerate its contents. (target2.ine.local)</li>
+</ol>
+<p>Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&rsquo;ll be subject to Windows targets.</p>
+<p>So without further ado, let&rsquo;s get started with the first flag.</p>
+<h2 id="flag-1">Flag 1</h2>
+<h4 id="user-bob-might-not-have-chosen-a-strong-password-try-common-passwords-to-gain-access-to-the-server-where-the-flag-is-located-target1inelocal">User &lsquo;bob&rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)</h4>
+<p>I, of course, started by performing an nmap service version scan on the first target : <code>nmap -sV target1.ine.local -p-</code>.</p>
+
+    <img src="/CTF2/nmap-1.png"  alt="nmap scan target1.ine.local"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We notice that among the many open ports, we seemingly have an IIS web-server running on the target; let&rsquo;s navigate to it, using Firefox, to see what it might be hiding.</p>
+
+    <img src="/CTF2/web-1.png"  alt="web server IIS"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We&rsquo;re met by a login screen. Let&rsquo;s remember the first flag stating that a user named <em>bob might not have chosen a strong password</em>, let&rsquo;s try to brute force it using hydra : <code>hydra -l bob -P /usr/share/metasploit-framework/data/wordlists unix_passwords.txt target1.ine.local http-get /</code>.</p>
+
+    <img src="/CTF2/hydra-1.png"  alt="hydra brute force"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Okay, we found the credentials : <em><strong>bob:password_123321</strong></em>. Logging in, we&rsquo;re met by the default IIS web-server front page.</p>
+
+    <img src="/CTF2/web-2.png"  alt="default IIS front page"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Next step would be to enumerate the directories within the web-server, for that we would use a Metasploit auxiliary scanner, or in this case, since it&rsquo;s easier to provide credentials, we use <em>dirb</em> : <code>dirb http://target1.ine.local/ -u bob:password_123321</code>.</p>
+
+    <img src="/CTF2/dirb-1.png"  alt="dirb scan target 1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We find a WebDav directory, that could be interesting. And indeed, navigating to it reveals the first flag.</p>
+
+    <img src="/CTF2/web-3.png"  alt="webdav directory and flag 1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="flag-2">Flag 2</h2>
+<h4 id="valuable-files-are-often-on-the-c-drive-explore-it-thoroughly-target1inelocal">Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)</h4>
+<p>Since we have access to a WebDav directory, let&rsquo;s see if we could exploit it by uploading and executing a webshell through it. First thing to do is to test the target setup for .asp execution : <code>davtest -auth bob:password_123321 -url http://target1.ine.local/webdav/</code>.</p>
+
+    <img src="/CTF2/davtest.png"  alt="davtest"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We now know that .asp files execute just fine, so let&rsquo;s upload a webshell using cadaver : <code>cadaver http://target1.ine.local/webdav/</code>.</p>
+
+    <img src="/CTF2/cadaver.png"  alt="cadaver"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>This provides us with a webshell, that once accessed, gets us the possibility to execute arbitrary commands :  <code>type c:\flag2.txt</code>.</p>
+
+    <img src="/CTF2/flag-2.png"  alt="second flag"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="flag-3">Flag 3</h2>
+<h4 id="by-attempting-to-guess-smb-user-credentials-you-may-uncover-important-information-that-could-lead-you-to-the-next-flag-target2inelocal">By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)</h4>
+<p>As always, let&rsquo;s scan the target and see what kind of services we have running : <code>nmap -sV target2.ine.local -p-</code>.</p>
+
+    <img src="/CTF2/nmap-2.png"  alt="nmap scan second target"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We already knew that we would be dealing with SMB and the scan pretty much confirms it with the open 445 port. Next step is to use the metasploit auxiliary scanner module for SMB : <code>auxiliary/scanner/smb/smb_login</code>.</p>
+
+    <img src="/CTF2/metasploit-1.png"  alt="metasploit one"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Configuring and running the scanner leaves us with 4 credentials, one of which is the <em>Administrator</em> account : <code>administrator:pineapple</code>. Using these credentials we can scan for shares using the module : <code>auxiliary/scanner/smb/smb_enumshares</code>.</p>
+
+    <img src="/CTF2/metasploit-2.png"  alt="metasploit two"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We have 6 shares accessible to the administrator, let&rsquo;s try accessing the default one <em><strong>C$</strong></em> where we&rsquo;ll find the third flag : <code>smbclient //target2.ine.local/C$ -U administrator%pineapple</code></p>
+
+    <img src="/CTF2/smbclient-1.png"  alt="flag 3"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="flag-4">Flag 4</h2>
+<h4 id="the-desktop-directory-might-have-what-youre-looking-for-enumerate-its-contents-target2inelocal">The Desktop directory might have what you&rsquo;re looking for. Enumerate its contents. (target2.ine.local)</h4>
+<p>To get this flag, it&rsquo;s as easy as navigating to the Desktop of the Administrator and finding the file containing the flag.</p>
+
+    <img src="/CTF2/smbclient-2.png"  alt="flag 4"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h1 id="conclusion">Conclusion</h1>
+<p>Fun as always, this one was a bit harder than the previous one but still very straightforward.</p>
+<p>I enjoyed it and i hope you will too.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>DeepDive : Concealing Text Using Unicode</title>
             <link>/posts/hide_emoji/</link>
             <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
             
@@ -243,7 +350,7 @@ I had a lot of fun discovering all of this and making it work and I hope you too
         </item>
         
         <item>
-            <title>(INE - eJPT) Assessment Methodologies: Vulnerability Assessment CTF 1</title>
+            <title>walkthrough : Assessment Methodologies: Vulnerability Assessment CTF 1 (INE - eJPT)</title>
             <link>/posts/vulnerability_assessment_ctf_1/</link>
             <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
             

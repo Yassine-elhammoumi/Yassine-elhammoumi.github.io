@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Mon, 17 Mar 2025 23:59:52 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 30 Mar 2025 23:00:53 +0000</lastBuildDate>
     <atom:link href="/tags/cybersecurity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)</title>
+      <link>/posts/ine_ctf_2/</link>
+      <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
+      <guid>/posts/ine_ctf_2/</guid>
+      <description>&lt;p&gt;Today, a second CTF walkthrough for the &lt;em&gt;System-Host Based Attacks CTF 1&lt;/em&gt;. This time we have 4 flags :&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The Desktop directory might have what you&amp;rsquo;re looking for. Enumerate its contents. (target2.ine.local)&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&amp;rsquo;ll be subject to Windows targets.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
       <link>/posts/shellshock/</link>
@@ -17,7 +24,7 @@
       <description>&lt;h2 id=&#34;what-is-shellshock-cve-2014-6271&#34;&gt;What is Shellshock (CVE-2014-6271)?&lt;/h2&gt;&#xA;&lt;p&gt;Basically, Shellshock is a &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2014-6271&#34;&gt;critical&lt;/a&gt; vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&lt;/p&gt;&#xA;&lt;h3 id=&#34;environment-variables-&#34;&gt;Environment variables ?&lt;/h3&gt;&#xA;&lt;p&gt;Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;variable&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test&amp;#34;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And you can use it as you would use a variable in a programming language.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>(INE - eJPT) Assessment Methodologies: Vulnerability Assessment CTF 1</title>
+      <title>walkthrough : Assessment Methodologies: Vulnerability Assessment CTF 1 (INE - eJPT)</title>
       <link>/posts/vulnerability_assessment_ctf_1/</link>
       <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
       <guid>/posts/vulnerability_assessment_ctf_1/</guid>

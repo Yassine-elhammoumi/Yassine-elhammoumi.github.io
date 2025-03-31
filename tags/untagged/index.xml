@@ -7,14 +7,14 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Wed, 19 Mar 2025 21:00:47 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Mar 2025 21:46:21 +0000</lastBuildDate>
     <atom:link href="//localhost:1313/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Hide_emoji</title>
-      <link>//localhost:1313/posts/hide_emoji/</link>
-      <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
-      <guid>//localhost:1313/posts/hide_emoji/</guid>
-      <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.&#xA;I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;&#xA;&lt;h3 id=&#34;unicode-variation-selectors&#34;&gt;Unicode Variation Selectors&lt;/h3&gt;&#xA;&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
+      <title>ADS</title>
+      <link>//localhost:1313/posts/ads/</link>
+      <pubDate>Tue, 25 Mar 2025 21:46:21 +0000</pubDate>
+      <guid>//localhost:1313/posts/ads/</guid>
+      <description>&lt;p&gt;NTFS uses Alternate Data Streams (ADS) to store additional data about a file. It was traditionally introduced so that it could provide compatibility for file sharing with the older Hierarchical File system (HFS) of Macintosh systems.&#xA;Each file on an NTFS file system typically has one main data stream, which contains the file’s primary contents. ADS allows additional data streams to be attached to the file, each identified by a unique stream name.&#xA;For example, consider a file named &lt;code&gt;document.txt&lt;/code&gt;. In addition to the main data stream, which holds the file’s contents, an alternate stream called &lt;code&gt;document.txt:hidden_data&lt;/code&gt; could be created. This stream can contain any data, such as text, images, or even executable code, without altering the visible file size or content in Windows Explorer.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -7,17 +7,24 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Wed, 19 Mar 2025 21:00:47 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 30 Mar 2025 23:00:53 +0000</lastBuildDate>
     <atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Concealing Text Using Unicode</title>
+      <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)</title>
+      <link>/posts/ine_ctf_2/</link>
+      <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
+      <guid>/posts/ine_ctf_2/</guid>
+      <description>&lt;p&gt;Today, a second CTF walkthrough for the &lt;em&gt;System-Host Based Attacks CTF 1&lt;/em&gt;. This time we have 4 flags :&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The Desktop directory might have what you&amp;rsquo;re looking for. Enumerate its contents. (target2.ine.local)&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&amp;rsquo;ll be subject to Windows targets.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DeepDive : Concealing Text Using Unicode</title>
       <link>/posts/hide_emoji/</link>
       <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
       <guid>/posts/hide_emoji/</guid>
       <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.&#xA;I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;&#xA;&lt;h3 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h3&gt;&#xA;&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>(INE - eJPT) Assessment Methodologies: Vulnerability Assessment CTF 1</title>
+      <title>walkthrough : Assessment Methodologies: Vulnerability Assessment CTF 1 (INE - eJPT)</title>
       <link>/posts/vulnerability_assessment_ctf_1/</link>
       <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
       <guid>/posts/vulnerability_assessment_ctf_1/</guid>
