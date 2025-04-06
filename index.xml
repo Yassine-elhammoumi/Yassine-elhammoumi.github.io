@@ -11,9 +11,9 @@
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 2 (INE - eJPT)</title>
-      <link>/posts/vulnerability_assessment_ctf_2/</link>
+      <link>/posts/ine_ctf_3/</link>
       <pubDate>Sun, 06 Apr 2025 17:15:27 +0100</pubDate>
-      <guid>/posts/vulnerability_assessment_ctf_2/</guid>
+      <guid>/posts/ine_ctf_3/</guid>
       <description>&lt;p&gt;Continuing on with my eJPT certification, this time we&amp;rsquo;ll tackle the second CTF in the  &lt;em&gt;System-Host Based Attacks&lt;/em&gt; course.&lt;/p&gt;&#xA;&lt;p&gt;In this lab we&amp;rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: Check the root (&amp;rsquo;/&amp;rsquo;) directory for a file that might hold the key to the first flag on target1.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: In the server&amp;rsquo;s root directory, there might be something hidden. Explore &amp;lsquo;/opt/apache/htdocs/&amp;rsquo; carefully to find the next flag on target1.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: Investigate the user&amp;rsquo;s home directory and consider using &amp;rsquo;libssh_auth_bypass&amp;rsquo; to uncover the flag on target2.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The most restricted areas often hold the most valuable secrets. Look into the &amp;lsquo;/root&amp;rsquo; directory to find the hidden flag on target2.ine.local.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;These would mostly be linux machines (since we&amp;rsquo;re in the linux section of the course), so let&amp;rsquo;s start by tackling both the first and second flag at the same time.&lt;/p&gt;</description>
     </item>
     <item>
