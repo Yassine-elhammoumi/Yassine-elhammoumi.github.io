@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Sun, 06 Apr 2025 17:15:27 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 07 May 2025 16:04:40 +0100</lastBuildDate>
     <atom:link href="/tags/cybersecurity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1 (INE - eJPT)</title>
+      <link>/posts/ine_ctf_4/</link>
+      <pubDate>Wed, 07 May 2025 16:04:40 +0100</pubDate>
+      <guid>/posts/ine_ctf_4/</guid>
+      <description>&lt;p&gt;It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the &lt;em&gt;&lt;strong&gt;Host &amp;amp; Network Penetration Testing: The Metasploit Framework CTF 1&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;p&gt;This time we are provided with a windows machine (since we&amp;rsquo;re told to exploit an MSSQL server) and we have 4 flags to capture :&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 2 (INE - eJPT)</title>
       <link>/posts/ine_ctf_3/</link>
