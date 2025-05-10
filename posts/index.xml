@@ -6,8 +6,117 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Wed, 07 May 2025 16:04:40 +0100</lastBuildDate>
+        <lastBuildDate>Sat, 10 May 2025 12:57:52 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 2 (INE - eJPT)</title>
+            <link>/posts/ine_ctf_5/</link>
+            <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
+            
+            <guid>/posts/ine_ctf_5/</guid>
+            <description>&lt;p&gt;Second CTF in the longest module for the &lt;em&gt;Penetration testing student&lt;/em&gt; course, This time we have two machines; &lt;strong&gt;target1.ine.local&lt;/strong&gt; &amp;amp; &lt;strong&gt;target2.ine.local&lt;/strong&gt;. Let&amp;rsquo;s see what flags we need to capture :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Flag 1:&lt;/strong&gt; Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 2:&lt;/strong&gt; The files on the RSYNC server hold valuable information. Explore the contents to find the flag.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 3:&lt;/strong&gt; Try exploiting the webapp to gain a shell using Metasploit on target2.ine.local.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flag 4:&lt;/strong&gt; Automated tasks can sometimes leave clues. Investigate scheduled jobs or running processes to uncover the hidden flag.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So it seems that the first machine hosts an &lt;a href=&#34;https://en.wikipedia.org/wiki/Rsync&#34;&gt;&lt;em&gt;rsync&lt;/em&gt;&lt;/a&gt; file server; therefore it is most likely a Linux machine.
+The 4th flag mentions automations, which makes me think of &lt;a href=&#34;https://en.wikipedia.org/wiki/Cron&#34;&gt;&lt;em&gt;cron&lt;/em&gt;&lt;/a&gt; so it might also ne a Linux machine.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>Second CTF in the longest module for the <em>Penetration testing student</em> course, This time we have two machines; <strong>target1.ine.local</strong> &amp; <strong>target2.ine.local</strong>. Let&rsquo;s see what flags we need to capture :</p>
+<ul>
+<li><strong>Flag 1:</strong> Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.</li>
+<li><strong>Flag 2:</strong> The files on the RSYNC server hold valuable information. Explore the contents to find the flag.</li>
+<li><strong>Flag 3:</strong> Try exploiting the webapp to gain a shell using Metasploit on target2.ine.local.</li>
+<li><strong>Flag 4:</strong> Automated tasks can sometimes leave clues. Investigate scheduled jobs or running processes to uncover the hidden flag.</li>
+</ul>
+<p>So it seems that the first machine hosts an <a href="https://en.wikipedia.org/wiki/Rsync"><em>rsync</em></a> file server; therefore it is most likely a Linux machine.
+The 4th flag mentions automations, which makes me think of <a href="https://en.wikipedia.org/wiki/Cron"><em>cron</em></a> so it might also ne a Linux machine.</p>
+<p>Let&rsquo;s start, as always, with an nmap scan of both machine :</p>
+<p><code>nmap -sC -sV -sS -O target1.ine.local</code>
+
+    <img src="/CTF5/nmap-1.png"  alt="First nmap scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p><code>nmap -sC -sV -sS -O target2.ine.local</code>
+
+    <img src="/CTF5/nmap-2.png"  alt="second nmap scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>it appears that for the second target we have an apache web-server, we&rsquo;ll get into exploring it later on, now let&rsquo;s focus on the flags.</p>
+<h2 id="flag-1">Flag 1</h2>
+<h4 id="enumerate-the-open-port-using-metasploit-and-inspect-the-rsync-banner-closely-it-might-reveal-something-interesting"><em>Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.</em></h4>
+<p>After a bit of googling, we find out that displaying the rsync server&rsquo;s banner is pretty easy and can be done with one command : <code>rsync rsync://target1.ine.local/</code>.
+
+    <img src="/CTF5/rsync-1.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>Quite an easy flag, and this trend will continue throughout the CTF.</p>
+<h2 id="flag-2">Flag 2</h2>
+<h4 id="the-files-on-the-rsync-server-hold-valuable-information-explore-the-contents-to-find-the-flag"><em>The files on the RSYNC server hold valuable information. Explore the contents to find the flag.</em></h4>
+<p><em><strong>backupwscohen</strong></em> is what we call a module, and modules contain files. So, in order to get all the files from this module, we would need to execute this command :</p>
+<p><code>rsync -avz rsync://target1.ine.local/backupwscohen ~/Downloads/</code></p>
+<ul>
+<li><code>-avz</code>
+<ul>
+<li><strong>a</strong> : Archive mode, to keep the data (and metadata) intact but most importantly in our case for recursion.</li>
+<li><strong>v</strong> : For verbosity.</li>
+<li><strong>z</strong> : To compress data during the transfer.</li>
+</ul>
+</li>
+<li><code>rsync://target1.ine.local/backupwscohen</code> : Source of the files in the rsync server.</li>
+<li><code>~/Downloads/</code> : Destination directory in our local computer.
+
+    <img src="/CTF5/rsync-2.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</li>
+</ul>
+<p>So we have 3 files:</p>
+<ul>
+<li>1 .txt,</li>
+<li>1 .xlsx (excel spreadsheet),</li>
+<li>1 .vhd (virtual hard drive).</li>
+</ul>
+<p>Let&rsquo;s cat them all out and see what they contain.</p>
+<p><code>cat *</code>
+
+    <img src="/CTF5/rsync-3.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+Flag 2 done.</p>
+<h2 id="flag-3">Flag 3</h2>
+<h4 id="try-exploiting-the-webapp-to-gain-a-shell-using-metasploit-on-target2inelocal">Try exploiting the webapp to gain a shell using Metasploit on target2.ine.local.</h4>
+<p>Well since this flag is about the second target, let&rsquo;s first see what the web-server is serving.
+
+    <img src="/CTF5/web-1.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>It is an app called <em>Roxy-WI</em>, let&rsquo;s fire up the metasploit console and search for exploits concerning this app.
+
+    <img src="/CTF5/msf-1.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>There&rsquo;s an excellent exploit for this application, we&rsquo;ll need to configure the <em><strong>RHOST</strong></em>, <em><strong>LHOST</strong></em> and hit <em>run</em> to start the exploit :
+
+    <img src="/CTF5/msf-2.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>If we navigate to the <code>/</code>, we&rsquo;ll find a flag.txt.</p>
+<h2 id="flag-4">Flag 4</h2>
+<h4 id="automated-tasks-can-sometimes-leave-clues-investigate-scheduled-jobs-or-running-processes-to-uncover-the-hidden-flag">Automated tasks can sometimes leave clues. Investigate scheduled jobs or running processes to uncover the hidden flag.</h4>
+<p>First thing i want to do is explore the Cron job available on this machine.
+After navigating to the /etc/cron.d directory, we find two jobs and one of them contains the flag.
+
+    <img src="/CTF5/msf-3.png"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+</p>
+<p>And that was it for the last flag.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>refer to <a href="https://yassine-elhammoumi.github.io/posts/ine_ctf_4/">the last article</a> for my thoughts about the course so far.</p>
+<p>Concerning this CTF in particular, it was very easy but it made me discover new things, especially rsync; So that was fun.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1 (INE - eJPT)</title>

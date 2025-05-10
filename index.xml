@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Wed, 07 May 2025 16:04:40 +0100</lastBuildDate>
+    <lastBuildDate>Sat, 10 May 2025 12:57:52 +0100</lastBuildDate>
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 2 (INE - eJPT)</title>
+      <link>/posts/ine_ctf_5/</link>
+      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
+      <guid>/posts/ine_ctf_5/</guid>
+      <description>&lt;p&gt;Second CTF in the longest module for the &lt;em&gt;Penetration testing student&lt;/em&gt; course, This time we have two machines; &lt;strong&gt;target1.ine.local&lt;/strong&gt; &amp;amp; &lt;strong&gt;target2.ine.local&lt;/strong&gt;. Let&amp;rsquo;s see what flags we need to capture :&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1:&lt;/strong&gt; Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2:&lt;/strong&gt; The files on the RSYNC server hold valuable information. Explore the contents to find the flag.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3:&lt;/strong&gt; Try exploiting the webapp to gain a shell using Metasploit on target2.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4:&lt;/strong&gt; Automated tasks can sometimes leave clues. Investigate scheduled jobs or running processes to uncover the hidden flag.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;So it seems that the first machine hosts an &lt;a href=&#34;https://en.wikipedia.org/wiki/Rsync&#34;&gt;&lt;em&gt;rsync&lt;/em&gt;&lt;/a&gt; file server; therefore it is most likely a Linux machine.&#xA;The 4th flag mentions automations, which makes me think of &lt;a href=&#34;https://en.wikipedia.org/wiki/Cron&#34;&gt;&lt;em&gt;cron&lt;/em&gt;&lt;/a&gt; so it might also ne a Linux machine.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1 (INE - eJPT)</title>
       <link>/posts/ine_ctf_4/</link>
