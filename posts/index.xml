@@ -6,8 +6,92 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Sat, 10 May 2025 12:57:52 +0100</lastBuildDate>
+        <lastBuildDate>Thu, 12 Jun 2025 13:43:05 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>eJPT for Beginners (and Slightly Impatient Nerds Like Me)</title>
+            <link>/posts/ejpt_cert/</link>
+            <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+            
+            <guid>/posts/ejpt_cert/</guid>
+            <description>&lt;p&gt;During the last five months, I have been studying for the &lt;a href=&#34;https://certs.ine.com/cda4537e-dd0d-42d7-84a1-2af72436e6a0&#34;&gt;eJPT certification&lt;/a&gt; exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.&lt;/p&gt;</description>
+            <content type="html"><![CDATA[<p>During the last five months, I have been studying for the <a href="https://certs.ine.com/cda4537e-dd0d-42d7-84a1-2af72436e6a0">eJPT certification</a> exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.</p>
+<h2 id="what-is-ejpt">What is eJPT</h2>
+<p>The Junior Penetration Tester certification by <a href="https://my.ine.com/">INE</a> is designed for individuals with basic understands of Internet technologies and networking but want to step into the security - Red Teaming - world. It covers 4 main segments :</p>
+<figure class="floatright"><img src="/ejpt_cert/eJPT-1.webp"
+    alt="ejpy" width="100px">
+</figure>
+
+<ul>
+<li><strong>Assessment Methodologies (25%)</strong></li>
+<li><strong>Host and Networking Auditing (25%)</strong></li>
+<li><strong>Host and Network Penetration Testing (35%)</strong></li>
+<li><strong>Web Application Penetration Testing (15%)</strong></li>
+</ul>
+<p>The eJPT voucher is typically around <strong>$200–250 USD</strong>, and <strong>includes a free retake</strong> if needed.</p>
+<p>The exam provides you with a virtual environment where you&rsquo;ll have multiple machines you would need to exploit and go through in order to answer the <strong>35 Questions</strong>; a tiny portion of them centers on general knowledge but the vast majority are question directly about the machines you&rsquo;re provided and some flags you need to capture.</p>
+<p>I want to emphasise that this exam shouldn&rsquo;t be treated like a CTF, there&rsquo;s no tricks and purposefully obfuscated information. It is straight forward and you will be able to answer the questions if you have the know-how and put in the work.</p>
+<p>The lab is available for 48 hours and you need to answer and submit all the question in this time frame. if you restart the lab for any reason, the environment won&rsquo;t change but you will lose your progress; meaning that if you had some reverse shells going on or stored information in the metasploit database, it will all be lost. I managed to crash some machines while attempting the exam and i can tell you that it wasn&rsquo;t fun waiting for all the scans to complete again and gaining access to all the machines. Hopefully I had the passwords stored on my personal computer so at least i didn&rsquo;t have to brute force them again.</p>
+<h2 id="my-experiences">My experiences</h2>
+<h3 id="my-experience-with-the-course">My experience with the course</h3>
+<p>This was honestly the biggest letdown for me personally (though it doesn&rsquo;t have to be for you too).</p>
+<blockquote>
+<p>The INE Fundamentals subscription offers the Penetration Testing Student Learning Path], built for entry-level Red Team professionals with a basic understanding of cybersecurity fundamentals. It prepares you to take the eJPT exam through a blend of expert-led courses and practical lab time. When you’ve completed the learning path, you’re ready for the exam!</p></blockquote>
+<p>The above is the course description on INE&rsquo;s website and I should&rsquo;ve honestly done some more research into the content before diving in.</p>
+<p>I am a Networking and Telecommunications engineering student and through-out my studies I had a rooted interest on how internet technologies worked and, of course, how to break them. I honestly think that this path wasn&rsquo;t right for me and i could have easily completed the exam without it.</p>
+<p>At first, the labs were fun and the courses seemed interesting, but as time continued on, I started feeling that things got more and more repetitive and pointless. I was tired of using the same old (very old) exploits and how easy they got with time, it honestly started feeling like a chore rather than a fun learning opportunity.</p>
+<p>The video courses were also a miss, I don&rsquo;t particularly feel like it was well structured for my taste, and there&rsquo;s was a lot of repeated concepts, at some point I started watching at 2x speed and not particularly had to give it much attention because either i already knew the techniques or I had seen them in a prior video in the course itself.</p>
+<p>The exploits we learned about were also very outdated, and i realise it&rsquo;s a beginners course and they needed to start with the basics. They also can&rsquo;t update the course each time a new vulnerability is discovered but i would&rsquo;ve liked to learn about newer things.</p>
+<p>Now that I told you about <em>my experience</em>, I would like to give credit where credit is due.
+I am nearly certain that this would constitute a perfect beginner course for people who have never dabbled in linux or have very few experiences in this domain. The repetitive aspect would constitute an opportunity for them to master the techniques thanks to the hands-on approach and get familiarized with the command line and the linux workflow.</p>
+<p>I might not be a big fan of a high-level understanding of the techniques used because I thirst for details and deep dives, but a lot of people are just content with that and enjoy to take their time and start from the above before diving in (a thing this course does very well).</p>
+<p>I did learn a lot of things, I want to make that very clear, and I really appreciated the way the instructor <a href="https://alexisahmed.com/">Alexis Ahmed</a> explained the concepts and made them clear and easy to understand by anyone.</p>
+<p>So, should <em>you</em> consider buying the course? here&rsquo;s a table that could help you decide.</p>
+<table>
+  <thead>
+      <tr>
+          <th><strong>Pros</strong></th>
+          <th><strong>Cons</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Beginner-Friendly:</strong> Ideal for those new to Linux, networking, or cybersecurity.</td>
+          <td><strong>Repetitive Labs:</strong> Concepts and tools are recycled often without much depth.</td>
+      </tr>
+      <tr>
+          <td><strong>Clear Structure:</strong> Covers assessment, auditing, and exploitation in a logical flow.</td>
+          <td><strong>Outdated Exploits:</strong> Many labs rely on old vulnerabilities not seen in modern environments.</td>
+      </tr>
+      <tr>
+          <td><strong>Hands-On Focus:</strong> The labs and exam emphasize real tool usage over theory.</td>
+          <td><strong>Video Course Issues:</strong> Poor pacing, lots of repetition, and not well-structured for advanced learners.</td>
+      </tr>
+      <tr>
+          <td><strong>Instructor:</strong> Explains topics clearly and makes them approachable.</td>
+          <td><strong>Course May Be Skippable:</strong> If you already have hands-on experience, it might feel like a waste of time.</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="my-experience-during-the-exam">My experience during the exam</h3>
+<p>As i mentioned before, I had 48 hours to complete the exam, I wasn&rsquo;t planning on taking that much time and I ended up finishing way earlier but I appreciate the fact that they thought about the fact that people might have to work around their school or work schedules. I finished in about 16 hours with a full night of sleep ans chores in the middle even with all the problems that I encountered (and summoned upon myself).</p>
+<p>I had to restart the lab exam twice, once because I crashed two servers; a linux machine, with an extremely heavy grep command that executed in the background and grounded anything else I wanted to do on the machine to a halt and a Windows machine, where I managed to crash an ISS web server. The second time I restarted was because I was heading to sleep and i didn&rsquo;t want to let the lab stay running if I wasn&rsquo;t using it because it would be a waste of ressources (it also helps that I was nearly done and I didn&rsquo;t have to re-exploit all the machines).</p>
+<p>I am aware that I, sometimes, complained about the in-course labs (check out my complainy articles <a href="https://yassine-elhammoumi.github.io/tags/ctf/">here</a>) but I want to emphasise again that it has nothing to do with CTFs or the in-course labs. I found it surprisingly challenging; it wasn&rsquo;t impossible to solve but I had to figure out a lot on my own, especially the pivoting part.</p>
+<p>A beginner will have ample opportunity to explore all the things they learned and try them in a simulated environment.</p>
+<h1 id="conclusion--recommendation">Conclusion &amp; Recommendation</h1>
+<p>I would recommend the course + certification bundle for anyone who is very new to cybersecurity and penetration testing and would encourage them to study along Alexis Ahmed because he is truly a great instructor.
+If, in the other hand you have some experience, i would recommend you save some money by finding learning ressources elsewhere and buying only a voucher to pass the exam. The assessment doesn&rsquo;t focus on advanced techniques with a lot of moving parts and you would be fine studying on your own if you have a solid base of knowledge.</p>
+<p>I would also like to recommend you use some sorte of note taking app. I used <a href="https://obsidian.md/">Obsidian</a> and it helped me to remember a lot of things and sort the things I was learning in a way that would make sense to me.</p>
+
+    <img src="/ejpt_cert/obsidian.png"  alt="obsidian"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>I would not be releasing my notes unfortunately, I have a very specific way of taking notes and I would be too embarrassed to share this three linguale mess of a notebook.</p>
+<p>I highly recommend diving deeper into the exploits and ways the technology works on a low level. I know it&rsquo;s not for everyone, but if you&rsquo;re like me and you feel like you don&rsquo;t understand something until you grasp every angle, I promise that the feeling fades the more you discover about the technologies and the motivations behind them and the way they got implemented.</p>
+<p>This wasn’t the Red Team bootcamp I expected, but it was the kick I needed. Now I’m planning to dive deeper into low-level exploits and maybe go after something more suitable for me next time. If you’re standing at the edge, wondering whether to jump into cybersecurity, this might just be the step you need.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 2 (INE - eJPT)</title>

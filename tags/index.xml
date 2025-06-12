@@ -7,8 +7,29 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Sat, 10 May 2025 12:57:52 +0100</lastBuildDate>
+    <lastBuildDate>Thu, 12 Jun 2025 13:43:05 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Certification</title>
+      <link>/tags/certification/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/certification/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cybersecurity</title>
+      <link>/tags/cybersecurity/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Pentesting</title>
+      <link>/tags/pentesting/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/pentesting/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CTF</title>
       <link>/tags/ctf/</link>
@@ -17,24 +38,10 @@
       <description></description>
     </item>
     <item>
-      <title>Cybersecurity</title>
-      <link>/tags/cybersecurity/</link>
-      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>/tags/cybersecurity/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Linux</title>
       <link>/tags/linux/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
       <guid>/tags/linux/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Pentesting</title>
-      <link>/tags/pentesting/</link>
-      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>/tags/pentesting/</guid>
       <description></description>
     </item>
     <item>
