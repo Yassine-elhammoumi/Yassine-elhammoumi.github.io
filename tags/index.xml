@@ -149,5 +149,138 @@
       <guid>/tags/vulnerability/</guid>
       <description></description>
     </item>
+    <item>
+      <title>Apt</title>
+      <link>/tags/apt/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/apt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Apt-Cache</title>
+      <link>/tags/apt-cache/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/apt-cache/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Apt-Get</title>
+      <link>/tags/apt-get/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/apt-get/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Command Line</title>
+      <link>/tags/command-line/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/command-line/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Deb Packages</title>
+      <link>/tags/deb-packages/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/deb-packages/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Debian</title>
+      <link>/tags/debian/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/debian/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dpkg</title>
+      <link>/tags/dpkg/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/dpkg/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux Administration</title>
+      <link>/tags/linux-administration/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-administration/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux Commands</title>
+      <link>/tags/linux-commands/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-commands/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux System</title>
+      <link>/tags/linux-system/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-system/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux Tutorial</title>
+      <link>/tags/linux-tutorial/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-tutorial/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Package Management</title>
+      <link>/tags/package-management/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/package-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Package Manager</title>
+      <link>/tags/package-manager/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/package-manager/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Repository Management</title>
+      <link>/tags/repository-management/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/repository-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Installation</title>
+      <link>/tags/software-installation/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/software-installation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Update</title>
+      <link>/tags/software-update/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/software-update/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Upgrade</title>
+      <link>/tags/software-upgrade/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/software-upgrade/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Sysadmin</title>
+      <link>/tags/sysadmin/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/sysadmin/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ubuntu</title>
+      <link>/tags/ubuntu/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/ubuntu/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>

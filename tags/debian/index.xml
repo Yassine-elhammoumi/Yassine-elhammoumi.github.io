@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Debian on Arvee&#39;s Blog</title>
+    <link>/tags/debian/</link>
+    <description>Recent content in Debian on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Fri, 14 Mar 2025 00:02:13 +0000</lastBuildDate>
+    <atom:link href="/tags/debian/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Effortless Package Management: A Comprehensive Look at APT</title>
+      <link>/posts/apt/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/posts/apt/</guid>
+      <description>&lt;p&gt;You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software.&#xA;Today I’ll dive deeper on the intricacies of this command.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-is-apt-package-manager&#34;&gt;What is APT Package Manager&lt;/h2&gt;&#xA;&lt;p&gt;The &lt;a href=&#34;https://en.wikipedia.org/wiki/APT_%28software%29&#34;&gt;Advanced Package Tool&lt;/a&gt; (APT) is a free utility that lets user install, update and manage software packages. These packages are bundled in repositories, which are external sources containing software that users can install. APT simplifies the interaction with these repositories and automates the management of dependencies.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
