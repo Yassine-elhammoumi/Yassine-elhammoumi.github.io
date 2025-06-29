@@ -2,164 +2,164 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:1313/</loc>
+    <loc>/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/docker/</loc>
+    <loc>/tags/docker/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/gnu-radio/</loc>
+    <loc>/tags/gnu-radio/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/gnuradiodocker/</loc>
+    <loc>/posts/gnuradiodocker/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux/</loc>
+    <loc>/tags/linux/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/</loc>
+    <loc>/posts/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/rtl-sdr/</loc>
+    <loc>/tags/rtl-sdr/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/sdr/</loc>
+    <loc>/tags/sdr/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/software-defined-radio/</loc>
+    <loc>/tags/software-defined-radio/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/</loc>
+    <loc>/tags/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/tutorial/</loc>
+    <loc>/tags/tutorial/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/usrp/</loc>
+    <loc>/tags/usrp/</loc>
     <lastmod>2025-06-29T14:06:00+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/certification/</loc>
+    <loc>/tags/certification/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/cybersecurity/</loc>
+    <loc>/tags/cybersecurity/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ejpt/</loc>
+    <loc>/tags/ejpt/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/ejpt_cert/</loc>
+    <loc>/posts/ejpt_cert/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ethical-hacking/</loc>
+    <loc>/tags/ethical-hacking/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ine/</loc>
+    <loc>/tags/ine/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/penetration-testing/</loc>
+    <loc>/tags/penetration-testing/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ctf/</loc>
+    <loc>/tags/ctf/</loc>
     <lastmod>2025-05-10T12:57:52+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/pentesting/</loc>
+    <loc>/tags/pentesting/</loc>
     <lastmod>2025-05-10T12:57:52+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/ine_ctf_5/</loc>
+    <loc>/posts/ine_ctf_5/</loc>
     <lastmod>2025-05-10T12:57:52+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/ine_ctf_4/</loc>
+    <loc>/posts/ine_ctf_4/</loc>
     <lastmod>2025-05-07T16:04:40+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/ine_ctf_3/</loc>
+    <loc>/posts/ine_ctf_3/</loc>
     <lastmod>2025-04-06T17:15:27+01:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/ine_ctf_2/</loc>
+    <loc>/posts/ine_ctf_2/</loc>
     <lastmod>2025-03-30T23:00:53+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/code/</loc>
+    <loc>/tags/code/</loc>
     <lastmod>2025-03-19T21:00:47+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/deepdive/</loc>
+    <loc>/tags/deepdive/</loc>
     <lastmod>2025-03-19T21:00:47+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/hide_emoji/</loc>
+    <loc>/posts/hide_emoji/</loc>
     <lastmod>2025-03-19T21:00:47+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/python/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2025-03-19T21:00:47+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/shellshock/</loc>
+    <loc>/posts/shellshock/</loc>
     <lastmod>2025-03-17T23:59:52+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/vulnerability/</loc>
+    <loc>/tags/vulnerability/</loc>
     <lastmod>2025-03-17T23:59:52+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/vulnerability_assessment_ctf_1/</loc>
+    <loc>/posts/vulnerability_assessment_ctf_1/</loc>
     <lastmod>2025-03-16T20:52:36+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/apt/</loc>
+    <loc>/tags/apt/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/apt-cache/</loc>
+    <loc>/tags/apt-cache/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/apt-get/</loc>
+    <loc>/tags/apt-get/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/command-line/</loc>
+    <loc>/tags/command-line/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/deb-packages/</loc>
+    <loc>/tags/deb-packages/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/debian/</loc>
+    <loc>/tags/debian/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/dpkg/</loc>
+    <loc>/tags/dpkg/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/apt/</loc>
+    <loc>/posts/apt/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux-administration/</loc>
+    <loc>/tags/linux-administration/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux-commands/</loc>
+    <loc>/tags/linux-commands/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux-system/</loc>
+    <loc>/tags/linux-system/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux-tutorial/</loc>
+    <loc>/tags/linux-tutorial/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/package-management/</loc>
+    <loc>/tags/package-management/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/package-manager/</loc>
+    <loc>/tags/package-manager/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/repository-management/</loc>
+    <loc>/tags/repository-management/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/software-installation/</loc>
+    <loc>/tags/software-installation/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/software-update/</loc>
+    <loc>/tags/software-update/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/software-upgrade/</loc>
+    <loc>/tags/software-upgrade/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/sysadmin/</loc>
+    <loc>/tags/sysadmin/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ubuntu/</loc>
+    <loc>/tags/ubuntu/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/blog/</loc>
+    <loc>/blog/</loc>
   </url><url>
-    <loc>//localhost:1313/series/</loc>
+    <loc>/series/</loc>
   </url>
 </urlset>

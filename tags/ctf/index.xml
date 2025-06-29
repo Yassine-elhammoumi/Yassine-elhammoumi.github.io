@@ -2,54 +2,54 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CTF on Arvee&#39;s Blog</title>
-    <link>//localhost:1313/tags/ctf/</link>
+    <link>/tags/ctf/</link>
     <description>Recent content in CTF on Arvee&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
     <lastBuildDate>Sat, 10 May 2025 12:57:52 +0100</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 2 (INE - eJPT)</title>
-      <link>//localhost:1313/posts/ine_ctf_5/</link>
+      <link>/posts/ine_ctf_5/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>//localhost:1313/posts/ine_ctf_5/</guid>
+      <guid>/posts/ine_ctf_5/</guid>
       <description>&lt;p&gt;Second CTF in the longest module for the &lt;em&gt;Penetration testing student&lt;/em&gt; course, This time we have two machines; &lt;strong&gt;target1.ine.local&lt;/strong&gt; &amp;amp; &lt;strong&gt;target2.ine.local&lt;/strong&gt;. Let&amp;rsquo;s see what flags we need to capture :&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1:&lt;/strong&gt; Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2:&lt;/strong&gt; The files on the RSYNC server hold valuable information. Explore the contents to find the flag.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3:&lt;/strong&gt; Try exploiting the webapp to gain a shell using Metasploit on target2.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4:&lt;/strong&gt; Automated tasks can sometimes leave clues. Investigate scheduled jobs or running processes to uncover the hidden flag.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;So it seems that the first machine hosts an &lt;a href=&#34;https://en.wikipedia.org/wiki/Rsync&#34;&gt;&lt;em&gt;rsync&lt;/em&gt;&lt;/a&gt; file server; therefore it is most likely a Linux machine.&#xA;The 4th flag mentions automations, which makes me think of &lt;a href=&#34;https://en.wikipedia.org/wiki/Cron&#34;&gt;&lt;em&gt;cron&lt;/em&gt;&lt;/a&gt; so it might also ne a Linux machine.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1 (INE - eJPT)</title>
-      <link>//localhost:1313/posts/ine_ctf_4/</link>
+      <link>/posts/ine_ctf_4/</link>
       <pubDate>Wed, 07 May 2025 16:04:40 +0100</pubDate>
-      <guid>//localhost:1313/posts/ine_ctf_4/</guid>
+      <guid>/posts/ine_ctf_4/</guid>
       <description>&lt;p&gt;It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the &lt;em&gt;&lt;strong&gt;Host &amp;amp; Network Penetration Testing: The Metasploit Framework CTF 1&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;p&gt;This time we are provided with a windows machine (since we&amp;rsquo;re told to exploit an MSSQL server) and we have 4 flags to capture :&lt;/p&gt;</description>
     </item>
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 2 (INE - eJPT)</title>
-      <link>//localhost:1313/posts/ine_ctf_3/</link>
+      <link>/posts/ine_ctf_3/</link>
       <pubDate>Sun, 06 Apr 2025 17:15:27 +0100</pubDate>
-      <guid>//localhost:1313/posts/ine_ctf_3/</guid>
+      <guid>/posts/ine_ctf_3/</guid>
       <description>&lt;p&gt;Continuing on with my eJPT certification, this time we&amp;rsquo;ll tackle the second CTF in the  &lt;em&gt;System-Host Based Attacks&lt;/em&gt; course.&lt;/p&gt;&#xA;&lt;p&gt;In this lab we&amp;rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: Check the root (&amp;rsquo;/&amp;rsquo;) directory for a file that might hold the key to the first flag on target1.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: In the server&amp;rsquo;s root directory, there might be something hidden. Explore &amp;lsquo;/opt/apache/htdocs/&amp;rsquo; carefully to find the next flag on target1.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: Investigate the user&amp;rsquo;s home directory and consider using &amp;rsquo;libssh_auth_bypass&amp;rsquo; to uncover the flag on target2.ine.local.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The most restricted areas often hold the most valuable secrets. Look into the &amp;lsquo;/root&amp;rsquo; directory to find the hidden flag on target2.ine.local.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;These would mostly be linux machines (since we&amp;rsquo;re in the linux section of the course), so let&amp;rsquo;s start by tackling both the first and second flag at the same time.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)</title>
-      <link>//localhost:1313/posts/ine_ctf_2/</link>
+      <link>/posts/ine_ctf_2/</link>
       <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
-      <guid>//localhost:1313/posts/ine_ctf_2/</guid>
+      <guid>/posts/ine_ctf_2/</guid>
       <description>&lt;p&gt;Today, a second CTF walkthrough for the &lt;em&gt;System-Host Based Attacks CTF 1&lt;/em&gt;. This time we have 4 flags :&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The Desktop directory might have what you&amp;rsquo;re looking for. Enumerate its contents. (target2.ine.local)&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&amp;rsquo;ll be subject to Windows targets.&lt;/p&gt;</description>
     </item>
     <item>
       <title>DeepDive : Concealing Text Using Unicode</title>
-      <link>//localhost:1313/posts/hide_emoji/</link>
+      <link>/posts/hide_emoji/</link>
       <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
-      <guid>//localhost:1313/posts/hide_emoji/</guid>
-      <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.&#xA;I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;&#xA;&lt;h3 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h3&gt;&#xA;&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
+      <guid>/posts/hide_emoji/</guid>
+      <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.&#xA;I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;&#xA;&lt;h2 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h2&gt;&#xA;&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
     </item>
     <item>
       <title>walkthrough : Assessment Methodologies: Vulnerability Assessment CTF 1 (INE - eJPT)</title>
-      <link>//localhost:1313/posts/vulnerability_assessment_ctf_1/</link>
+      <link>/posts/vulnerability_assessment_ctf_1/</link>
       <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
-      <guid>//localhost:1313/posts/vulnerability_assessment_ctf_1/</guid>
-      <description>&lt;p&gt;Today we&amp;rsquo;re going to write about my attempt at solving the &lt;em&gt;&amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.&lt;/p&gt;&#xA;&#xA;    &lt;img src=&#34;//localhost:1313/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;&#xA;&#xA;&#xA;&lt;p&gt;We can see that the ports &lt;strong&gt;80&lt;/strong&gt; and &lt;strong&gt;3306&lt;/strong&gt; are open on the host&amp;rsquo;s IP &lt;strong&gt;192.194.77.3&lt;/strong&gt; so it must be our target (the &lt;em&gt;target.ine.local&lt;/em&gt; helps too).&lt;/p&gt;</description>
+      <guid>/posts/vulnerability_assessment_ctf_1/</guid>
+      <description>&lt;p&gt;Today we&amp;rsquo;re going to write about my attempt at solving the &lt;em&gt;&amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.&lt;/p&gt;&#xA;&#xA;    &lt;img src=&#34;/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;&#xA;&#xA;&#xA;&lt;p&gt;We can see that the ports &lt;strong&gt;80&lt;/strong&gt; and &lt;strong&gt;3306&lt;/strong&gt; are open on the host&amp;rsquo;s IP &lt;strong&gt;192.194.77.3&lt;/strong&gt; so it must be our target (the &lt;em&gt;target.ine.local&lt;/em&gt; helps too).&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

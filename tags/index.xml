@@ -2,284 +2,284 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Arvee&#39;s Blog</title>
-    <link>//localhost:1313/tags/</link>
+    <link>/tags/</link>
     <description>Recent content in Tags on Arvee&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
     <lastBuildDate>Sun, 29 Jun 2025 14:06:00 +0100</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker</title>
-      <link>//localhost:1313/tags/docker/</link>
+      <link>/tags/docker/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/docker/</guid>
+      <guid>/tags/docker/</guid>
       <description></description>
     </item>
     <item>
       <title>GNU Radio</title>
-      <link>//localhost:1313/tags/gnu-radio/</link>
+      <link>/tags/gnu-radio/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/gnu-radio/</guid>
+      <guid>/tags/gnu-radio/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux</title>
-      <link>//localhost:1313/tags/linux/</link>
+      <link>/tags/linux/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/linux/</guid>
+      <guid>/tags/linux/</guid>
       <description></description>
     </item>
     <item>
       <title>RTL-SDR</title>
-      <link>//localhost:1313/tags/rtl-sdr/</link>
+      <link>/tags/rtl-sdr/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/rtl-sdr/</guid>
+      <guid>/tags/rtl-sdr/</guid>
       <description></description>
     </item>
     <item>
       <title>SDR</title>
-      <link>//localhost:1313/tags/sdr/</link>
+      <link>/tags/sdr/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/sdr/</guid>
+      <guid>/tags/sdr/</guid>
       <description></description>
     </item>
     <item>
       <title>Software Defined Radio</title>
-      <link>//localhost:1313/tags/software-defined-radio/</link>
+      <link>/tags/software-defined-radio/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/software-defined-radio/</guid>
+      <guid>/tags/software-defined-radio/</guid>
       <description></description>
     </item>
     <item>
       <title>Tutorial</title>
-      <link>//localhost:1313/tags/tutorial/</link>
+      <link>/tags/tutorial/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/tutorial/</guid>
+      <guid>/tags/tutorial/</guid>
       <description></description>
     </item>
     <item>
       <title>USRP</title>
-      <link>//localhost:1313/tags/usrp/</link>
+      <link>/tags/usrp/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
-      <guid>//localhost:1313/tags/usrp/</guid>
+      <guid>/tags/usrp/</guid>
       <description></description>
     </item>
     <item>
       <title>Certification</title>
-      <link>//localhost:1313/tags/certification/</link>
+      <link>/tags/certification/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>//localhost:1313/tags/certification/</guid>
+      <guid>/tags/certification/</guid>
       <description></description>
     </item>
     <item>
       <title>Cybersecurity</title>
-      <link>//localhost:1313/tags/cybersecurity/</link>
+      <link>/tags/cybersecurity/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>//localhost:1313/tags/cybersecurity/</guid>
+      <guid>/tags/cybersecurity/</guid>
       <description></description>
     </item>
     <item>
       <title>EJPT</title>
-      <link>//localhost:1313/tags/ejpt/</link>
+      <link>/tags/ejpt/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>//localhost:1313/tags/ejpt/</guid>
+      <guid>/tags/ejpt/</guid>
       <description></description>
     </item>
     <item>
       <title>Ethical Hacking</title>
-      <link>//localhost:1313/tags/ethical-hacking/</link>
+      <link>/tags/ethical-hacking/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>//localhost:1313/tags/ethical-hacking/</guid>
+      <guid>/tags/ethical-hacking/</guid>
       <description></description>
     </item>
     <item>
       <title>INE</title>
-      <link>//localhost:1313/tags/ine/</link>
+      <link>/tags/ine/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>//localhost:1313/tags/ine/</guid>
+      <guid>/tags/ine/</guid>
       <description></description>
     </item>
     <item>
       <title>Penetration Testing</title>
-      <link>//localhost:1313/tags/penetration-testing/</link>
+      <link>/tags/penetration-testing/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>//localhost:1313/tags/penetration-testing/</guid>
+      <guid>/tags/penetration-testing/</guid>
       <description></description>
     </item>
     <item>
       <title>CTF</title>
-      <link>//localhost:1313/tags/ctf/</link>
+      <link>/tags/ctf/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>//localhost:1313/tags/ctf/</guid>
+      <guid>/tags/ctf/</guid>
       <description></description>
     </item>
     <item>
       <title>Pentesting</title>
-      <link>//localhost:1313/tags/pentesting/</link>
+      <link>/tags/pentesting/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>//localhost:1313/tags/pentesting/</guid>
+      <guid>/tags/pentesting/</guid>
       <description></description>
     </item>
     <item>
       <title>Code</title>
-      <link>//localhost:1313/tags/code/</link>
+      <link>/tags/code/</link>
       <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
-      <guid>//localhost:1313/tags/code/</guid>
+      <guid>/tags/code/</guid>
       <description></description>
     </item>
     <item>
       <title>DeepDive</title>
-      <link>//localhost:1313/tags/deepdive/</link>
+      <link>/tags/deepdive/</link>
       <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
-      <guid>//localhost:1313/tags/deepdive/</guid>
+      <guid>/tags/deepdive/</guid>
       <description></description>
     </item>
     <item>
       <title>Python</title>
-      <link>//localhost:1313/tags/python/</link>
+      <link>/tags/python/</link>
       <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
-      <guid>//localhost:1313/tags/python/</guid>
+      <guid>/tags/python/</guid>
       <description></description>
     </item>
     <item>
       <title>Vulnerability</title>
-      <link>//localhost:1313/tags/vulnerability/</link>
+      <link>/tags/vulnerability/</link>
       <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
-      <guid>//localhost:1313/tags/vulnerability/</guid>
+      <guid>/tags/vulnerability/</guid>
       <description></description>
     </item>
     <item>
       <title>Apt</title>
-      <link>//localhost:1313/tags/apt/</link>
+      <link>/tags/apt/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/apt/</guid>
+      <guid>/tags/apt/</guid>
       <description></description>
     </item>
     <item>
       <title>Apt-Cache</title>
-      <link>//localhost:1313/tags/apt-cache/</link>
+      <link>/tags/apt-cache/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/apt-cache/</guid>
+      <guid>/tags/apt-cache/</guid>
       <description></description>
     </item>
     <item>
       <title>Apt-Get</title>
-      <link>//localhost:1313/tags/apt-get/</link>
+      <link>/tags/apt-get/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/apt-get/</guid>
+      <guid>/tags/apt-get/</guid>
       <description></description>
     </item>
     <item>
       <title>Command Line</title>
-      <link>//localhost:1313/tags/command-line/</link>
+      <link>/tags/command-line/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/command-line/</guid>
+      <guid>/tags/command-line/</guid>
       <description></description>
     </item>
     <item>
       <title>Deb Packages</title>
-      <link>//localhost:1313/tags/deb-packages/</link>
+      <link>/tags/deb-packages/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/deb-packages/</guid>
+      <guid>/tags/deb-packages/</guid>
       <description></description>
     </item>
     <item>
       <title>Debian</title>
-      <link>//localhost:1313/tags/debian/</link>
+      <link>/tags/debian/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/debian/</guid>
+      <guid>/tags/debian/</guid>
       <description></description>
     </item>
     <item>
       <title>Dpkg</title>
-      <link>//localhost:1313/tags/dpkg/</link>
+      <link>/tags/dpkg/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/dpkg/</guid>
+      <guid>/tags/dpkg/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux Administration</title>
-      <link>//localhost:1313/tags/linux-administration/</link>
+      <link>/tags/linux-administration/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/linux-administration/</guid>
+      <guid>/tags/linux-administration/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux Commands</title>
-      <link>//localhost:1313/tags/linux-commands/</link>
+      <link>/tags/linux-commands/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/linux-commands/</guid>
+      <guid>/tags/linux-commands/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux System</title>
-      <link>//localhost:1313/tags/linux-system/</link>
+      <link>/tags/linux-system/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/linux-system/</guid>
+      <guid>/tags/linux-system/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux Tutorial</title>
-      <link>//localhost:1313/tags/linux-tutorial/</link>
+      <link>/tags/linux-tutorial/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/linux-tutorial/</guid>
+      <guid>/tags/linux-tutorial/</guid>
       <description></description>
     </item>
     <item>
       <title>Package Management</title>
-      <link>//localhost:1313/tags/package-management/</link>
+      <link>/tags/package-management/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/package-management/</guid>
+      <guid>/tags/package-management/</guid>
       <description></description>
     </item>
     <item>
       <title>Package Manager</title>
-      <link>//localhost:1313/tags/package-manager/</link>
+      <link>/tags/package-manager/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/package-manager/</guid>
+      <guid>/tags/package-manager/</guid>
       <description></description>
     </item>
     <item>
       <title>Repository Management</title>
-      <link>//localhost:1313/tags/repository-management/</link>
+      <link>/tags/repository-management/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/repository-management/</guid>
+      <guid>/tags/repository-management/</guid>
       <description></description>
     </item>
     <item>
       <title>Software Installation</title>
-      <link>//localhost:1313/tags/software-installation/</link>
+      <link>/tags/software-installation/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/software-installation/</guid>
+      <guid>/tags/software-installation/</guid>
       <description></description>
     </item>
     <item>
       <title>Software Update</title>
-      <link>//localhost:1313/tags/software-update/</link>
+      <link>/tags/software-update/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/software-update/</guid>
+      <guid>/tags/software-update/</guid>
       <description></description>
     </item>
     <item>
       <title>Software Upgrade</title>
-      <link>//localhost:1313/tags/software-upgrade/</link>
+      <link>/tags/software-upgrade/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/software-upgrade/</guid>
+      <guid>/tags/software-upgrade/</guid>
       <description></description>
     </item>
     <item>
       <title>Sysadmin</title>
-      <link>//localhost:1313/tags/sysadmin/</link>
+      <link>/tags/sysadmin/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/sysadmin/</guid>
+      <guid>/tags/sysadmin/</guid>
       <description></description>
     </item>
     <item>
       <title>Ubuntu</title>
-      <link>//localhost:1313/tags/ubuntu/</link>
+      <link>/tags/ubuntu/</link>
       <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
-      <guid>//localhost:1313/tags/ubuntu/</guid>
+      <guid>/tags/ubuntu/</guid>
       <description></description>
     </item>
   </channel>
