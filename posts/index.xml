@@ -1,28 +1,28 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Posts on Arvee&#39;s Blog</title>
-        <link>/posts/</link>
+        <link>//localhost:1313/posts/</link>
         <description>Recent content in Posts on Arvee&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
         <lastBuildDate>Sun, 29 Jun 2025 14:06:00 +0100</lastBuildDate>
-        <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="//localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
             <title>How to Set Up GNU Radio with Docker and UHD for SDR Development</title>
-            <link>/posts/gnuradiodocker/</link>
+            <link>//localhost:1313/posts/gnuradiodocker/</link>
             <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
             
-            <guid>/posts/gnuradiodocker/</guid>
+            <guid>//localhost:1313/posts/gnuradiodocker/</guid>
             <description>&lt;p&gt;This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user.
 The following instructions are also compatible with other Debian based distributions like Ubuntu.&lt;/p&gt;
-&lt;h1 id=&#34;installing-docker&#34;&gt;Installing Docker&lt;/h1&gt;
+&lt;h2 id=&#34;installing-docker&#34;&gt;Installing Docker&lt;/h2&gt;
 &lt;p&gt;&lt;em&gt;Source : &lt;a href=&#34;https://docs.docker.com/engine/install/debian/&#34;&gt;https://docs.docker.com/engine/install/debian/&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker &lt;code&gt;apt&lt;/code&gt; repository. Afterward, you can install and update Docker from the repository.&lt;/p&gt;</description>
             <content type="html"><![CDATA[<p>This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user.
 The following instructions are also compatible with other Debian based distributions like Ubuntu.</p>
-<h1 id="installing-docker">Installing Docker</h1>
+<h2 id="installing-docker">Installing Docker</h2>
 <p><em>Source : <a href="https://docs.docker.com/engine/install/debian/">https://docs.docker.com/engine/install/debian/</a></em></p>
 <p>Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker <code>apt</code> repository. Afterward, you can install and update Docker from the repository.</p>
 <hr>
@@ -54,7 +54,7 @@ The following instructions are also compatible with other Debian based distribut
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>sudo docker run hello-world
 </span></span></code></pre></div><p>This command downloads a test image and runs it in a container. When the container runs, it prints a confirmation message and exits.</p>
 <p>You have now successfully installed and started Docker Engine.</p>
-<h1 id="setting-up-the-docker-container">Setting up the Docker container</h1>
+<h2 id="setting-up-the-docker-container">Setting up the Docker container</h2>
 <p><em>source : <a href="https://github.com/git-artes/docker-gnuradio">https://github.com/git-artes/docker-gnuradio</a></em></p>
 <p>We&rsquo;ll be using the <a href="https://github.com/git-artes/docker-gnuradio">git-artes/docker-gnuradio</a> as a base and make some very minor changes :</p>
 <ul>
@@ -129,7 +129,7 @@ All in all, the docker file should look something like this :</li>
 <li>To stop the container : <code>docker stop gnuradio</code></li>
 <li>To access the container : <code>docker exec -it gnuradio bash</code></li>
 </ol>
-<h1 id="installing-the-uhd-drivers">Installing the UHD drivers</h1>
+<h2 id="installing-the-uhd-drivers">Installing the UHD drivers</h2>
 <p><em>source : <a href="https://kb.ettus.com/Building_and_Installing_the_USRP_Open-Source_Toolchain_%28UHD_and_GNU_Radio%29_on_Linux">https://kb.ettus.com/Building_and_Installing_the_USRP_Open-Source_Toolchain_(UHD_and_GNU_Radio)_on_Linux</a></em></p>
 <p><em>note : The password for the user gnuradio is <code>gnuradio</code></em></p>
 <p>Once inside the container, make sure to update the packages that are already installed :</p>
@@ -137,27 +137,27 @@ All in all, the docker file should look something like this :</li>
 </span></span></code></pre></div><p>Next, you&rsquo;ll need to install a bunch of packages :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>sudo apt -y install autoconf automake build-essential ccache cmake cpufrequtils doxygen ethtool fort77 g++ gir1.2-gtk-3.0 git gobject-introspection gpsd gpsd-clients inetutils-tools libasound2-dev libboost-all-dev libcomedi-dev libcppunit-dev libfftw3-bin libfftw3-dev libfftw3-doc libfontconfig1-dev libgmp-dev libgps-dev libgsl-dev liblog4cpp5-dev libncurses5 libncurses5-dev libpulse-dev libqt5opengl5-dev libqwt-qt5-dev libsdl1.2-dev libtool libudev-dev libusb-1.0-0 libusb-1.0-0-dev libusb-dev libxi-dev libxrender-dev libzmq3-dev libzmq5 ncurses-bin python3-cheetah python3-click python3-click-plugins python3-click-threading python3-dev python3-docutils python3-gi python3-gi-cairo python3-gps python3-lxml python3-mako python3-numpy python3-numpy-dbg python3-opengl python3-pyqt5 python3-requests python3-scipy python3-setuptools python3-six python3-sphinx python3-yaml python3-zmq python3-ruamel.yaml swig wget
 </span></span></code></pre></div><p>Next, follow these steps to install UHD (USRP Hardware Driver) from source :</p>
-<h4 id="1-prepare-the-installation-environment">1. Prepare the Installation Environment</h4>
+<h3 id="1-prepare-the-installation-environment">1. Prepare the Installation Environment</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>cd $HOME
 </span></span><span style="display:flex;"><span>mkdir workarea
 </span></span><span style="display:flex;"><span>cd workarea
-</span></span></code></pre></div><h4 id="2-clone-the-uhd-github-repository">2. Clone the UHD GitHub Repository</h4>
+</span></span></code></pre></div><h3 id="2-clone-the-uhd-github-repository">2. Clone the UHD GitHub Repository</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>git clone https://github.com/EttusResearch/uhd
 </span></span><span style="display:flex;"><span>cd uhd
 </span></span><span style="display:flex;"><span>git checkout v4.8.0.0
 </span></span></code></pre></div><p>use <code>git tag -l</code> and checkout the latest version (replace v4.8.0.0 with the latest version available at the time).</p>
-<h4 id="3-set-up-the-build-directory">3. Set Up the Build Directory</h4>
+<h3 id="3-set-up-the-build-directory">3. Set Up the Build Directory</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>cd host
 </span></span><span style="display:flex;"><span>mkdir build
 </span></span><span style="display:flex;"><span>cd build
-</span></span></code></pre></div><h4 id="4-configure-the-build-environment">4. Configure the Build Environment</h4>
+</span></span></code></pre></div><h3 id="4-configure-the-build-environment">4. Configure the Build Environment</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>cmake ..
-</span></span></code></pre></div><h4 id="5-build-and-install">5. Build and Install</h4>
+</span></span></code></pre></div><h3 id="5-build-and-install">5. Build and Install</h3>
 <p>Once the environment is configured, compile UHD using:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>make
 </span></span></code></pre></div><p>Then install it with :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>sudo make install
-</span></span></code></pre></div><h4 id="6-post-installation">6. Post-Installation</h4>
+</span></span></code></pre></div><h3 id="6-post-installation">6. Post-Installation</h3>
 <p>Update the shared library cache and add UHD to your environment:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>sudo ldconfig
 </span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;export LD_LIBRARY_PATH=/usr/local/lib&#39;</span> &gt;&gt; ~/.bashrc
@@ -165,7 +165,7 @@ All in all, the docker file should look something like this :</li>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;export DISPLAY=:0.0&#39;</span> &gt;&gt; ~/.bashrc
 </span></span></code></pre></div><p>And if the <code>gnuradio-companion</code> doesn&rsquo;t work because of display issues after exporting the $DISPLAY environment variable try doing this on your host machine (outside the container).</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>xhost +local:
-</span></span></code></pre></div><h4 id="7-test-the-installation">7. Test the Installation</h4>
+</span></span></code></pre></div><h3 id="7-test-the-installation">7. Test the Installation</h3>
 <p>To verify that UHD is installed and can detect connected USRP devices:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>uhd_find_devices
 </span></span></code></pre></div><p>If a USRP is connected, it should appear in the output.</p>
@@ -175,10 +175,10 @@ All in all, the docker file should look something like this :</li>
         
         <item>
             <title>eJPT Certification Guide for Beginners (and Impatient Nerds Like Me)</title>
-            <link>/posts/ejpt_cert/</link>
+            <link>//localhost:1313/posts/ejpt_cert/</link>
             <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
             
-            <guid>/posts/ejpt_cert/</guid>
+            <guid>//localhost:1313/posts/ejpt_cert/</guid>
             <description>&lt;p&gt;During the last five months, I have been studying for the &lt;a href=&#34;https://certs.ine.com/cda4537e-dd0d-42d7-84a1-2af72436e6a0&#34;&gt;eJPT certification&lt;/a&gt; exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.&lt;/p&gt;</description>
             <content type="html"><![CDATA[<p>During the last five months, I have been studying for the <a href="https://certs.ine.com/cda4537e-dd0d-42d7-84a1-2af72436e6a0">eJPT certification</a> exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.</p>
 <h2 id="what-is-ejpt">What is eJPT</h2>
@@ -259,10 +259,10 @@ If, in the other hand you have some experience, i would recommend you save some 
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 2 (INE - eJPT)</title>
-            <link>/posts/ine_ctf_5/</link>
+            <link>//localhost:1313/posts/ine_ctf_5/</link>
             <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
             
-            <guid>/posts/ine_ctf_5/</guid>
+            <guid>//localhost:1313/posts/ine_ctf_5/</guid>
             <description>&lt;p&gt;Second CTF in the longest module for the &lt;em&gt;Penetration testing student&lt;/em&gt; course, This time we have two machines; &lt;strong&gt;target1.ine.local&lt;/strong&gt; &amp;amp; &lt;strong&gt;target2.ine.local&lt;/strong&gt;. Let&amp;rsquo;s see what flags we need to capture :&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Flag 1:&lt;/strong&gt; Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.&lt;/li&gt;
@@ -368,10 +368,10 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1 (INE - eJPT)</title>
-            <link>/posts/ine_ctf_4/</link>
+            <link>//localhost:1313/posts/ine_ctf_4/</link>
             <pubDate>Wed, 07 May 2025 16:04:40 +0100</pubDate>
             
-            <guid>/posts/ine_ctf_4/</guid>
+            <guid>//localhost:1313/posts/ine_ctf_4/</guid>
             <description>&lt;p&gt;It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the &lt;em&gt;&lt;strong&gt;Host &amp;amp; Network Penetration Testing: The Metasploit Framework CTF 1&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;
 &lt;p&gt;This time we are provided with a windows machine (since we&amp;rsquo;re told to exploit an MSSQL server) and we have 4 flags to capture :&lt;/p&gt;</description>
             <content type="html"><![CDATA[<p>It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the <em><strong>Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1</strong></em>.</p>
@@ -564,10 +564,10 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 2 (INE - eJPT)</title>
-            <link>/posts/ine_ctf_3/</link>
+            <link>//localhost:1313/posts/ine_ctf_3/</link>
             <pubDate>Sun, 06 Apr 2025 17:15:27 +0100</pubDate>
             
-            <guid>/posts/ine_ctf_3/</guid>
+            <guid>//localhost:1313/posts/ine_ctf_3/</guid>
             <description>&lt;p&gt;Continuing on with my eJPT certification, this time we&amp;rsquo;ll tackle the second CTF in the  &lt;em&gt;System-Host Based Attacks&lt;/em&gt; course.&lt;/p&gt;
 &lt;p&gt;In this lab we&amp;rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :&lt;/p&gt;
 &lt;ul&gt;
@@ -668,10 +668,10 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
         
         <item>
             <title>Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)</title>
-            <link>/posts/ine_ctf_2/</link>
+            <link>//localhost:1313/posts/ine_ctf_2/</link>
             <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
             
-            <guid>/posts/ine_ctf_2/</guid>
+            <guid>//localhost:1313/posts/ine_ctf_2/</guid>
             <description>&lt;p&gt;Today, a second CTF walkthrough for the &lt;em&gt;System-Host Based Attacks CTF 1&lt;/em&gt;. This time we have 4 flags :&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)&lt;/li&gt;
@@ -775,17 +775,17 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
         
         <item>
             <title>DeepDive : Concealing Text Using Unicode</title>
-            <link>/posts/hide_emoji/</link>
+            <link>//localhost:1313/posts/hide_emoji/</link>
             <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
             
-            <guid>/posts/hide_emoji/</guid>
+            <guid>//localhost:1313/posts/hide_emoji/</guid>
             <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.
 I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;
-&lt;h3 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h3&gt;
+&lt;h2 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h2&gt;
 &lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
             <content type="html"><![CDATA[<p>I recently stumbled upon an article titled <a href="https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking">Hidden Messages in Emojis and Hacking the US Treasury</a> and it reminded me of a <a href="https://github.com/Yassine-elhammoumi/Unicode_character_encoding">piece of code</a> i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.
 I was able to do that thanks to the Unicode Variation Selectors.</p>
-<h3 id="unicode-variation-selectors">Unicode variation selectors</h3>
+<h2 id="unicode-variation-selectors">Unicode variation selectors</h2>
 <p>Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.</p>
 <p>For example in the case of emojis : (<a href="https://en.wikipedia.org/wiki/Hearts_in_Unicode">source</a>)</p>
 <table>
@@ -919,10 +919,10 @@ I had a lot of fun discovering all of this and making it work and I hope you too
         
         <item>
             <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
-            <link>/posts/shellshock/</link>
+            <link>//localhost:1313/posts/shellshock/</link>
             <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
             
-            <guid>/posts/shellshock/</guid>
+            <guid>//localhost:1313/posts/shellshock/</guid>
             <description>&lt;h2 id=&#34;what-is-shellshock-cve-2014-6271&#34;&gt;What is Shellshock (CVE-2014-6271)?&lt;/h2&gt;
 &lt;p&gt;Basically, Shellshock is a &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2014-6271&#34;&gt;critical&lt;/a&gt; vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&lt;/p&gt;
 &lt;h3 id=&#34;environment-variables-&#34;&gt;Environment variables ?&lt;/h3&gt;
@@ -1008,14 +1008,14 @@ I had a lot of fun discovering all of this and making it work and I hope you too
         
         <item>
             <title>walkthrough : Assessment Methodologies: Vulnerability Assessment CTF 1 (INE - eJPT)</title>
-            <link>/posts/vulnerability_assessment_ctf_1/</link>
+            <link>//localhost:1313/posts/vulnerability_assessment_ctf_1/</link>
             <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
             
-            <guid>/posts/vulnerability_assessment_ctf_1/</guid>
+            <guid>//localhost:1313/posts/vulnerability_assessment_ctf_1/</guid>
             <description>&lt;p&gt;Today we&amp;rsquo;re going to write about my attempt at solving the &lt;em&gt;&amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.&lt;/p&gt;
 
-    &lt;img src=&#34;/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;
+    &lt;img src=&#34;//localhost:1313/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;
 
 
 &lt;p&gt;We can see that the ports &lt;strong&gt;80&lt;/strong&gt; and &lt;strong&gt;3306&lt;/strong&gt; are open on the host&amp;rsquo;s IP &lt;strong&gt;192.194.77.3&lt;/strong&gt; so it must be our target (the &lt;em&gt;target.ine.local&lt;/em&gt; helps too).&lt;/p&gt;</description>
@@ -1131,10 +1131,10 @@ I had a lot of fun discovering all of this and making it work and I hope you too
         
         <item>
             <title>Effortless Package Management: A Comprehensive Look at APT</title>
-            <link>/posts/apt/</link>
+            <link>//localhost:1313/posts/apt/</link>
             <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
             
-            <guid>/posts/apt/</guid>
+            <guid>//localhost:1313/posts/apt/</guid>
             <description>&lt;p&gt;You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software.
 Today I’ll dive deeper on the intricacies of this command.&lt;/p&gt;
 &lt;h2 id=&#34;what-is-apt-package-manager&#34;&gt;What is APT Package Manager&lt;/h2&gt;
