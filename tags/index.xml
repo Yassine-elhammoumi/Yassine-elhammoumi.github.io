@@ -7,8 +7,64 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Thu, 12 Jun 2025 13:43:05 +0100</lastBuildDate>
+    <lastBuildDate>Sun, 29 Jun 2025 14:06:00 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker</title>
+      <link>/tags/docker/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GNU Radio</title>
+      <link>/tags/gnu-radio/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/gnu-radio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux</title>
+      <link>/tags/linux/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>RTL-SDR</title>
+      <link>/tags/rtl-sdr/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/rtl-sdr/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>SDR</title>
+      <link>/tags/sdr/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/sdr/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Defined Radio</title>
+      <link>/tags/software-defined-radio/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/software-defined-radio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tutorial</title>
+      <link>/tags/tutorial/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/tutorial/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>USRP</title>
+      <link>/tags/usrp/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/usrp/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Certification</title>
       <link>/tags/certification/</link>
@@ -24,10 +80,31 @@
       <description></description>
     </item>
     <item>
-      <title>Pentesting</title>
-      <link>/tags/pentesting/</link>
+      <title>EJPT</title>
+      <link>/tags/ejpt/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>/tags/pentesting/</guid>
+      <guid>/tags/ejpt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ethical Hacking</title>
+      <link>/tags/ethical-hacking/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/ethical-hacking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>INE</title>
+      <link>/tags/ine/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/ine/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Penetration Testing</title>
+      <link>/tags/penetration-testing/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/penetration-testing/</guid>
       <description></description>
     </item>
     <item>
@@ -38,10 +115,10 @@
       <description></description>
     </item>
     <item>
-      <title>Linux</title>
-      <link>/tags/linux/</link>
+      <title>Pentesting</title>
+      <link>/tags/pentesting/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>/tags/linux/</guid>
+      <guid>/tags/pentesting/</guid>
       <description></description>
     </item>
     <item>

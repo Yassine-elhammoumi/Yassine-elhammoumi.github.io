@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software Defined Radio on Arvee&#39;s Blog</title>
+    <link>/tags/software-defined-radio/</link>
+    <description>Recent content in Software Defined Radio on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Sun, 29 Jun 2025 14:06:00 +0100</lastBuildDate>
+    <atom:link href="/tags/software-defined-radio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to Set Up GNU Radio with Docker and UHD for SDR Development</title>
+      <link>/posts/gnuradiodocker/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/posts/gnuradiodocker/</guid>
+      <description>&lt;p&gt;This guide was tested on a Linux machine (Debian 12 - Bookworm), propre, up to date system with administrative privileges for the installing user.&#xA;The following instructions are also compatible with other Debian based distributions like Ubuntu.&lt;/p&gt;&#xA;&lt;h1 id=&#34;installing-docker&#34;&gt;Installing Docker&lt;/h1&gt;&#xA;&lt;p&gt;&lt;em&gt;Source : &lt;a href=&#34;https://docs.docker.com/engine/install/debian/&#34;&gt;https://docs.docker.com/engine/install/debian/&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker &lt;code&gt;apt&lt;/code&gt; repository. Afterward, you can install and update Docker from the repository.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
