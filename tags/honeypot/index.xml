@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Untagged on Arvee&#39;s Blog</title>
-    <link>//localhost:1313/tags/untagged/</link>
-    <description>Recent content in Untagged on Arvee&#39;s Blog</description>
+    <title>Honeypot on Arvee&#39;s Blog</title>
+    <link>/tags/honeypot/</link>
+    <description>Recent content in Honeypot on Arvee&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
     <lastBuildDate>Thu, 17 Jul 2025 11:27:17 +0100</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/tags/honeypot/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Deploying T-Pot: A Complete Guide to Building Your All-in-One Honeypot Lab</title>
-      <link>//localhost:1313/posts/tpot/</link>
+      <title>How to Deploy T-Pot Honeypot on Linux for Threat Intelligence and Network Monitoring</title>
+      <link>/posts/tpot/</link>
       <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
-      <guid>//localhost:1313/posts/tpot/</guid>
+      <guid>/posts/tpot/</guid>
       <description>&lt;p&gt;In this guide, we’ll walk through the complete installation process of &lt;a href=&#34;https://github.com/telekom-security/tpotce/&#34;&gt;T-Pot&lt;/a&gt;, the open-source honeypot platform maintained by &lt;a href=&#34;https://geschaeftskunden.telekom.de/business/loesungen/digitalisierung/cyber-security&#34;&gt;Deutsche Telekom Security&lt;/a&gt;. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.&lt;/p&gt;</description>
     </item>
   </channel>
