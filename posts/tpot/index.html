@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="">
 <meta name="description" content="Step-by-step guide to installing and configuring T-Pot, an all-in-one honeypot platform using Docker and ELK stack, on Linux. Monitor network attacks and collect threat intelligence with ease." />
-<meta name="keywords" content="homepage, blog, cybersecurity, technology, T-Pot, Honeypot, Cybersecurity, Threat Intelligence, Docker, ELK Stack, Network Security, Linux, Tutorial" />
+<meta name="keywords" content=", T-Pot, Honeypot, Cybersecurity, Threat Intelligence, Docker, ELK Stack, Network Security, Linux, Tutorial" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="/posts/tpot/" />
@@ -76,7 +76,7 @@
 
 
 
-    <meta property="article:published_time" content="2025-07-17 11:27:17 &#43;0100 &#43;01" />
+    <meta property="article:published_time" content="2025-07-17 11:27:17 &#43;0100 &#43;0100" />
 
 
 
@@ -204,13 +204,15 @@
       <div class="post-content">
         <p>In this guide, we’ll walk through the complete installation process of <a href="https://github.com/telekom-security/tpotce/">T-Pot</a>, the open-source honeypot platform maintained by <a href="https://geschaeftskunden.telekom.de/business/loesungen/digitalisierung/cyber-security">Deutsche Telekom Security</a>. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.</p>
 <blockquote>
-<p>This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</p></blockquote>
+<p>This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</p>
+</blockquote>
 <h2 id="what-is-t-pot-">What is T-Pot ?</h2>
 <p>T‑Pot is an open‑source multi‑honeypot platform. It is designed to run multiple isolated honeypot services within Docker containers and to centralize all telemetry via a unified logging and analysis pipeline.</p>
 <p>T‑Pot integrates approximately 20 honeypot daemons such as <a href="https://github.com/cowrie/cowrie">Cowrie</a>, <a href="https://github.com/DinoTools/dionaea">Dionaea</a>, <a href="https://github.com/mushorg/glastopf">Glastopf</a>, <a href="https://github.com/johnnykv/Heralding">Heralding</a>, <a href="https://github.com/bontchev/elasticpot">ElasticPot</a>, <a href="https://github.com/phin3has/mailoney">Mailoney</a> and more in one consolidated system. Each honeypot runs in its own Docker container for modularity and isolation. This architecture enables flexible scaling and maintenance.</p>
 <p>The platform includes a full Elastic Stack (<a href="https://www.elastic.co/elasticsearch">Elasticsearch</a>, <a href="https://www.elastic.co/logstash">Logstash</a>, <a href="https://www.elastic.co/kibana">Kibana</a>) for ingestion, storage, and visualization of captured attacks and logs.</p>
 <blockquote>
-<p>For full details on supported honeypots, installation options, configuration, and advanced setups, check out the official GitHub repository: <a href="https://github.com/telekom-security/tpotce/">telekom-security/tpotce</a>.</p></blockquote>
+<p>For full details on supported honeypots, installation options, configuration, and advanced setups, check out the official GitHub repository: <a href="https://github.com/telekom-security/tpotce/">telekom-security/tpotce</a>.</p>
+</blockquote>
 <h2 id="pre-installation">Pre-Installation</h2>
 <h3 id="choosing-the-distribution">Choosing the Distribution</h3>
 <p>Before starting the installation, you must choose one of the Linux distributions supported by T-Pot:</p>
@@ -237,7 +239,8 @@
 <p>During installation, select the minimal (or server) installation type, never install a graphical environment, and make sure to install SSH.
 For this guide, the selected distribution is Rocky Linux OS 9.6 Boot ISO.</p>
 <blockquote>
-<p>learn more and get direct download links <a href="https://github.com/telekom-security/tpotce/?tab=readme-ov-file#choose-your-distro">here</a></p></blockquote>
+<p>learn more and get direct download links <a href="https://github.com/telekom-security/tpotce/?tab=readme-ov-file#choose-your-distro">here</a></p>
+</blockquote>
 <h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>RAM: <strong>16 GB</strong></li>
@@ -248,125 +251,125 @@ For this guide, the selected distribution is Rocky Linux OS 9.6 Boot ISO.</p>
 <p>Since the machine is placed upstream of the network firewall, it is recommended to configure the system firewall manually, even though the T-Pot installer sets it up for us.
 The port allocation is as follows:</p>
 <table>
-  <thead>
-      <tr>
-          <th style="text-align: left">Port</th>
-          <th style="text-align: left">Protocol</th>
-          <th style="text-align: left">Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td style="text-align: left">80, 443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management: Install, Updates, Logs (i.e. OS, GitHub, DockerHub, Sicherheitstacho, etc.</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">11434</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">LLM based honeypots: Access your Ollama installation</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">64294</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management: Sensor data transmission to hive (through NGINX reverse proxy) to 127.0.0.1:64305</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">64295</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management: Access to SSH</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">64297</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management Access to NGINX reverse proxy</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">5555</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: ADBHoney</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">22</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Beelzebub (LLM required)</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">5000</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: CiscoASA</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">8443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: CiscoASA</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: CitrixHoneypot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">80, 102, 502, 1025, 2404, 10001, 44818, 47808, 50100</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Conpot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">161, 623</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: Conpot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">22, 23</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Cowrie</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">19, 53, 123, 1900</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: Ddospot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">11112</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Dicompot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">21, 42, 135, 443, 445, 1433, 1723, 1883, 3306, 8081</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Dionaea</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">69</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: Dionaea</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">9200</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Elasticpot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">22</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Endlessh</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">80, 443, 8080, 8443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Galah (LLM required)</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">8080</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Go-pot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">80, 443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: H0neytr4p</td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th style="text-align:left">Port</th>
+<th style="text-align:left">Protocol</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">80, 443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management: Install, Updates, Logs (i.e. OS, GitHub, DockerHub, Sicherheitstacho, etc.</td>
+</tr>
+<tr>
+<td style="text-align:left">11434</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">LLM based honeypots: Access your Ollama installation</td>
+</tr>
+<tr>
+<td style="text-align:left">64294</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management: Sensor data transmission to hive (through NGINX reverse proxy) to 127.0.0.1:64305</td>
+</tr>
+<tr>
+<td style="text-align:left">64295</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management: Access to SSH</td>
+</tr>
+<tr>
+<td style="text-align:left">64297</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management Access to NGINX reverse proxy</td>
+</tr>
+<tr>
+<td style="text-align:left">5555</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: ADBHoney</td>
+</tr>
+<tr>
+<td style="text-align:left">22</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Beelzebub (LLM required)</td>
+</tr>
+<tr>
+<td style="text-align:left">5000</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: CiscoASA</td>
+</tr>
+<tr>
+<td style="text-align:left">8443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: CiscoASA</td>
+</tr>
+<tr>
+<td style="text-align:left">443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: CitrixHoneypot</td>
+</tr>
+<tr>
+<td style="text-align:left">80, 102, 502, 1025, 2404, 10001, 44818, 47808, 50100</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Conpot</td>
+</tr>
+<tr>
+<td style="text-align:left">161, 623</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: Conpot</td>
+</tr>
+<tr>
+<td style="text-align:left">22, 23</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Cowrie</td>
+</tr>
+<tr>
+<td style="text-align:left">19, 53, 123, 1900</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: Ddospot</td>
+</tr>
+<tr>
+<td style="text-align:left">11112</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Dicompot</td>
+</tr>
+<tr>
+<td style="text-align:left">21, 42, 135, 443, 445, 1433, 1723, 1883, 3306, 8081</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Dionaea</td>
+</tr>
+<tr>
+<td style="text-align:left">69</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: Dionaea</td>
+</tr>
+<tr>
+<td style="text-align:left">9200</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Elasticpot</td>
+</tr>
+<tr>
+<td style="text-align:left">22</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Endlessh</td>
+</tr>
+<tr>
+<td style="text-align:left">80, 443, 8080, 8443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Galah (LLM required)</td>
+</tr>
+<tr>
+<td style="text-align:left">8080</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Go-pot</td>
+</tr>
+<tr>
+<td style="text-align:left">80, 443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: H0neytr4p</td>
+</tr>
+</tbody>
 </table>
 <p>Rocky Linux uses <a href="https://firewalld.org/">Firewalld</a>, which is configured as follows:</p>
 <h4 id="enable-and-start-firewalld">Enable and Start Firewalld</h4>
@@ -451,7 +454,8 @@ The port allocation is as follows:</p>
 </span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;Please check the configuration. Use &#39;firewall-cmd --remove-port=PORT&#39; to remove unexpected entries.&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
 </span></span></code></pre></div><blockquote>
-<p>You can download the script from <a href="/tpot/firewall_script.sh">here</a>. Please make sure to read through the script before executing it.</p></blockquote>
+<p>You can download the script from <a href="/tpot/firewall_script.sh">here</a>. Please make sure to read through the script before executing it.</p>
+</blockquote>
 
     <img src="/tpot/firewall-2.png"  alt="using the firewall script"  class="center"  style="border-radius: 8px; width: 100%;"  />
 
@@ -606,7 +610,7 @@ Navigate to <code>about:config</code>, search for <code>webgl.disabled</code>, a
           <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
         
-          17-07-2025 11:27
+          17-07-2025 12:27
         
 
          
@@ -711,8 +715,20 @@ Navigate to <code>about:config</code>, search for <code>webgl.disabled</code>, a
     
     <div class="pagination">
         
+        <div class="pagination__title">
+            <span class="pagination__title-h">Read other posts</span>
+            <hr />
+        </div>
+        
 
         <div class="pagination__buttons">
+            
+            <span class="button previous">
+                <a href="/posts/cve_2025_27591/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">CVE-2025-27591 Lab Setup and Exploitation Guide</span>
+                </a>
+            </span>
             
 
             

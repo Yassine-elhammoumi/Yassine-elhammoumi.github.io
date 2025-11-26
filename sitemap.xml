@@ -3,13 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/cve-2025-27591/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/posts/cve_2025_27591/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/cybersecurity/</loc>
-    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/docker/</loc>
-    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/exploitation/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/lab/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/posts/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/vulnerable-container/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/elk-stack/</loc>
     <lastmod>2025-07-17T11:27:17+01:00</lastmod>
@@ -26,13 +47,7 @@
     <loc>/tags/network-security/</loc>
     <lastmod>2025-07-17T11:27:17+01:00</lastmod>
   </url><url>
-    <loc>/posts/</loc>
-    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
-  </url><url>
     <loc>/tags/t-pot/</loc>
-    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
     <lastmod>2025-07-17T11:27:17+01:00</lastmod>
   </url><url>
     <loc>/tags/threat-intelligence/</loc>

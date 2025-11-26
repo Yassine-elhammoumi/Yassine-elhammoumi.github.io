@@ -14,7 +14,7 @@
       <link>/posts/gnuradiodocker/</link>
       <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
       <guid>/posts/gnuradiodocker/</guid>
-      <description>&lt;p&gt;This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user.&#xA;The following instructions are also compatible with other Debian based distributions like Ubuntu.&lt;/p&gt;&#xA;&lt;h2 id=&#34;installing-docker&#34;&gt;Installing Docker&lt;/h2&gt;&#xA;&lt;p&gt;&lt;em&gt;Source : &lt;a href=&#34;https://docs.docker.com/engine/install/debian/&#34;&gt;https://docs.docker.com/engine/install/debian/&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker &lt;code&gt;apt&lt;/code&gt; repository. Afterward, you can install and update Docker from the repository.&lt;/p&gt;</description>
+      <description>This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user. The following instructions are also compatible with other Debian based distributions like Ubuntu.&#xA;Installing Docker Source : https://docs.docker.com/engine/install/debian/&#xA;Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker apt repository. Afterward, you can install and update Docker from the repository.</description>
     </item>
   </channel>
 </rss>

@@ -14,7 +14,7 @@
       <link>/posts/tpot/</link>
       <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
       <guid>/posts/tpot/</guid>
-      <description>&lt;p&gt;In this guide, we’ll walk through the complete installation process of &lt;a href=&#34;https://github.com/telekom-security/tpotce/&#34;&gt;T-Pot&lt;/a&gt;, the open-source honeypot platform maintained by &lt;a href=&#34;https://geschaeftskunden.telekom.de/business/loesungen/digitalisierung/cyber-security&#34;&gt;Deutsche Telekom Security&lt;/a&gt;. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.&lt;/p&gt;</description>
+      <description>In this guide, we’ll walk through the complete installation process of T-Pot, the open-source honeypot platform maintained by Deutsche Telekom Security. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.&#xA;This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</description>
     </item>
   </channel>
 </rss>

@@ -7,20 +7,48 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Thu, 17 Jul 2025 11:27:17 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CVE-2025-27591</title>
+      <link>/tags/cve-2025-27591/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/cve-2025-27591/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Cybersecurity</title>
       <link>/tags/cybersecurity/</link>
-      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
       <guid>/tags/cybersecurity/</guid>
       <description></description>
     </item>
     <item>
       <title>Docker</title>
       <link>/tags/docker/</link>
-      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
       <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Exploitation</title>
+      <link>/tags/exploitation/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/exploitation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lab</title>
+      <link>/tags/lab/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/lab/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Vulnerable Container</title>
+      <link>/tags/vulnerable-container/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/vulnerable-container/</guid>
       <description></description>
     </item>
     <item>

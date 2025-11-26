@@ -7,9 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="">
 <meta name="description" content="I recently stumbled upon an article titled Hidden Messages in Emojis and Hacking the US Treasury and it reminded me of a piece of code i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to. I was able to do that thanks to the Unicode Variation Selectors.
-Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.
-" />
-<meta name="keywords" content="homepage, blog, cybersecurity, technology, CTF, python, code, DeepDive" />
+Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters." />
+<meta name="keywords" content=", CTF, python, code, DeepDive" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="/posts/hide_emoji/" />
@@ -43,7 +42,7 @@ Unicode variation selectors Variation selectors are special characters in the Un
 
   <meta itemprop="name" content="DeepDive : Concealing Text Using Unicode">
   <meta itemprop="description" content="I recently stumbled upon an article titled Hidden Messages in Emojis and Hacking the US Treasury and it reminded me of a piece of code i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to. I was able to do that thanks to the Unicode Variation Selectors.
-Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.">
+Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters.">
   <meta itemprop="datePublished" content="2025-03-19T21:00:47+00:00">
   <meta itemprop="dateModified" content="2025-03-19T21:00:47+00:00">
   <meta itemprop="wordCount" content="636">
@@ -54,7 +53,7 @@ Unicode variation selectors Variation selectors are special characters in the Un
   <meta name="twitter:image" content="/">
   <meta name="twitter:title" content="DeepDive : Concealing Text Using Unicode">
   <meta name="twitter:description" content="I recently stumbled upon an article titled Hidden Messages in Emojis and Hacking the US Treasury and it reminded me of a piece of code i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to. I was able to do that thanks to the Unicode Variation Selectors.
-Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.">
+Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters.">
 
 
 
@@ -62,7 +61,7 @@ Unicode variation selectors Variation selectors are special characters in the Un
   <meta property="og:site_name" content="Arvee&#39;s Blog">
   <meta property="og:title" content="DeepDive : Concealing Text Using Unicode">
   <meta property="og:description" content="I recently stumbled upon an article titled Hidden Messages in Emojis and Hacking the US Treasury and it reminded me of a piece of code i wrote back in February 2025 about Unicode character encoding and how we could hide text inside a single character to hide a message inside of it, if we wanted to. I was able to do that thanks to the Unicode Variation Selectors.
-Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.">
+Unicode variation selectors Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters.">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -194,45 +193,45 @@ I was able to do that thanks to the Unicode Variation Selectors.</p>
 <p>Variation selectors are special characters in the Unicode standard that modify the appearance of preceding characters. They are often used in situations where slight variations in character rendering are needed, such as choosing between different glyph styles.</p>
 <p>For example in the case of emojis : (<a href="https://en.wikipedia.org/wiki/Hearts_in_Unicode">source</a>)</p>
 <table>
-  <thead>
-      <tr>
-          <th>Glyph</th>
-          <th>Description</th>
-          <th>Unicode</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>☑︎</td>
-          <td>U+2611 BALLOT BOX WITH CHECK in explicit text style</td>
-          <td><code>U+2611 U+FE0E</code> (VS15)</td>
-      </tr>
-      <tr>
-          <td>☑️</td>
-          <td>U+2611 BALLOT BOX WITH CHECK in explicit emoji style</td>
-          <td><code>U+2611 U+FE0F</code> (VS16)</td>
-      </tr>
-      <tr>
-          <td>✉︎</td>
-          <td>U+2709 ENVELOPE in explicit text style</td>
-          <td><code>U+2709 U+FE0E</code> (VS15)</td>
-      </tr>
-      <tr>
-          <td>✉️</td>
-          <td>U+2709 ENVELOPE in explicit emoji style</td>
-          <td><code>U+2709 U+FE0F</code> (VS16)</td>
-      </tr>
-      <tr>
-          <td>✔︎</td>
-          <td>U+2714 HEAVY CHECK MARK in explicit text style</td>
-          <td><code>U+2714 U+FE0E</code> (VS15)</td>
-      </tr>
-      <tr>
-          <td>✔️</td>
-          <td>U+2714 HEAVY CHECK MARK in explicit emoji style</td>
-          <td><code>U+2714 U+FE0F</code> (VS16)</td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th>Glyph</th>
+<th>Description</th>
+<th>Unicode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>☑︎</td>
+<td>U+2611 BALLOT BOX WITH CHECK in explicit text style</td>
+<td><code>U+2611 U+FE0E</code> (VS15)</td>
+</tr>
+<tr>
+<td>☑️</td>
+<td>U+2611 BALLOT BOX WITH CHECK in explicit emoji style</td>
+<td><code>U+2611 U+FE0F</code> (VS16)</td>
+</tr>
+<tr>
+<td>✉︎</td>
+<td>U+2709 ENVELOPE in explicit text style</td>
+<td><code>U+2709 U+FE0E</code> (VS15)</td>
+</tr>
+<tr>
+<td>✉️</td>
+<td>U+2709 ENVELOPE in explicit emoji style</td>
+<td><code>U+2709 U+FE0F</code> (VS16)</td>
+</tr>
+<tr>
+<td>✔︎</td>
+<td>U+2714 HEAVY CHECK MARK in explicit text style</td>
+<td><code>U+2714 U+FE0E</code> (VS15)</td>
+</tr>
+<tr>
+<td>✔️</td>
+<td>U+2714 HEAVY CHECK MARK in explicit emoji style</td>
+<td><code>U+2714 U+FE0F</code> (VS16)</td>
+</tr>
+</tbody>
 </table>
 <p>We see that they are pretty much the same but with different formating thanks to the variation selectors.</p>
 <p>We use these variation selectors in other contexts too, such as:</p>
@@ -358,7 +357,7 @@ I had a lot of fun discovering all of this and making it work and I hope you too
           <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
         
-          19-03-2025 21:00
+          19-03-2025 22:00
         
 
          
@@ -462,6 +461,11 @@ I had a lot of fun discovering all of this and making it work and I hope you too
 
     
     <div class="pagination">
+        
+        <div class="pagination__title">
+            <span class="pagination__title-h">Read other posts</span>
+            <hr />
+        </div>
         
 
         <div class="pagination__buttons">

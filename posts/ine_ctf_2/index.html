@@ -7,9 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="">
 <meta name="description" content="Today, a second CTF walkthrough for the System-Host Based Attacks CTF 1. This time we have 4 flags :
-Flag 1: User &lsquo;bob&rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local) Flag 4: The Desktop directory might have what you&rsquo;re looking for. Enumerate its contents. (target2.ine.local) Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we&rsquo;ll be subject to Windows targets.
-" />
-<meta name="keywords" content="homepage, blog, cybersecurity, technology, linux, CTF, cybersecurity, pentesting" />
+Flag 1: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag." />
+<meta name="keywords" content=", linux, CTF, cybersecurity, pentesting" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="/posts/ine_ctf_2/" />
@@ -41,9 +40,9 @@ Flag 1: User &lsquo;bob&rsquo; might not have chosen a strong password. Try comm
 
 
 
-  <meta itemprop="name" content="Walkthrough : Host & Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)">
+  <meta itemprop="name" content="Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)">
   <meta itemprop="description" content="Today, a second CTF walkthrough for the System-Host Based Attacks CTF 1. This time we have 4 flags :
-Flag 1: User ‘bob’ might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local) Flag 4: The Desktop directory might have what you’re looking for. Enumerate its contents. (target2.ine.local) Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we’ll be subject to Windows targets.">
+Flag 1: User ‘bob’ might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag.">
   <meta itemprop="datePublished" content="2025-03-30T23:00:53+00:00">
   <meta itemprop="dateModified" content="2025-03-30T23:00:53+00:00">
   <meta itemprop="wordCount" content="640">
@@ -52,17 +51,17 @@ Flag 1: User ‘bob’ might not have chosen a strong password. Try common passw
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="/">
-  <meta name="twitter:title" content="Walkthrough : Host & Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)">
+  <meta name="twitter:title" content="Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)">
   <meta name="twitter:description" content="Today, a second CTF walkthrough for the System-Host Based Attacks CTF 1. This time we have 4 flags :
-Flag 1: User ‘bob’ might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local) Flag 4: The Desktop directory might have what you’re looking for. Enumerate its contents. (target2.ine.local) Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we’ll be subject to Windows targets.">
+Flag 1: User ‘bob’ might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag.">
 
 
 
     <meta property="og:url" content="/posts/ine_ctf_2/">
   <meta property="og:site_name" content="Arvee&#39;s Blog">
-  <meta property="og:title" content="Walkthrough : Host & Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)">
+  <meta property="og:title" content="Walkthrough : Host &amp; Network Penetration Testing: System-Host Based Attacks CTF 1 (INE - eJPT)">
   <meta property="og:description" content="Today, a second CTF walkthrough for the System-Host Based Attacks CTF 1. This time we have 4 flags :
-Flag 1: User ‘bob’ might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag. (target2.ine.local) Flag 4: The Desktop directory might have what you’re looking for. Enumerate its contents. (target2.ine.local) Judging from the tasks descriptions, we notice that we have 2 targets that are most likely Windows targets; The second flag mentions a C drive and the third talks about SMB so we can confidently assume that we’ll be subject to Windows targets.">
+Flag 1: User ‘bob’ might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag.">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -302,7 +301,7 @@ Flag 1: User ‘bob’ might not have chosen a strong password. Try common passw
           <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
         
-          30-03-2025 23:00
+          31-03-2025 01:00
         
 
          
@@ -406,6 +405,11 @@ Flag 1: User ‘bob’ might not have chosen a strong password. Try common passw
 
     
     <div class="pagination">
+        
+        <div class="pagination__title">
+            <span class="pagination__title-h">Read other posts</span>
+            <hr />
+        </div>
         
 
         <div class="pagination__buttons">
