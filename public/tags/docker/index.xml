@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on Arvee&#39;s Blog</title>
+    <link>/tags/docker/</link>
+    <description>Recent content in Docker on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+    <atom:link href="/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
+      <link>/posts/cve_2025_27591/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/posts/cve_2025_27591/</guid>
+      <description>Introduction This guide demonstrates how to set up a vulnerable Docker lab environment to study CVE-2025-27591, a privilege escalation vulnerability in the Below binary. The lab combines a vulnerable Apache server with a CGI script as a controlled entry point.&#xA;The lab is intended for educational purposes only, and it provides an isolated environment to practice exploitation techniques, reverse shells, and privilege escalation without affecting your host system.&#xA;By the end of this guide, you will have:</description>
+    </item>
+    <item>
+      <title>How to Deploy T-Pot Honeypot on Linux for Threat Intelligence and Network Monitoring</title>
+      <link>/posts/tpot/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/posts/tpot/</guid>
+      <description>In this guide, we’ll walk through the complete installation process of T-Pot, the open-source honeypot platform maintained by Deutsche Telekom Security. T-Pot brings together several honeypot daemons, loggers, dashboards, and analysis tools into a single system, all containerized with Docker for easy deployment.&#xA;This article is not just a copy-paste tutorial. It documents a real-world setup using Rocky Linux 9.6, including firewall configuration, troubleshooting tips, and post-installation monitoring. All screenshots, commands, and insights are based on an actual installation.</description>
+    </item>
+    <item>
+      <title>How to Set Up GNU Radio with Docker and UHD for SDR Development</title>
+      <link>/posts/gnuradiodocker/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/posts/gnuradiodocker/</guid>
+      <description>This guide was tested on a Linux machine (Debian 12 - Bookworm), proper, up to date system with administrative privileges for the installing user. The following instructions are also compatible with other Debian based distributions like Ubuntu.&#xA;Installing Docker Source : https://docs.docker.com/engine/install/debian/&#xA;Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker apt repository. Afterward, you can install and update Docker from the repository.</description>
+    </item>
+  </channel>
+</rss>

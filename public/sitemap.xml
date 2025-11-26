@@ -3,24 +3,126 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-03-17T23:59:52+00:00</lastmod>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/cve-2025-27591/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/posts/cve_2025_27591/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/cybersecurity/</loc>
-    <lastmod>2025-03-17T23:59:52+00:00</lastmod>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
-    <loc>/tags/linux/</loc>
-    <lastmod>2025-03-17T23:59:52+00:00</lastmod>
+    <loc>/tags/docker/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
-    <loc>/tags/pentesting/</loc>
-    <lastmod>2025-03-17T23:59:52+00:00</lastmod>
+    <loc>/tags/exploitation/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/lab/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/posts/</loc>
-    <lastmod>2025-03-17T23:59:52+00:00</lastmod>
-  </url><url>
-    <loc>/posts/shellshock/</loc>
-    <lastmod>2025-03-17T23:59:52+00:00</lastmod>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/vulnerable-container/</loc>
+    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/elk-stack/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/honeypot/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/posts/tpot/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/linux/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/network-security/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/t-pot/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/threat-intelligence/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/tutorial/</loc>
+    <lastmod>2025-07-17T11:27:17+01:00</lastmod>
+  </url><url>
+    <loc>/tags/gnu-radio/</loc>
+    <lastmod>2025-06-29T14:06:00+01:00</lastmod>
+  </url><url>
+    <loc>/posts/gnuradiodocker/</loc>
+    <lastmod>2025-06-29T14:06:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/rtl-sdr/</loc>
+    <lastmod>2025-06-29T14:06:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/sdr/</loc>
+    <lastmod>2025-06-29T14:06:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/software-defined-radio/</loc>
+    <lastmod>2025-06-29T14:06:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/usrp/</loc>
+    <lastmod>2025-06-29T14:06:00+01:00</lastmod>
+  </url><url>
+    <loc>/tags/certification/</loc>
+    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
+  </url><url>
+    <loc>/tags/ejpt/</loc>
+    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
+  </url><url>
+    <loc>/posts/ejpt_cert/</loc>
+    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
+  </url><url>
+    <loc>/tags/ethical-hacking/</loc>
+    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
+  </url><url>
+    <loc>/tags/ine/</loc>
+    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
+  </url><url>
+    <loc>/tags/penetration-testing/</loc>
+    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
+  </url><url>
+    <loc>/tags/ctf/</loc>
+    <lastmod>2025-05-10T12:57:52+01:00</lastmod>
+  </url><url>
+    <loc>/tags/pentesting/</loc>
+    <lastmod>2025-05-10T12:57:52+01:00</lastmod>
+  </url><url>
+    <loc>/posts/ine_ctf_5/</loc>
+    <lastmod>2025-05-10T12:57:52+01:00</lastmod>
+  </url><url>
+    <loc>/posts/ine_ctf_4/</loc>
+    <lastmod>2025-05-07T16:04:40+01:00</lastmod>
+  </url><url>
+    <loc>/posts/ine_ctf_3/</loc>
+    <lastmod>2025-04-06T17:15:27+01:00</lastmod>
+  </url><url>
+    <loc>/posts/ine_ctf_2/</loc>
+    <lastmod>2025-03-30T23:00:53+00:00</lastmod>
+  </url><url>
+    <loc>/tags/code/</loc>
+    <lastmod>2025-03-19T21:00:47+00:00</lastmod>
+  </url><url>
+    <loc>/tags/deepdive/</loc>
+    <lastmod>2025-03-19T21:00:47+00:00</lastmod>
+  </url><url>
+    <loc>/posts/hide_emoji/</loc>
+    <lastmod>2025-03-19T21:00:47+00:00</lastmod>
+  </url><url>
+    <loc>/tags/python/</loc>
+    <lastmod>2025-03-19T21:00:47+00:00</lastmod>
+  </url><url>
+    <loc>/posts/shellshock/</loc>
     <lastmod>2025-03-17T23:59:52+00:00</lastmod>
   </url><url>
     <loc>/tags/vulnerability/</loc>
@@ -29,10 +131,64 @@
     <loc>/posts/vulnerability_assessment_ctf_1/</loc>
     <lastmod>2025-03-16T20:52:36+00:00</lastmod>
   </url><url>
-    <loc>/tags/ctf/</loc>
-    <lastmod>2025-03-16T20:52:36+00:00</lastmod>
+    <loc>/tags/apt/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/apt-cache/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/apt-get/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/command-line/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/deb-packages/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/debian/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/dpkg/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
     <loc>/posts/apt/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/linux-administration/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/linux-commands/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/linux-system/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/linux-tutorial/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/package-management/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/package-manager/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/repository-management/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/software-installation/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/software-update/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/software-upgrade/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/sysadmin/</loc>
+    <lastmod>2025-03-14T00:02:13+00:00</lastmod>
+  </url><url>
+    <loc>/tags/ubuntu/</loc>
     <lastmod>2025-03-14T00:02:13+00:00</lastmod>
   </url><url>
     <loc>/blog/</loc>

@@ -7,27 +7,202 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Mon, 17 Mar 2025 23:59:52 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CVE-2025-27591</title>
+      <link>/tags/cve-2025-27591/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/cve-2025-27591/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Cybersecurity</title>
       <link>/tags/cybersecurity/</link>
-      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
       <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Docker</title>
+      <link>/tags/docker/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Exploitation</title>
+      <link>/tags/exploitation/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/exploitation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lab</title>
+      <link>/tags/lab/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/lab/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Vulnerable Container</title>
+      <link>/tags/vulnerable-container/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/vulnerable-container/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>ELK Stack</title>
+      <link>/tags/elk-stack/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/tags/elk-stack/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Honeypot</title>
+      <link>/tags/honeypot/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/tags/honeypot/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux</title>
       <link>/tags/linux/</link>
-      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
       <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Network Security</title>
+      <link>/tags/network-security/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/tags/network-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>T-Pot</title>
+      <link>/tags/t-pot/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/tags/t-pot/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Threat Intelligence</title>
+      <link>/tags/threat-intelligence/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/tags/threat-intelligence/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tutorial</title>
+      <link>/tags/tutorial/</link>
+      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
+      <guid>/tags/tutorial/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GNU Radio</title>
+      <link>/tags/gnu-radio/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/gnu-radio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>RTL-SDR</title>
+      <link>/tags/rtl-sdr/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/rtl-sdr/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>SDR</title>
+      <link>/tags/sdr/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/sdr/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Defined Radio</title>
+      <link>/tags/software-defined-radio/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/software-defined-radio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>USRP</title>
+      <link>/tags/usrp/</link>
+      <pubDate>Sun, 29 Jun 2025 14:06:00 +0100</pubDate>
+      <guid>/tags/usrp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Certification</title>
+      <link>/tags/certification/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/certification/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>EJPT</title>
+      <link>/tags/ejpt/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/ejpt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ethical Hacking</title>
+      <link>/tags/ethical-hacking/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/ethical-hacking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>INE</title>
+      <link>/tags/ine/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/ine/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Penetration Testing</title>
+      <link>/tags/penetration-testing/</link>
+      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
+      <guid>/tags/penetration-testing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>CTF</title>
+      <link>/tags/ctf/</link>
+      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
+      <guid>/tags/ctf/</guid>
       <description></description>
     </item>
     <item>
       <title>Pentesting</title>
       <link>/tags/pentesting/</link>
-      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
       <guid>/tags/pentesting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Code</title>
+      <link>/tags/code/</link>
+      <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
+      <guid>/tags/code/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DeepDive</title>
+      <link>/tags/deepdive/</link>
+      <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
+      <guid>/tags/deepdive/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>/tags/python/</link>
+      <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
+      <guid>/tags/python/</guid>
       <description></description>
     </item>
     <item>
@@ -38,10 +213,136 @@
       <description></description>
     </item>
     <item>
-      <title>CTF</title>
-      <link>/tags/ctf/</link>
-      <pubDate>Sun, 16 Mar 2025 20:52:36 +0000</pubDate>
-      <guid>/tags/ctf/</guid>
+      <title>Apt</title>
+      <link>/tags/apt/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/apt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Apt-Cache</title>
+      <link>/tags/apt-cache/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/apt-cache/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Apt-Get</title>
+      <link>/tags/apt-get/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/apt-get/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Command Line</title>
+      <link>/tags/command-line/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/command-line/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Deb Packages</title>
+      <link>/tags/deb-packages/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/deb-packages/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Debian</title>
+      <link>/tags/debian/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/debian/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dpkg</title>
+      <link>/tags/dpkg/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/dpkg/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux Administration</title>
+      <link>/tags/linux-administration/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-administration/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux Commands</title>
+      <link>/tags/linux-commands/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-commands/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux System</title>
+      <link>/tags/linux-system/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-system/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux Tutorial</title>
+      <link>/tags/linux-tutorial/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/linux-tutorial/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Package Management</title>
+      <link>/tags/package-management/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/package-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Package Manager</title>
+      <link>/tags/package-manager/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/package-manager/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Repository Management</title>
+      <link>/tags/repository-management/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/repository-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Installation</title>
+      <link>/tags/software-installation/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/software-installation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Update</title>
+      <link>/tags/software-update/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/software-update/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software Upgrade</title>
+      <link>/tags/software-upgrade/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/software-upgrade/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Sysadmin</title>
+      <link>/tags/sysadmin/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/sysadmin/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ubuntu</title>
+      <link>/tags/ubuntu/</link>
+      <pubDate>Fri, 14 Mar 2025 00:02:13 +0000</pubDate>
+      <guid>/tags/ubuntu/</guid>
       <description></description>
     </item>
   </channel>
