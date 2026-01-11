@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 16 Dec 2025 21:51:17 +0100</lastBuildDate>
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Good Bye</title>
+      <link>/bye/goodbye/</link>
+      <pubDate>Tue, 16 Dec 2025 21:51:17 +0100</pubDate>
+      <guid>/bye/goodbye/</guid>
+      <description>This is a good bye message, I don&amp;rsquo;t know yet who&amp;rsquo;s receiving it, I know how tho, my dead man switch is pretty sweet (last time i tried i didn&amp;rsquo;t have one and that sucked ass). I was thinking of making a more elaborate plan but simple will have to do.&#xA;I&amp;rsquo;ve been struggling with mental health lately, I would spend entire days without talking to anyone in real life, not by choice mind you, I just literally don&amp;rsquo;t have anyone to talk to and everyone I&amp;rsquo;d talk to online wouldn&amp;rsquo;t care (not like I had online friends or anything, m talking about my girlfriend and my mom lol)</description>
+    </item>
     <item>
       <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
       <link>/posts/cve_2025_27591/</link>
