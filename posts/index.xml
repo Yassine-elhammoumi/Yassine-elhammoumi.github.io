@@ -6,8 +6,215 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+        <lastBuildDate>Thu, 12 Mar 2026 00:55:01 +0000</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Red Teaming Methodology: A Complete Overview</title>
+            <link>/posts/red_teaming/</link>
+            <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+            
+            <guid>/posts/red_teaming/</guid>
+            <description>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&amp;rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.
+1. Introduction to Red Teaming The essence of Red Teaming is to think like an attacker: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets.</description>
+            <content type="html"><![CDATA[<p>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.</p>
+<h2 id="1-introduction-to-red-teaming">1. Introduction to Red Teaming</h2>
+<p>The essence of Red Teaming is to <strong>think like an attacker</strong>: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets. This approach has evolved from simple network penetration testing to multi-layered exercises encompassing technical, physical, and social attack vectors.</p>
+<p>Unlike vulnerability scans or traditional penetration tests that aim to identify specific weaknesses, Red Teaming simulates the <strong>full attack lifecycle</strong>, from initial reconnaissance to data exfiltration. This gives organizations a realistic view of how well they can respond to actual attacks.</p>
+<h3 id="11-definition-and-evolution">1.1 Definition and Evolution</h3>
+<p>Modern Red Team exercises simulate complex multi-step attacks capable of challenging even mature security programs. This holistic approach provides insights into detection, response, and recovery capabilities, making Red Teaming an essential part of any robust cybersecurity strategy.</p>
+<h3 id="12-scope-and-objectives">1.2 Scope and Objectives</h3>
+<p>The scope of a Red Team engagement can vary widely: it may focus on a single application, a segment of the network, or the entire organization. Typical objectives include:</p>
+<ul>
+<li>Identifying vulnerabilities across technical, physical, and human layers.</li>
+<li>Providing actionable recommendations to improve security posture.</li>
+<li>Evaluating the organization’s detection and response capabilities.</li>
+<li>Identifying gaps in monitoring and incident management.</li>
+<li>Raising awareness among internal teams about attacker techniques and associated risks.</li>
+</ul>
+<hr>
+<h2 id="2-red-team-engagement-methodology">2. Red Team Engagement Methodology</h2>
+<p>A Red Team engagement follows a structured methodology that replicates the full attack cycle. The goal is to simulate an adversary’s behavior to evaluate the organization&rsquo;s defenses in a realistic, progressive manner.</p>
+<h3 id="21-planning-and-scoping">2.1 Planning and Scoping</h3>
+<p>Before launching technical activities, clear planning and scoping are critical. This phase defines objectives, boundaries, and resources.</p>
+<h4 id="211-objectives-and-success-criteria">2.1.1 Objectives and Success Criteria</h4>
+<p>Clear, measurable objectives might include:</p>
+<ul>
+<li>Gaining access to pre-defined critical assets.</li>
+<li>Measuring time to detection.</li>
+<li>Evaluating the effectiveness of incident response procedures.</li>
+</ul>
+<p>These criteria are used to measure the success of the engagement.</p>
+<h4 id="212-rules-of-engagement">2.1.2 Rules of Engagement</h4>
+<p>Rules of engagement define the operational boundaries:</p>
+<ul>
+<li>Systems, networks, and applications in scope.</li>
+<li>Authorized and prohibited techniques (e.g., social engineering, DoS attacks).</li>
+<li>Procedures for reporting critical vulnerabilities.</li>
+<li>Safety measures to avoid disrupting business operations.</li>
+</ul>
+<h4 id="213-resource-allocation-and-scheduling">2.1.3 Resource Allocation and Scheduling</h4>
+<p>This includes:</p>
+<ul>
+<li>Assigning personnel for each phase (reconnaissance, exploitation, reporting).</li>
+<li>Budgeting for tools, equipment, or external services.</li>
+<li>Scheduling the engagement phases and report delivery.</li>
+</ul>
+<h4 id="214-coordination-with-stakeholders">2.1.4 Coordination with Stakeholders</h4>
+<p>Engagements require alignment with IT teams, security teams, management, and legal advisors to ensure compliance and minimize operational risks.</p>
+<hr>
+<h3 id="22-preparation-and-passive-reconnaissance">2.2 Preparation and Passive Reconnaissance</h3>
+<p>Before active engagement, preparation includes collecting information to build an understanding of the target.</p>
+<h4 id="221-open-source-intelligence-osint">2.2.1 Open-Source Intelligence (OSINT)</h4>
+<p>OSINT involves collecting publicly available information, such as:</p>
+<ul>
+<li>Organizational structure</li>
+<li>Employee details</li>
+<li>Email formats</li>
+<li>Publicly exposed documents</li>
+<li>Technologies in use</li>
+<li>Previously leaked credentials</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>theHarvester</li>
+<li>Maltego</li>
+<li>Google Dorking</li>
+<li>SpiderFoot</li>
+<li>Have I Been Pwned</li>
+</ul>
+<h4 id="222-passive-footprinting-and-digital-mapping">2.2.2 Passive Footprinting and Digital Mapping</h4>
+<p>Passive reconnaissance maps the external footprint without interacting with target systems:</p>
+<ul>
+<li>Identifying IP ranges, domains, and subdomains.</li>
+<li>Analyzing DNS records, SSL certificates, and historical data.</li>
+<li>Mapping exposed infrastructure.</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>Amass</li>
+<li>Subfinder</li>
+<li>crt.sh</li>
+<li>Shodan</li>
+<li>DNSDumpster</li>
+</ul>
+<h4 id="223-documentation">2.2.3 Documentation</h4>
+<p>All collected intelligence is documented to guide attack scenarios and support comparison with active testing results.</p>
+<hr>
+<h3 id="23-initial-access">2.3 Initial Access</h3>
+<p>The Red Team uses collected information to gain a foothold in the target environment.</p>
+<h4 id="231-social-engineering--phishing">2.3.1 Social Engineering &amp; Phishing</h4>
+<p>Common techniques:</p>
+<ul>
+<li><strong>Spear phishing</strong>: targeted emails appearing legitimate.</li>
+<li><strong>Pretexting</strong>: creating a credible scenario to extract information.</li>
+<li><strong>Vishing &amp; SMiShing</strong>: phone or SMS-based manipulation.</li>
+</ul>
+<h4 id="232-exploitation-of-exposed-systems">2.3.2 Exploitation of Exposed Systems</h4>
+<p>Targeting internet-facing systems:</p>
+<ul>
+<li><strong>Web applications</strong>: SQL injection, XSS, misconfigurations.</li>
+<li><strong>Network services</strong>: open ports, outdated services, weak authentication.</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>Nmap</li>
+<li>Burp Suite</li>
+<li>Vulnerability scanners</li>
+</ul>
+<p>Exploits may be publicly available or custom-developed for specific targets.</p>
+<hr>
+<h3 id="24-establishing-persistence">2.4 Establishing Persistence</h3>
+<p>Once access is obtained, the Red Team ensures a durable foothold.</p>
+<h4 id="241-persistence-mechanisms">2.4.1 Persistence Mechanisms</h4>
+<p>Methods include:</p>
+<ul>
+<li>Registry modifications (Run/RunOnce)</li>
+<li>Scheduled tasks</li>
+<li>Service installation/modification</li>
+<li>DLL hijacking</li>
+<li>WMI event subscriptions</li>
+<li>Logon/startup scripts</li>
+<li>Abuse of authentication or enterprise certificates</li>
+</ul>
+<h4 id="242-stealth-and-evasion">2.4.2 Stealth and Evasion</h4>
+<p>Techniques to avoid detection:</p>
+<ul>
+<li>Payload obfuscation</li>
+<li>Encrypted communication with command &amp; control</li>
+<li>Mimicking legitimate network traffic</li>
+</ul>
+<hr>
+<h3 id="25-internal-reconnaissance-lateral-movement-and-privilege-escalation">2.5 Internal Reconnaissance, Lateral Movement, and Privilege Escalation</h3>
+<p>After establishing a foothold, the Red Team maps internal resources and escalates privileges.</p>
+<h4 id="251-internal-reconnaissance">2.5.1 Internal Reconnaissance</h4>
+<ul>
+<li>Identify machines, services, shares, accounts, and groups.</li>
+<li>Map critical systems: domain controllers, file servers, databases, backup servers.</li>
+<li>Understand security tools in place to avoid detection.</li>
+</ul>
+<h4 id="252-lateral-movement--privilege-escalation">2.5.2 Lateral Movement &amp; Privilege Escalation</h4>
+<ul>
+<li>Move from compromised systems to other resources.</li>
+<li>Extract credentials, scan for vulnerable services, exploit trust relationships.</li>
+<li>Expand access toward high-value targets like admin accounts or sensitive databases.</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>Mimikatz</li>
+<li>BloodHound</li>
+<li>CrackMapExec</li>
+</ul>
+<hr>
+<h3 id="26-achieving-engagement-objectives">2.6 Achieving Engagement Objectives</h3>
+<p>With extended access and elevated privileges, the Red Team focuses on demonstrating potential impact while staying <strong>within the scope of the engagement</strong>.</p>
+<p>Target assets may include:</p>
+<ul>
+<li>Internal documents and confidential files</li>
+<li>Databases and critical business information</li>
+<li>Source code repositories</li>
+<li>Sensitive accounts and credentials</li>
+<li>Mail servers and backup systems</li>
+</ul>
+<p>Exfiltration is simulated using secure methods:</p>
+<ul>
+<li>Encrypted channels (HTTPS, VPN)</li>
+<li>Existing protocols (DNS, HTTP)</li>
+<li>Splitting data into small chunks</li>
+<li>External cloud or simulated servers</li>
+</ul>
+<p>This shows how a real attacker could affect the organization, while respecting legal and contractual boundaries.</p>
+<h4 id="https-and-dns-exfiltration-conceptual">HTTPS and DNS Exfiltration (Conceptual)</h4>
+<ul>
+<li><strong>HTTPS</strong>: data is encoded and sent over normal HTTPS requests to an external server.</li>
+<li><strong>DNS</strong>: small fragments of data are embedded in subdomains of queries to an attacker-controlled domain.</li>
+<li>Both techniques blend into legitimate traffic to simulate stealthy exfiltration.</li>
+</ul>
+<hr>
+<h3 id="27-cleanup-engagement-closure-and-reporting">2.7 Cleanup, Engagement Closure, and Reporting</h3>
+<h4 id="271-cleanup-and-system-restoration">2.7.1 Cleanup and System Restoration</h4>
+<ul>
+<li>Remove all persistence mechanisms, payloads, and tools.</li>
+<li>Close communication channels.</li>
+<li>Restore modified configurations.</li>
+</ul>
+<h4 id="272-documentation-and-reporting">2.7.2 Documentation and Reporting</h4>
+<ul>
+<li>Detail attack vectors, accessed assets, and compromise timeline.</li>
+<li>Highlight detection and response gaps.</li>
+<li>Provide actionable recommendations for improving security.</li>
+</ul>
+<hr>
+<p>Red Teaming provides a realistic measure of an organization’s security posture, highlighting weaknesses and strengthening defenses through controlled, safe simulations.</p>
+<hr>
+<p>References:</p>
+<p>[1] <a href="https://securedebug.com/mastering-red-teaming-an-ultra-extensive-guide-to-processes-tools-and-techniques/">Mastering Red Teaming</a><br>
+[2] <a href="https://www.crowdstrike.com/en-us/cybersecurity-101/threat-intelligence/open-source-intelligence-osint/">CrowdStrike OSINT Guide</a><br>
+[3] <a href="https://lorenzomeacci.com/advanced-initial-access-techniques">Advanced Initial Access Techniques</a><br>
+[4] <a href="https://pentestlab.blog/methodologies/red-teaming/persistence/">Red Team Persistence Techniques</a><br>
+[5] <a href="https://encyclopedia.kaspersky.com/glossary/lateral-movement/">Kaspersky Lateral Movement</a></p>
+]]></content>
+        </item>
         
         <item>
             <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>

@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+    <lastBuildDate>Thu, 12 Mar 2026 00:55:01 +0000</lastBuildDate>
     <atom:link href="/tags/cybersecurity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Red Teaming Methodology: A Complete Overview</title>
+      <link>/posts/red_teaming/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/posts/red_teaming/</guid>
+      <description>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&amp;rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.&#xA;1. Introduction to Red Teaming The essence of Red Teaming is to think like an attacker: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets.</description>
+    </item>
     <item>
       <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
       <link>/posts/cve_2025_27591/</link>

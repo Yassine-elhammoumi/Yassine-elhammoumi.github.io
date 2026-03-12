@@ -3,15 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/cybersecurity/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/lateral-movement/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/offensive-security/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/osint/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/penetration-testing/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/persistence/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/posts/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/privilege-escalation/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/red-team/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/red-teaming/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/posts/red_teaming/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/security-testing/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2026-03-12T00:55:01+00:00</lastmod>
   </url><url>
     <loc>/tags/cve-2025-27591/</loc>
     <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/posts/cve_2025_27591/</loc>
-    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
-  </url><url>
-    <loc>/tags/cybersecurity/</loc>
     <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/docker/</loc>
@@ -21,12 +57,6 @@
     <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/lab/</loc>
-    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
-  </url><url>
-    <loc>/posts/</loc>
-    <lastmod>2025-11-25T22:10:00+01:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
     <lastmod>2025-11-25T22:10:00+01:00</lastmod>
   </url><url>
     <loc>/tags/vulnerable-container/</loc>
@@ -87,9 +117,6 @@
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
     <loc>/tags/ine/</loc>
-    <lastmod>2025-06-12T13:43:05+01:00</lastmod>
-  </url><url>
-    <loc>/tags/penetration-testing/</loc>
     <lastmod>2025-06-12T13:43:05+01:00</lastmod>
   </url><url>
     <loc>/tags/ctf/</loc>

@@ -7,20 +7,83 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+    <lastBuildDate>Thu, 12 Mar 2026 00:55:01 +0000</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cybersecurity</title>
+      <link>/tags/cybersecurity/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lateral Movement</title>
+      <link>/tags/lateral-movement/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/lateral-movement/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Offensive Security</title>
+      <link>/tags/offensive-security/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/offensive-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>OSINT</title>
+      <link>/tags/osint/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/osint/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Penetration Testing</title>
+      <link>/tags/penetration-testing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/penetration-testing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Persistence</title>
+      <link>/tags/persistence/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/persistence/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Privilege Escalation</title>
+      <link>/tags/privilege-escalation/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/privilege-escalation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Red Team</title>
+      <link>/tags/red-team/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/red-team/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Red Teaming</title>
+      <link>/tags/red-teaming/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/red-teaming/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Security Testing</title>
+      <link>/tags/security-testing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/security-testing/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CVE-2025-27591</title>
       <link>/tags/cve-2025-27591/</link>
       <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
       <guid>/tags/cve-2025-27591/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Cybersecurity</title>
-      <link>/tags/cybersecurity/</link>
-      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
-      <guid>/tags/cybersecurity/</guid>
       <description></description>
     </item>
     <item>
@@ -161,13 +224,6 @@
       <link>/tags/ine/</link>
       <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
       <guid>/tags/ine/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Penetration Testing</title>
-      <link>/tags/penetration-testing/</link>
-      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>/tags/penetration-testing/</guid>
       <description></description>
     </item>
     <item>
