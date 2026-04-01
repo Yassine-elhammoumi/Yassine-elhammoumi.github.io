@@ -7,8 +7,22 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Thu, 12 Mar 2026 00:55:01 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 01 Apr 2026 10:38:53 +0100</lastBuildDate>
     <atom:link href="/tags/offensive-security/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+      <link>/mythic/install/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/mythic/install/</guid>
+      <description>This is Part 1 of a series on Mythic C2.&#xA;As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+    </item>
+    <item>
+      <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+      <link>/posts/install_mythic/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/posts/install_mythic/</guid>
+      <description>This is Part 1 of a series on Mythic C2.&#xA;As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+    </item>
     <item>
       <title>Red Teaming Methodology: A Complete Overview</title>
       <link>/posts/red_teaming/</link>

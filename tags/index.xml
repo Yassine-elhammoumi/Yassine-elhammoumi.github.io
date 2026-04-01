@@ -7,13 +7,62 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Thu, 12 Mar 2026 00:55:01 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 01 Apr 2026 10:38:53 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C2</title>
+      <link>/tags/c2/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/c2/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Cybersecurity</title>
       <link>/tags/cybersecurity/</link>
-      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
       <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Docker</title>
+      <link>/tags/docker/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux</title>
+      <link>/tags/linux/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mythic</title>
+      <link>/tags/mythic/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/mythic/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Offensive Security</title>
+      <link>/tags/offensive-security/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/offensive-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Pentesting</title>
+      <link>/tags/pentesting/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/pentesting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Redteam</title>
+      <link>/tags/redteam/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/redteam/</guid>
       <description></description>
     </item>
     <item>
@@ -21,13 +70,6 @@
       <link>/tags/lateral-movement/</link>
       <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
       <guid>/tags/lateral-movement/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Offensive Security</title>
-      <link>/tags/offensive-security/</link>
-      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
-      <guid>/tags/offensive-security/</guid>
       <description></description>
     </item>
     <item>
@@ -87,13 +129,6 @@
       <description></description>
     </item>
     <item>
-      <title>Docker</title>
-      <link>/tags/docker/</link>
-      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
-      <guid>/tags/docker/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Exploitation</title>
       <link>/tags/exploitation/</link>
       <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
@@ -126,13 +161,6 @@
       <link>/tags/honeypot/</link>
       <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
       <guid>/tags/honeypot/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Linux</title>
-      <link>/tags/linux/</link>
-      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
-      <guid>/tags/linux/</guid>
       <description></description>
     </item>
     <item>
@@ -231,13 +259,6 @@
       <link>/tags/ctf/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
       <guid>/tags/ctf/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Pentesting</title>
-      <link>/tags/pentesting/</link>
-      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>/tags/pentesting/</guid>
       <description></description>
     </item>
     <item>
