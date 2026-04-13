@@ -7,27 +7,153 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>CVE-2025-27591</title>
-      <link>/tags/cve-2025-27591/</link>
-      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
-      <guid>/tags/cve-2025-27591/</guid>
+      <title>C2</title>
+      <link>/tags/c2/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/c2/</guid>
       <description></description>
     </item>
     <item>
       <title>Cybersecurity</title>
       <link>/tags/cybersecurity/</link>
-      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
       <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Edr</title>
+      <link>/tags/edr/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/edr/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Evasion</title>
+      <link>/tags/evasion/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/evasion/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Malware-Dev</title>
+      <link>/tags/malware-dev/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/malware-dev/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mythic</title>
+      <link>/tags/mythic/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/mythic/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Red Teaming</title>
+      <link>/tags/red-teaming/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/red-teaming/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Siem</title>
+      <link>/tags/siem/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/tags/siem/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Privilege Escalation</title>
+      <link>/tags/privilege-escalation/</link>
+      <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
+      <guid>/tags/privilege-escalation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Red Team</title>
+      <link>/tags/red-team/</link>
+      <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
+      <guid>/tags/red-team/</guid>
       <description></description>
     </item>
     <item>
       <title>Docker</title>
       <link>/tags/docker/</link>
-      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
       <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux</title>
+      <link>/tags/linux/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Offensive Security</title>
+      <link>/tags/offensive-security/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/offensive-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Pentesting</title>
+      <link>/tags/pentesting/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/pentesting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Redteam</title>
+      <link>/tags/redteam/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/tags/redteam/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lateral Movement</title>
+      <link>/tags/lateral-movement/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/lateral-movement/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>OSINT</title>
+      <link>/tags/osint/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/osint/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Penetration Testing</title>
+      <link>/tags/penetration-testing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/penetration-testing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Persistence</title>
+      <link>/tags/persistence/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/persistence/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Security Testing</title>
+      <link>/tags/security-testing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/tags/security-testing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>CVE-2025-27591</title>
+      <link>/tags/cve-2025-27591/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/tags/cve-2025-27591/</guid>
       <description></description>
     </item>
     <item>
@@ -63,13 +189,6 @@
       <link>/tags/honeypot/</link>
       <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
       <guid>/tags/honeypot/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Linux</title>
-      <link>/tags/linux/</link>
-      <pubDate>Thu, 17 Jul 2025 11:27:17 +0100</pubDate>
-      <guid>/tags/linux/</guid>
       <description></description>
     </item>
     <item>
@@ -164,24 +283,10 @@
       <description></description>
     </item>
     <item>
-      <title>Penetration Testing</title>
-      <link>/tags/penetration-testing/</link>
-      <pubDate>Thu, 12 Jun 2025 13:43:05 +0100</pubDate>
-      <guid>/tags/penetration-testing/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>CTF</title>
       <link>/tags/ctf/</link>
       <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
       <guid>/tags/ctf/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Pentesting</title>
-      <link>/tags/pentesting/</link>
-      <pubDate>Sat, 10 May 2025 12:57:52 +0100</pubDate>
-      <guid>/tags/pentesting/</guid>
       <description></description>
     </item>
     <item>

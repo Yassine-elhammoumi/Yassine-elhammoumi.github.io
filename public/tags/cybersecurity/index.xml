@@ -7,8 +7,43 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Tue, 25 Nov 2025 22:10:00 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
     <atom:link href="/tags/cybersecurity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mythic C2 : Evading Advanced Detection Systems (Part 1)</title>
+      <link>/posts/evasion/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/posts/evasion/</guid>
+      <description>This is the continuation of this article&#xA;Advanced Detection Systems are a real headache for red teamers (as they should be). Modern environments aren’t just relying on static AV anymore, you’re dealing with layered detection: AV, EDR, SIEM correlation, sometimes even behavioral ML on top.&#xA;So instead of trying to “bypass everything” (which is unrealistic), the idea here is to reduce your footprint at each layer.&#xA;In this part, I focused on a few steps that already make a big difference in a real-world engagement.</description>
+    </item>
+    <item>
+      <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+      <link>/mythic/install/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/mythic/install/</guid>
+      <description>This is Part 1 of a series on Mythic C2.&#xA;As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+    </item>
+    <item>
+      <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+      <link>/posts/install_mythic/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/posts/install_mythic/</guid>
+      <description>This is Part 1 of a series on Mythic C2.&#xA;As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+    </item>
+    <item>
+      <title>Red Teaming Methodology: A Complete Overview</title>
+      <link>/posts/red_teaming/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/posts/red_teaming/</guid>
+      <description>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&amp;rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.&#xA;1. Introduction to Red Teaming The essence of Red Teaming is to think like an attacker: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets.</description>
+    </item>
+    <item>
+      <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
+      <link>/labs/cve_2025_27591/</link>
+      <pubDate>Tue, 25 Nov 2025 22:10:00 +0100</pubDate>
+      <guid>/labs/cve_2025_27591/</guid>
+      <description>Introduction This guide demonstrates how to set up a vulnerable Docker lab environment to study CVE-2025-27591, a privilege escalation vulnerability in the Below binary. The lab combines a vulnerable Apache server with a CGI script as a controlled entry point.&#xA;The lab is intended for educational purposes only, and it provides an isolated environment to practice exploitation techniques, reverse shells, and privilege escalation without affecting your host system.&#xA;By the end of this guide, you will have:</description>
+    </item>
     <item>
       <title>CVE-2025-27591 Lab Setup and Exploitation Guide</title>
       <link>/posts/cve_2025_27591/</link>
@@ -57,6 +92,13 @@
       <pubDate>Sun, 30 Mar 2025 23:00:53 +0000</pubDate>
       <guid>/posts/ine_ctf_2/</guid>
       <description>Today, a second CTF walkthrough for the System-Host Based Attacks CTF 1. This time we have 4 flags :&#xA;Flag 1: User &amp;lsquo;bob&amp;rsquo; might not have chosen a strong password. Try common passwords to gain access to the server where the flag is located. (target1.ine.local) Flag 2: Valuable files are often on the C: drive. Explore it thoroughly. (target1.ine.local) Flag 3: By attempting to guess SMB user credentials, you may uncover important information that could lead you to the next flag.</description>
+    </item>
+    <item>
+      <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>
+      <link>/labs/shellshock/</link>
+      <pubDate>Mon, 17 Mar 2025 23:59:52 +0000</pubDate>
+      <guid>/labs/shellshock/</guid>
+      <description>What is Shellshock (CVE-2014-6271)? Basically, Shellshock is a critical vulnerability in Bash (versions 1.03 through 4.3) that allows attackers to perform arbitrary commands executions due to a flaw in Bash&amp;rsquo;s handling of environment variables.&#xA;Environment variables ? Environment variables are a simple way to pass about the current operating environment to the program being executed. You can define one simply by typing :&#xA;variable=&amp;#34;test&amp;#34; And you can use it as you would use a variable in a programming language.</description>
     </item>
     <item>
       <title>Shellshock : Explanation &#43; Demonstration (CVE-2014-6271)</title>

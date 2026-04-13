@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Red Teaming on Arvee&#39;s Blog</title>
+    <link>/tags/red-teaming/</link>
+    <description>Recent content in Red Teaming on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
+    <atom:link href="/tags/red-teaming/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mythic C2 : Evading Advanced Detection Systems (Part 1)</title>
+      <link>/posts/evasion/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/posts/evasion/</guid>
+      <description>This is the continuation of this article&#xA;Advanced Detection Systems are a real headache for red teamers (as they should be). Modern environments aren’t just relying on static AV anymore, you’re dealing with layered detection: AV, EDR, SIEM correlation, sometimes even behavioral ML on top.&#xA;So instead of trying to “bypass everything” (which is unrealistic), the idea here is to reduce your footprint at each layer.&#xA;In this part, I focused on a few steps that already make a big difference in a real-world engagement.</description>
+    </item>
+    <item>
+      <title>Red Teaming Methodology: A Complete Overview</title>
+      <link>/posts/red_teaming/</link>
+      <pubDate>Thu, 12 Mar 2026 00:55:01 +0000</pubDate>
+      <guid>/posts/red_teaming/</guid>
+      <description>Red Teaming is a controlled simulation of adversarial attacks, designed to test and improve an organization&amp;rsquo;s security posture. By simulating the tactics, techniques, and procedures (TTPs) of real attackers, Red Team exercises help organizations evaluate their ability to detect, respond to, and recover from sophisticated threats.&#xA;1. Introduction to Red Teaming The essence of Red Teaming is to think like an attacker: identify vulnerabilities, bypass defenses, and attempt unauthorized access to critical assets.</description>
+    </item>
+  </channel>
+</rss>

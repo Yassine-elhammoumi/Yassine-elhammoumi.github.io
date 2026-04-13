@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mythic on Arvee&#39;s Blog</title>
+    <link>/tags/mythic/</link>
+    <description>Recent content in Mythic on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
+    <atom:link href="/tags/mythic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mythic C2 : Evading Advanced Detection Systems (Part 1)</title>
+      <link>/posts/evasion/</link>
+      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
+      <guid>/posts/evasion/</guid>
+      <description>This is the continuation of this article&#xA;Advanced Detection Systems are a real headache for red teamers (as they should be). Modern environments aren’t just relying on static AV anymore, you’re dealing with layered detection: AV, EDR, SIEM correlation, sometimes even behavioral ML on top.&#xA;So instead of trying to “bypass everything” (which is unrealistic), the idea here is to reduce your footprint at each layer.&#xA;In this part, I focused on a few steps that already make a big difference in a real-world engagement.</description>
+    </item>
+    <item>
+      <title>Building a Custom Mythic Agent from Scratch (in Python)</title>
+      <link>/posts/mythic_agent/</link>
+      <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
+      <guid>/posts/mythic_agent/</guid>
+      <description>This is the continuation of this article&#xA;## Introduction&#xA;Now that we have a working Mythic setup, we&amp;rsquo;re able to deep diver into C2 architecture and start integrating our own tools and techniques to the base platform.&#xA;The goal is simple:&#xA;Understand how an agent really works internally Build my own minimal implant Extend it with a custom command tied to a real-world privilege escalation exploit Integrate everything cleanly into Mythic’s tasking system Understanding the Agent Model To get started, we have example containers available to help us understand the file structures.</description>
+    </item>
+    <item>
+      <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+      <link>/mythic/install/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/mythic/install/</guid>
+      <description>This is Part 1 of a series on Mythic C2.&#xA;As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+    </item>
+    <item>
+      <title>Getting Started with Mythic C2: Installation, Configuration, and First Callback</title>
+      <link>/posts/install_mythic/</link>
+      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
+      <guid>/posts/install_mythic/</guid>
+      <description>This is Part 1 of a series on Mythic C2.&#xA;As an offensive cybersecurity professional, learning about C2 frameworks feels essential. I spent some time researching different options and narrowed it down to two popular open source projects: Mythic and Sliver. Both are widely used in red team and adversary emulation work, but I chose Mythic because of its modular architecture and flexibility. Mythic separates agents and communication profiles into individual components that can be dynamically installed and extended, which felt like a good platform for learning and experimentation.</description>
+    </item>
+  </channel>
+</rss>
