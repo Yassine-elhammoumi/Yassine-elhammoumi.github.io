@@ -7,20 +7,83 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 24 Apr 2026 13:55:03 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cybersecurity</title>
+      <link>/tags/cybersecurity/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dkim</title>
+      <link>/tags/dkim/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/dkim/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dmarc</title>
+      <link>/tags/dmarc/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/dmarc/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Email</title>
+      <link>/tags/email/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/email/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>EvilGinx</title>
+      <link>/tags/evilginx/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/evilginx/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GoPhish</title>
+      <link>/tags/gophish/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/gophish/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Phishing-Simulation</title>
+      <link>/tags/phishing-simulation/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/phishing-simulation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Postfix</title>
+      <link>/tags/postfix/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/postfix/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Red Team</title>
+      <link>/tags/red-team/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/red-team/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Smtp</title>
+      <link>/tags/smtp/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/tags/smtp/</guid>
+      <description></description>
+    </item>
     <item>
       <title>C2</title>
       <link>/tags/c2/</link>
       <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
       <guid>/tags/c2/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Cybersecurity</title>
-      <link>/tags/cybersecurity/</link>
-      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
-      <guid>/tags/cybersecurity/</guid>
       <description></description>
     </item>
     <item>
@@ -70,13 +133,6 @@
       <link>/tags/privilege-escalation/</link>
       <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
       <guid>/tags/privilege-escalation/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Red Team</title>
-      <link>/tags/red-team/</link>
-      <pubDate>Wed, 08 Apr 2026 11:09:02 +0100</pubDate>
-      <guid>/tags/red-team/</guid>
       <description></description>
     </item>
     <item>

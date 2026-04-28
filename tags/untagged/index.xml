@@ -7,14 +7,14 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Mon, 13 Apr 2026 17:14:55 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 24 Apr 2026 13:55:03 +0100</lastBuildDate>
     <atom:link href="//localhost:1313/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Mythic C2 : Evading Advanced Detection Systems</title>
-      <link>//localhost:1313/posts/evasion/</link>
-      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
-      <guid>//localhost:1313/posts/evasion/</guid>
-      <description>This is the continuation of this article&#xA;Advanced Detection Systems pose a real headache for red teamers (as they should), therefore I went looking for ways to circumvent EDRs and SIEMs and took a few steps that would help a lot in a real world engagement. But before we get started, let&amp;rsquo;s make sure that our payload isn&amp;rsquo;t detectable by AVs.&#xA;Bypassing AVs Before anything, I checked my payload against the VirusTotal, as expected it was picked up by a couple of AV solutions :</description>
+      <title>Email_infra</title>
+      <link>//localhost:1313/posts/email_infra/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>//localhost:1313/posts/email_infra/</guid>
+      <description>Today, we&amp;rsquo;re setting up email. Those of you who are familiar with the self-hosting sphere know how much of a pain it is to set up email yourself. Hopefully, this guide will help beginner red teamers or just curious people understand the specific way I set up my phishing infrastructure.&#xA;Registering a Domain Name &amp;amp;&amp;amp; Setting up an Azure VM I&amp;rsquo;ll be combining Azure, Namecheap and Cloudflare for this part, but you can choose any alternatives that you like for any of these services.</description>
     </item>
   </channel>
 </rss>

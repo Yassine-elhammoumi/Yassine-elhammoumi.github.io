@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Phishing-Simulation on Arvee&#39;s Blog</title>
+    <link>/tags/phishing-simulation/</link>
+    <description>Recent content in Phishing-Simulation on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Fri, 24 Apr 2026 13:55:03 +0100</lastBuildDate>
+    <atom:link href="/tags/phishing-simulation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Building a Phishing Email Infrastructure: Postfix, DKIM, DMARC, SMTP Relay, GoPhish &amp; EvilGinx</title>
+      <link>/posts/email_infra/</link>
+      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <guid>/posts/email_infra/</guid>
+      <description>Today, we&amp;rsquo;re setting up email. Those of you who are familiar with the self-hosting sphere know how much of a pain it is to set up email yourself. Hopefully, this guide will help beginner red teamers or just curious people understand the specific way I set up my phishing infrastructure.&#xA;Registering a Domain Name &amp;amp;&amp;amp; Setting up an Azure VM I&amp;rsquo;ll be combining Azure, Namecheap and Cloudflare for this part, but you can choose any alternatives that you like for any of these services.</description>
+    </item>
+  </channel>
+</rss>

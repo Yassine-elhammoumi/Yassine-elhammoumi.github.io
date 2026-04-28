@@ -3,12 +3,48 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2026-04-13T17:14:55+01:00</lastmod>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
   </url><url>
-    <loc>/tags/c2/</loc>
-    <lastmod>2026-04-13T17:14:55+01:00</lastmod>
+    <loc>/posts/email_infra/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
   </url><url>
     <loc>/tags/cybersecurity/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/dkim/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/dmarc/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/email/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/evilginx/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/gophish/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/phishing-simulation/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/postfix/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/posts/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/red-team/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/smtp/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+  </url><url>
+    <loc>/tags/c2/</loc>
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
     <loc>/tags/edr/</loc>
@@ -26,16 +62,10 @@
     <loc>/posts/evasion/</loc>
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
-    <loc>/posts/</loc>
-    <lastmod>2026-04-13T17:14:55+01:00</lastmod>
-  </url><url>
     <loc>/tags/red-teaming/</loc>
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
     <loc>/tags/siem/</loc>
-    <lastmod>2026-04-13T17:14:55+01:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
     <loc>/posts/mythic_agent/</loc>
@@ -45,9 +75,6 @@
     <lastmod>2026-04-08T11:09:02+01:00</lastmod>
   </url><url>
     <loc>/tags/privilege-escalation/</loc>
-    <lastmod>2026-04-08T11:09:02+01:00</lastmod>
-  </url><url>
-    <loc>/tags/red-team/</loc>
     <lastmod>2026-04-08T11:09:02+01:00</lastmod>
   </url><url>
     <loc>/tags/docker/</loc>
