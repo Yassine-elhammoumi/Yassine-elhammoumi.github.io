@@ -7,13 +7,223 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Fri, 24 Apr 2026 13:55:03 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2026 14:24:06 +0100</lastBuildDate>
     <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Azure</title>
+      <link>/tags/azure/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/azure/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>C2</title>
+      <link>/tags/c2/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/c2/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>C2-Profiles</title>
+      <link>/tags/c2-profiles/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/c2-profiles/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cloudflare</title>
+      <link>/tags/cloudflare/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/cloudflare/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Command-and-Control</title>
+      <link>/tags/command-and-control/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/command-and-control/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Covert-Channel</title>
+      <link>/tags/covert-channel/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/covert-channel/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cryptography</title>
+      <link>/tags/cryptography/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/cryptography/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Custom-Protocol</title>
+      <link>/tags/custom-protocol/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/custom-protocol/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Cybersecurity</title>
       <link>/tags/cybersecurity/</link>
-      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
       <guid>/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Data-Exfiltration</title>
+      <link>/tags/data-exfiltration/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/data-exfiltration/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Detection-Evasion</title>
+      <link>/tags/detection-evasion/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/detection-evasion/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Devops</title>
+      <link>/tags/devops/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/devops/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dns</title>
+      <link>/tags/dns/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/dns/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dns-Protocol</title>
+      <link>/tags/dns-protocol/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/dns-protocol/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dns-Tunneling</title>
+      <link>/tags/dns-tunneling/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/dns-tunneling/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Docker</title>
+      <link>/tags/docker/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Exfiltration-Techniques</title>
+      <link>/tags/exfiltration-techniques/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/exfiltration-techniques/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hmac</title>
+      <link>/tags/hmac/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/hmac/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Implant-Development</title>
+      <link>/tags/implant-development/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/implant-development/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Infrastructure</title>
+      <link>/tags/infrastructure/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/infrastructure/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Malware-Development</title>
+      <link>/tags/malware-development/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/malware-development/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mythic</title>
+      <link>/tags/mythic/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/mythic/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Network-Evasion</title>
+      <link>/tags/network-evasion/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/network-evasion/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Networking</title>
+      <link>/tags/networking/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/networking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Offensive Security</title>
+      <link>/tags/offensive-security/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/offensive-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Opsec</title>
+      <link>/tags/opsec/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/opsec/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Protocol-Design</title>
+      <link>/tags/protocol-design/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/protocol-design/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>/tags/python/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Red Team</title>
+      <link>/tags/red-team/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/red-team/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tcp-Ip</title>
+      <link>/tags/tcp-ip/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/tcp-ip/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Weeagent</title>
+      <link>/tags/weeagent/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/tags/weeagent/</guid>
       <description></description>
     </item>
     <item>
@@ -66,24 +276,10 @@
       <description></description>
     </item>
     <item>
-      <title>Red Team</title>
-      <link>/tags/red-team/</link>
-      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
-      <guid>/tags/red-team/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Smtp</title>
       <link>/tags/smtp/</link>
       <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
       <guid>/tags/smtp/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>C2</title>
-      <link>/tags/c2/</link>
-      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
-      <guid>/tags/c2/</guid>
       <description></description>
     </item>
     <item>
@@ -108,13 +304,6 @@
       <description></description>
     </item>
     <item>
-      <title>Mythic</title>
-      <link>/tags/mythic/</link>
-      <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
-      <guid>/tags/mythic/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Red Teaming</title>
       <link>/tags/red-teaming/</link>
       <pubDate>Mon, 13 Apr 2026 17:14:55 +0100</pubDate>
@@ -136,24 +325,10 @@
       <description></description>
     </item>
     <item>
-      <title>Docker</title>
-      <link>/tags/docker/</link>
-      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
-      <guid>/tags/docker/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Linux</title>
       <link>/tags/linux/</link>
       <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
       <guid>/tags/linux/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Offensive Security</title>
-      <link>/tags/offensive-security/</link>
-      <pubDate>Wed, 01 Apr 2026 10:38:53 +0100</pubDate>
-      <guid>/tags/offensive-security/</guid>
       <description></description>
     </item>
     <item>
@@ -357,13 +532,6 @@
       <link>/tags/deepdive/</link>
       <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
       <guid>/tags/deepdive/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Python</title>
-      <link>/tags/python/</link>
-      <pubDate>Wed, 19 Mar 2025 21:00:47 +0000</pubDate>
-      <guid>/tags/python/</guid>
       <description></description>
     </item>
     <item>

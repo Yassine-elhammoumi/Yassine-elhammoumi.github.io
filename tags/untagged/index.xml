@@ -7,14 +7,14 @@
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-    <lastBuildDate>Fri, 24 Apr 2026 13:55:03 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2026 14:24:06 +0100</lastBuildDate>
     <atom:link href="//localhost:1313/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Email_infra</title>
-      <link>//localhost:1313/posts/email_infra/</link>
-      <pubDate>Fri, 24 Apr 2026 13:55:03 +0100</pubDate>
-      <guid>//localhost:1313/posts/email_infra/</guid>
-      <description>Today, we&amp;rsquo;re setting up email. Those of you who are familiar with the self-hosting sphere know how much of a pain it is to set up email yourself. Hopefully, this guide will help beginner red teamers or just curious people understand the specific way I set up my phishing infrastructure.&#xA;Registering a Domain Name &amp;amp;&amp;amp; Setting up an Azure VM I&amp;rsquo;ll be combining Azure, Namecheap and Cloudflare for this part, but you can choose any alternatives that you like for any of these services.</description>
+      <title>Building a Custom DNS C2 Profile for Mythic</title>
+      <link>//localhost:1313/posts/dns_mythic/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>//localhost:1313/posts/dns_mythic/</guid>
+      <description>This post covers the full process of building a custom DNS command and control profile from scratch and integrating it into the Mythic C2 framework. This includes the DNS infrastructure setup, the Mythic C2 profile container, the protocol design, the agent-side transport, and the builder integration.&#xA;Why DNS C2 Most network monitoring focuses on HTTP/HTTPS traffic. DNS is different, it&amp;rsquo;s treated as essential infrastructure and is almost never blocked outright. Firewalls that would catch an HTTP callback to an unknown IP will happily pass a DNS query to an external nameserver.</description>
     </item>
   </channel>
 </rss>

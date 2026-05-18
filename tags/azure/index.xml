@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Azure on Arvee&#39;s Blog</title>
+    <link>/tags/azure/</link>
+    <description>Recent content in Azure on Arvee&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <lastBuildDate>Fri, 15 May 2026 14:24:06 +0100</lastBuildDate>
+    <atom:link href="/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Building a Custom DNS C2 Profile for Mythic</title>
+      <link>/posts/dns_mythic/</link>
+      <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+      <guid>/posts/dns_mythic/</guid>
+      <description>This post covers the full process of building a custom DNS command and control profile from scratch and integrating it into the Mythic C2 framework. This includes the DNS infrastructure setup, the Mythic C2 profile container, the protocol design, the agent-side transport, and the builder integration.&#xA;Why DNS C2 Most network monitoring focuses on HTTP/HTTPS traffic. DNS is different, it&amp;rsquo;s treated as essential infrastructure and is almost never blocked outright. Firewalls that would catch an HTTP callback to an unknown IP will happily pass a DNS query to an external nameserver.</description>
+    </item>
+  </channel>
+</rss>

